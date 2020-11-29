@@ -1,0 +1,26 @@
+{
+  "name": "chengyao/framework",
+  "description": "Are you okay!",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "chengyao",
+      "email": "bigyao@139.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "helper.php"
+    ],
+    "psr-4": {
+      "yao\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "twig/twig": "^3.1",
+    "monolog/monolog": "^2.1",
+    "symfony/var-dumper": "^5.1"
+  }
+}
