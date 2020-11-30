@@ -49,7 +49,7 @@ class Config
     {
         if (!isset($key)) {
             foreach (glob($this->_getConfig('*')) as $config) {
-                $config_suffix = substr($config, strrpos($config, DS) + 1, -4);
+                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
                 if (!isset(self::$config[$config_suffix])) {
                     self::$config[$config_suffix] = require_once($config);
                 }
@@ -73,6 +73,6 @@ class Config
      */
     private function _getConfig(string $config): string
     {
-        return ROOT . 'config' . DS . $config . '.php';
+        return ROOT . 'config' . DIRECTORY_SEPARATOR . $config . '.php';
     }
 }

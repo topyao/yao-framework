@@ -1,6 +1,6 @@
 <?php
 
-namespace yao\data;
+namespace yao;
 
 class Collection implements \ArrayAccess, \JsonSerializable
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace yao\data;
+namespace yao;
 
 use PDO;
 use PDOException;
@@ -190,9 +190,9 @@ class Db
      * @return Db|null
      * 返回实例化对象
      */
-    public static function name(string $tableName): Db
+    public static function name(string $table_name): Db
     {
-        self::$name = $tableName;
+        self::$name = $table_name;
         return self::instance();
     }
 

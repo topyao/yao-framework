@@ -52,7 +52,7 @@ class File
         } else {
             $name = $this->file['name'];
         }
-        $paths = ROOT . 'public' . DS . trim($path, '/\\') . DS;
+        $paths = ROOT . 'public' . DIRECTORY_SEPARATOR . trim($path, '/\\') . DIRECTORY_SEPARATOR;
         if (!file_exists($paths) || !is_dir($paths)) {
             if (!mkdir($path, 0777, 1)) {
                 throw new \Exception('目录创建失败！');
@@ -61,7 +61,7 @@ class File
         if (false == move_uploaded_file($this->file['tmp_name'], $paths . $name)) {
             throw new \Exception('文件移动失败！');
         }
-        return ['address' => $path . DS . $name, 'filename' => $this->file['name']];
+        return ['address' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
     }
 
     /**

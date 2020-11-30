@@ -16,7 +16,7 @@ class View
 
     private function _setOptions()
     {
-        $loader = new \Twig\Loader\FilesystemLoader(ROOT . 'app' . DS . $this->module . 'view');
+        $loader = new \Twig\Loader\FilesystemLoader(ROOT . 'app' . DIRECTORY_SEPARATOR . $this->module . 'view');
         $this->twig = new \Twig\Environment($loader, [
             'debug' => $this->config['debug'],
             'cache' => $this->config['cache'] ? $this->config['cache_dir'] : false,
@@ -27,7 +27,7 @@ class View
     {
         if (strpos($template, '@')) {
             $dir = explode('@', $template);
-            $this->module = $dir[0] . DS;
+            $this->module = $dir[0] . DIRECTORY_SEPARATOR;
             $template = $dir[1];
         }
         $this->_setOptions();

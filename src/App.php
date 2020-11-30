@@ -8,7 +8,7 @@ class App
 {
     public static function run()
     {
-        \yao\facade\Service::serve();
+        \yao\facade\Event::serve();
 //        (new \app\http\Service())->serve();
         \yao\facade\Route::dispatch();
     }

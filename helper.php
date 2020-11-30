@@ -152,8 +152,3 @@ if (false === function_exists('getMultidimensionalArrayValue')) {
         return $value;
     }
 }
-
-function hook($hookClass, $args)
-{
-    return \yao\facade\Hook::hook($hookClass, $args);
-}
