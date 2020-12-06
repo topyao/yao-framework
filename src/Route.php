@@ -2,8 +2,6 @@
 
 namespace yao;
 
-use yao\Facade\Request;
-
 /**
  * Class Route
  * @package yao
@@ -26,10 +24,11 @@ class Route
     public static string $action = '';
     public static array $param = [];
 
+
     private function _matchRoute()
     {
         //请求类型转为小写
-        $method = Request::method();
+        $method = \yao\Facade\Request::method();
         if (!property_exists(self::class, $method)) {
             throw new \Exception('请求类型' . $method . '暂时不支持', 403);
         }
@@ -37,7 +36,7 @@ class Route
             //设置路由匹配正则
             $uriRegexp = '@^' . $uri . '$@i';
             //路由和请求一致或者匹配到正则
-            if (Request::path() == $uri || preg_match($uriRegexp, Request::path(), $match)) {
+            if (\yao\Facade\Request::path() == $uri || preg_match($uriRegexp, \yao\Facade\Request::path(), $match)) {
                 //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
                 if (isset($match)) {
                     array_shift($match);

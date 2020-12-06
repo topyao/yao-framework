@@ -47,21 +47,31 @@ class File
      */
     public function move($path, string $name = null)
     {
-        if (isset($name)) {
-            $name .= strrchr($this->file['name'], '.');
-        } else {
-            $name = $this->file['name'];
+        $this->_setNewName($name);
+        $this->_mkdir($path);
+        if (false == move_uploaded_file($this->file['tmp_name'], $paths . $name)) {
+            throw new \Exception('文件移动失败！');
         }
+        return ['address' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
+    }
+
+    private function _mkdir($path)
+    {
         $paths = ROOT . 'public' . DIRECTORY_SEPARATOR . trim($path, '/\\') . DIRECTORY_SEPARATOR;
         if (!file_exists($paths) || !is_dir($paths)) {
             if (!mkdir($path, 0777, 1)) {
                 throw new \Exception('目录创建失败！');
             }
         }
-        if (false == move_uploaded_file($this->file['tmp_name'], $paths . $name)) {
-            throw new \Exception('文件移动失败！');
+    }
+
+    private function _setNewName(&$name)
+    {
+        if (isset($name)) {
+            $name .= strrchr($this->file['name'], '.');
+        } else {
+            $name = $this->file['name'];
         }
-        return ['address' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
     }
 
     /**
