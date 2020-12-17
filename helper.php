@@ -78,8 +78,8 @@ if (!function_exists('view')) {
     /**
      * 视图赋值和渲染方法
      * @param string $template
-     * 模板名，例如index/index对应模块/index/index文件，可以为空表示模块/控制器/方法
-     * @param array $param 需要赋值给模板的参数
+     * 模板名，例如index@index对应index模块的index.html文件
+     * @param array $param 需要渲染给模板的变量
      * @return mixed
      */
     function view(?string $template = '', array $params = [])
