@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao\cache;
+namespace Yao\Cache;
 
 
 class Memcached

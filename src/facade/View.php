@@ -1,21 +1,19 @@
 <?php
 
-namespace yao\facade;
-
-use yao\Facade;
+namespace Yao\Facade;
 
 /**
  * @method static fetch(string $template, $params = [])
  * Class View
- * @package yao\facade
+ * @package Yao\Facade
  */
-class View extends Facade
+class View extends \Yao\Facade
 {
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\View::class;
+        return \Yao\View::class;
     }
 
 }

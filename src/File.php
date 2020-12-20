@@ -1,13 +1,13 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 /**
  * @method File ext(array $ext)
  * @method File size(int $size)
  * @method File extExcept(array $ext)
  * Class File
- * @package yao
+ * @package Yao
  */
 class File
 {

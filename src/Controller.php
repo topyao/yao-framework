@@ -1,10 +1,10 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 /**
  * Class Controller
- * @package yao
+ * @package Yao
  */
 abstract class Controller
 {

@@ -4,7 +4,7 @@
  * 内置函数
 */
 
-use yao\facade\Session;
+use Yao\Facade\Session;
 
 if (!function_exists('abort')) {
     function abort($message, $code = 0, $class = \Exception::class, $options = null)
@@ -15,11 +15,11 @@ if (!function_exists('abort')) {
 
 function error_handler($code, $message, $file, $line, $errContext)
 {
-    \yao\facade\Log::write('system', $message, 'notice', [$code, $file, $line]);
+    \Yao\Facade\Log::write('system', $message, 'notice', [$code, $file, $line]);
     if (config('app.debug')) {
         exit('<title>' . $message . '</title><pre style="font-size:1.6em">错误信息：' . $message . '<br>错误代码：' . $code . '<br>文件位置：' . $file . '<br>错误行：' . $line . '</pre>');
     }
-    exit(include_once \yao\facade\Config::get('app.exception_view'));
+    exit(include_once \Yao\Facade\Config::get('app.exception_view'));
 }
 
 
@@ -28,12 +28,12 @@ if (!function_exists('exception_handler')) {
     {
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
-        \yao\facade\Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
+        \Yao\Facade\Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
         http_response_code((int)$exception->getCode());
         if (config('app.debug')) {
             exit('<title>' . $message . '</title><pre style="font-size:1.6em">错误信息：' . $message . '<br>错误代码：' . $code . '<br>文件位置：' . $exception->getFile() . '<br>错误行：' . $exception->getLine() . '<br>Stack trace:' . $exception->getTraceAsString() . '</pre>');
         }
-        exit(include_once \yao\facade\Config::get('app.exception_view'));
+        exit(include_once \Yao\Facade\Config::get('app.exception_view'));
     }
 }
 
@@ -54,7 +54,7 @@ if (!function_exists('config')) {
      */
     function config(string $key = '')
     {
-        return yao\facade\Config::get($key);
+        return Yao\Facade\Config::get($key);
     }
 }
 
@@ -62,14 +62,14 @@ if (!function_exists('config')) {
 if (!function_exists('env')) {
     function env(string $key, $default = null)
     {
-        return \yao\facade\Env::get($key, $default);
+        return \Yao\Facade\Env::get($key, $default);
     }
 }
 
 if (!function_exists('request')) {
     function request()
     {
-        return \yao\facade\Request::instance();
+        return \Yao\Facade\Request::instance();
     }
 }
 
@@ -84,7 +84,7 @@ if (!function_exists('view')) {
      */
     function view(?string $template = '', array $params = [])
     {
-        return \yao\facade\View::fetch($template, $params);
+        return \Yao\Facade\View::fetch($template, $params);
     }
 }
 
@@ -92,11 +92,11 @@ if (!function_exists('db')) {
     /**
      * Db类助手函数
      * @param string $tableName
-     * @return \yao\Db
+     * @return \Yao\Db
      */
-    function db(string $tableName): \yao\Db
+    function db(string $tableName): \Yao\Db
     {
-        return \yao\Db::name($tableName);
+        return \Yao\Db::name($tableName);
     }
 }
 

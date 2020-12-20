@@ -1,12 +1,12 @@
 <?php
 
 
-namespace yao\facade;
+namespace yao\Facade;
 
 /**
  * @method static write($logName, $message, $level, array $context = [])
  * Class Log
- * @package yao\facade
+ * @package yao\Facade
  */
 class Log extends \yao\Facade
 {

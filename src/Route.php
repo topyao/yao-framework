@@ -1,10 +1,12 @@
 <?php
 
-namespace yao;
+namespace Yao;
+
+use Yao\Facade\Request;
 
 /**
  * Class Route
- * @package yao
+ * @package Yao
  */
 class Route
 {
@@ -24,42 +26,60 @@ class Route
     public static string $action = '';
     public static array $param = [];
 
+    private string $method = '';
+    private string $path = '';
+    private $route;
+
+    private static array $alias = [];
+    private static array $middleware = [];
+
 
     private function _matchRoute()
     {
         //请求类型转为小写
-        $method = \yao\Facade\Request::method();
+        $method = \Yao\Facade\Request::method();
         if (!property_exists(self::class, $method)) {
             throw new \Exception('请求类型' . $method . '暂时不支持', 403);
         }
-        foreach (self::$$method as $uri => $location) {
-            //设置路由匹配正则
-            $uriRegexp = '@^' . $uri . '$@i';
-            //路由和请求一致或者匹配到正则
-            if (\yao\Facade\Request::path() == $uri || preg_match($uriRegexp, \yao\Facade\Request::path(), $match)) {
-                //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
-                if (isset($match)) {
-                    array_shift($match);
-                    self::$param = $match;
-                }
-                if ($location instanceof \Closure) {
-                    return response(call_user_func_array($location, self::$param));
-                } else if (is_array($location) && 2 == count($location)) {
-                    [self::$controller, self::$action] = $location;
-                } else if (is_string($location)) {
-                    $module = '';
-                    if (strpos($location, '@')) {
-                        $dir = explode('@', $location);
-                        $module = $dir[0] . '\\';
-                        $location = $dir[1];
+
+        if (isset(self::$$method[\Yao\Facade\Request::path()])) {
+            $this->_locate(self::$$method[\Yao\Facade\Request::path()]);
+        } else {
+            foreach (self::$$method as $uri => $location) {
+                //设置路由匹配正则
+                $uriRegexp = '@^' . $uri . '$@i';
+                //路由和请求一致或者匹配到正则
+                if (preg_match($uriRegexp, \Yao\Facade\Request::path(), $match)) {
+                    //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
+                    if (isset($match)) {
+                        array_shift($match);
+                        self::$param = $match;
                     }
-                    [$controller, self::$action] = explode('/', $location);
-                    self::$controller = 'app' . '\\' . $module . 'controller' . '\\' . ucfirst($controller);
-                } else {
-                    throw new \Exception('路由配置有问题！');
+                    $this->_locate($location);
+                    break;
                 }
-                break;
             }
+        }
+    }
+
+
+    private function _locate($location)
+    {
+        if ($location instanceof \Closure) {
+            return response(call_user_func_array($location, self::$param));
+        } else if (is_array($location) && 2 == count($location)) {
+            [self::$controller, self::$action] = $location;
+        } else if (is_string($location)) {
+            $module = '';
+            if (strpos($location, '@')) {
+                $dir = explode('@', $location);
+                $module = $dir[0] . '\\';
+                $location = $dir[1];
+            }
+            [$controller, self::$action] = explode('/', $location);
+            self::$controller = 'App' . '\\' . ucfirst($module) . 'Controller' . '\\' . ucfirst($controller);
+        } else {
+            throw new \Exception('路由配置有问题！');
         }
     }
 
@@ -85,11 +105,32 @@ class Route
      * @param array $route
      * route参数
      */
-    public function __call(string $name, array $route)
+    public function __call(string $method, array $route)
     {
-        $name = strtolower($name);
-        $uri = '/' . trim($route[0], '/');
-        self::$$name[$uri] = $route[1];
+        $this->method = $method;
+        $method = strtolower($method);
+        $path = '/' . trim($route[0], '/');
+        $this->path = $path;
+        self::$$method[$path] = $route[1];
+        return $this;
+    }
+
+    public function alias($alias)
+    {
+        self::$alias[$alias] = [
+            'method' => $this->method,
+            'path' => $this->path,
+        ];
+        return $this;
+    }
+
+    public function middleware($middleware)
+    {
+        self::$middleware[$middleware] = [
+            'method' => $this->method,
+            'path' => $this->path,
+        ];
+        return $this;
     }
 
     /**

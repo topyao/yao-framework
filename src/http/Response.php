@@ -1,6 +1,6 @@
 <?php
 
-namespace yao\http;
+namespace Yao\Http;
 
 abstract class Response
 {

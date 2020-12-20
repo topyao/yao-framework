@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao;
+namespace Yao;
 
 
 class Event
@@ -15,8 +15,8 @@ class Event
     public function builtInServices()
     {
         return [
-            \yao\event\Init::class,
-            \yao\event\SessionInit::class
+            \yao\Event\Init::class,
+            \yao\Event\SessionInit::class
         ];
     }
 

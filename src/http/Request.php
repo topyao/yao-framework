@@ -1,11 +1,11 @@
 <?php
 
-namespace yao\http;
+namespace Yao\Http;
 
 /**
  * 请求类
  * Class Request
- * @package yao
+ * @package Yao
  */
 class Request
 {
@@ -24,9 +24,9 @@ class Request
      */
     public function __construct(?array $filters = null)
     {
-        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
         $this->url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
-        $this->filters = $filters ?? \yao\facade\Config::get('app.filter');
+        $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
 
     /** 请求类型判断

@@ -1,25 +1,22 @@
 <?php
 
 
-namespace yao\facade;
-
-
-use yao\Facade;
+namespace Yao\Facade;
 
 /**
  * @method static get(string $name)
  * @method static set(string $name, $value)
  * @method static flash(string $name, $value)
  * Class Session
- * @package yao\facade
+ * @package Yao\Facade
  */
-class Session extends Facade
+class Session extends \Yao\Facade
 {
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\http\Session::class;
+        return \Yao\http\Session::class;
     }
 
 }

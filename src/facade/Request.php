@@ -1,10 +1,8 @@
 <?php
 
 
-namespace yao\facade;
+namespace Yao\Facade;
 
-
-use yao\Facade;
 
 /**
  * @method static bool isMethod(string $method)
@@ -19,15 +17,15 @@ use yao\Facade;
  * @method static array file($field = null, $default = '')
  * @method static string cookie($field = null, $default = '')
  * Class Request
- * @package yao\facade
+ * @package Yao\Facade
  */
-class Request extends Facade
+class Request extends \Yao\Facade
 {
 
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\http\Request::class;
+        return \Yao\http\Request::class;
     }
 }

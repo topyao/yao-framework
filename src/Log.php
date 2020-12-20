@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao;
+namespace Yao;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -20,7 +20,7 @@ class Log
 
     public function write($logName, $message, $level = 'warning', array $context = [])
     {
-        if (false == \yao\facade\Config::get('app.log')) {
+        if (false == \yao\Facade\Config::get('app.log')) {
             return;
         }
         $logLevel = constant(Logger::class . '::' . strtoupper($level));

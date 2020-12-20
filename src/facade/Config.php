@@ -1,21 +1,19 @@
 <?php
 
-namespace yao\facade;
-
-use yao\Facade;
+namespace Yao\Facade;
 
 /**
  * @method static get(string $key)
  * Class Config
- * @package yao\facade
+ * @package Yao\Facade
  */
-class Config extends Facade
+class Config extends Yao\Facade
 {
 
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\Config::class;
+        return \Yao\Config::class;
     }
 }

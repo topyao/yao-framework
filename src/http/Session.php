@@ -1,6 +1,6 @@
 <?php
 
-namespace yao\http;
+namespace Yao\Http;
 
 class Session
 {
@@ -33,17 +33,17 @@ class Session
     {
         if (true === $this->get('yao_session_flash_flag')) {
             $this->set('yao_session_flash_flag', false);
-        } else if (false === $this->get('yao_session_flash_flag')) {
-            $this->set('yao_session_flash_flag', null);
-            $this->set($this->get('yao_session_flash_name'), null);
+        } else if (false === $this->get('Yao_session_flash_flag')) {
+            $this->set('Yao_session_flash_flag', null);
+            $this->set($this->get('Yao_session_flash_name'), null);
         }
     }
 
     public function flash($name, $value = null)
     {
         if (isset($value)) {
-            $this->set('yao_session_flash_flag', true);
-            $this->set('yao_session_flash_name', $name);
+            $this->set('Yao_session_flash_flag', true);
+            $this->set('Yao_session_flash_name', $name);
             $this->set($name, $value);
         } else {
             return $this->get($name);

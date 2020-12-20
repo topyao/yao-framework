@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao\event;
+namespace Yao\Event;
 
 
 class SessionInit
@@ -9,10 +9,10 @@ class SessionInit
     public function boot()
     {
         //是否默认开启session
-        if (\yao\facade\Config::get('app.auto_start')) {
+        if (\Yao\Facade\Config::get('app.auto_start')) {
             session_start();
             //session闪存检查
-            \yao\facade\Session::flashCheck();
+            \Yao\Facade\Session::flashCheck();
         }
     }
 }

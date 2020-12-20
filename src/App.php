@@ -1,15 +1,12 @@
 <?php
 
-
-namespace yao;
-
+namespace Yao;
 
 class App
 {
     public static function run()
     {
-        \yao\facade\Event::serve();
-//        (new \app\http\Service())->serve();
-        \yao\facade\Route::dispatch();
+        \Yao\Facade\Event::serve();
+        \Yao\Facade\Route::dispatch();
     }
 }

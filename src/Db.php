@@ -1,10 +1,10 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 use PDO;
 use PDOException;
-use yao\facade\Config;
+use Yao\Facade\Config;
 
 /**
  * @method array query(string $sql, array $data = [], bool $all = false)

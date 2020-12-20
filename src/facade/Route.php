@@ -1,29 +1,29 @@
 <?php
 
 
-namespace yao\facade;
+namespace Yao\Facade;
 
 
 /**
- * @method static get(string $uri, $location)
- * @method static post(string $uri, $location)
- * @method static put(string $uri, $location)
- * @method static delete(string $uri, $location)
- * @method static patch(string $uri, $location)
- * @method static rule(string $uri, $location, $type = ['get', 'post'])
- * @method static source(string $uri, $location)
- * @method static parse()
- * @method static dispatch()
+ * @method \Yao\Route get(string $uri, $location)
+ * @method \Yao\Route post(string $uri, $location)
+ * @method \Yao\Route put(string $uri, $location)
+ * @method \Yao\Route delete(string $uri, $location)
+ * @method \Yao\Route patch(string $uri, $location)
+ * @method \Yao\Route rule(string $uri, $location, $type = ['get', 'post'])
+ * @method \Yao\Route source(string $uri, $location)
+ * @method \Yao\Route alias(string $alias)
+ * @method \Yao\Route middleware(string $middleware)
  * Class Route
- * @package yao\facade
+ * @package \Yao\Facade
  */
-class Route extends \yao\Facade
+class Route extends \Yao\Facade
 {
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\Route::class;
+        return \Yao\Route::class;
     }
 
 }

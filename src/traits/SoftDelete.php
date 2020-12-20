@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao\traits;
+namespace Yao\traits;
 
 
 trait SoftDelete

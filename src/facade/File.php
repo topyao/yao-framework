@@ -1,23 +1,20 @@
 <?php
 
 
-namespace yao\facade;
-
-
-use yao\Facade;
+namespace Yao\Facade;
 
 /**
- * @method static \yao\File data(array $file)
- * @method static \yao\File download($filename, $path)
+ * @method static \Yao\File data(array $file)
+ * @method static \Yao\File download($filename, $path)
  * Class File
- * @package yao\facade
+ * @package Yao\Facade
  */
-class File extends Facade
+class File extends \Yao\Facade
 {
 
     protected static function getFacadeClass()
     {
-        return \yao\File::class;
+        return \Yao\File::class;
     }
 
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace yao\http\response;
+namespace Yao\Http\Response;
 
-use yao\Response;
+use Yao\Response;
 
 class Json extends Response
 {

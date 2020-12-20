@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yao\http;
+namespace Yao\Http;
 
 
 class Middleware

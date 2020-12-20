@@ -1,6 +1,6 @@
 <?php
 
-namespace yao\event;
+namespace Yao\Event;
 
 class Init
 {
@@ -13,9 +13,9 @@ class Init
             throw new \Exception('PHP版本太低，建议升级到PHP7.4', 403);
         }
         //装载env变量
-        \yao\facade\Env::load();
+        \Yao\Facade\Env::load();
         //关闭调试后显示屏蔽错误
-        if (\yao\facade\Config::get('app.debug')) {
+        if (\Yao\Facade\Config::get('app.debug')) {
             ini_set('display_errors', 'On');
             error_reporting(E_ALL);
         } else {
@@ -23,6 +23,6 @@ class Init
             error_reporting(0);
         }
         //设置默认时区
-        date_default_timezone_set(\yao\facade\Config::get('app.default_timezone'));
+        date_default_timezone_set(\Yao\Facade\Config::get('app.default_timezone'));
     }
 }

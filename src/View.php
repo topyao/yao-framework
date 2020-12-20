@@ -1,6 +1,6 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 class View
 {
@@ -11,7 +11,7 @@ class View
 
     public function __construct()
     {
-        $this->config = \yao\facade\Config::get('view');
+        $this->config = \Yao\Facade\Config::get('view');
     }
 
     private function _setOptions()

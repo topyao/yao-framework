@@ -1,26 +1,23 @@
 <?php
 
 
-namespace yao\facade;
-
-
-use yao\Facade;
+namespace Yao\Facade;
 
 
 /**
  * @method static load(string $envFile = ROOT . '.env')
  * @method static get(string $key, $default)
  * Class Env
- * @package yao\facade
+ * @package Yao\Facade
  */
-class Env extends Facade
+class Env extends \Yao\Facade
 {
 
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \yao\Env::class;
+        return \Yao\Env::class;
     }
 
 }

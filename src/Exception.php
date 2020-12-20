@@ -1,6 +1,6 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 use Throwable;
 

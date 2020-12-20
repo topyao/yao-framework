@@ -1,6 +1,6 @@
 <?php
 
-namespace yao;
+namespace Yao;
 
 /**
  * @method Validate max(array $rule)
@@ -15,7 +15,7 @@ namespace yao;
  * @author ：chengyao
  * @version : 0.0.1
  * Class Validate
- * @package yao
+ * @package Yao
  */
 class Validate
 {

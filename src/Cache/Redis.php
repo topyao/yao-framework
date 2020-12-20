@@ -1,8 +1,8 @@
 <?php
 
-namespace yao\cache;
+namespace Yao\Cache;
 
-use yao\facade\Config;
+use Yao\Facade\Config;
 
 class Redis
 {
