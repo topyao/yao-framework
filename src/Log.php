@@ -20,7 +20,7 @@ class Log
 
     public function write($logName, $message, $level = 'warning', array $context = [])
     {
-        if (false == \yao\Facade\Config::get('app.log')) {
+        if (false == \Yao\Facade\Config::get('app.log')) {
             return;
         }
         $logLevel = constant(Logger::class . '::' . strtoupper($level));

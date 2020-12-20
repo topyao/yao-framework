@@ -7,7 +7,7 @@ namespace Yao\Facade;
  * Class Config
  * @package Yao\Facade
  */
-class Config extends Yao\Facade
+class Config extends \Yao\Facade
 {
 
     protected static $singleInstance = true;

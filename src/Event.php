@@ -15,8 +15,8 @@ class Event
     public function builtInServices()
     {
         return [
-            \yao\Event\Init::class,
-            \yao\Event\SessionInit::class
+            \Yao\Event\Init::class,
+            \Yao\Event\SessionInit::class
         ];
     }
 

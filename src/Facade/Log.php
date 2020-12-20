@@ -8,11 +8,11 @@ namespace yao\Facade;
  * Class Log
  * @package yao\Facade
  */
-class Log extends \yao\Facade
+class Log extends \Yao\Facade
 {
     protected static function getFacadeClass()
     {
-        return \yao\Log::class;
+        return \Yao\Log::class;
     }
 
 }
