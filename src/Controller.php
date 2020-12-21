@@ -14,7 +14,7 @@ abstract class Controller
      * @param array $data 验证数据
      * @param array $notice 验证失败提示消息
      */
-    protected function validate(string $class = \app\http\Validate::class, array $data = [], array $notice = [])
+    protected function validate(string $class = \App\Http\Validate::class, array $data = [], array $notice = [])
     {
         return (new $class($data))->notice($notice);
     }
