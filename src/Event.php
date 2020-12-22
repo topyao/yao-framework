@@ -16,6 +16,7 @@ class Event
     {
         return [
             \Yao\Event\Init::class,
+            \Yao\Event\Route::class,
             \Yao\Event\SessionInit::class
         ];
     }

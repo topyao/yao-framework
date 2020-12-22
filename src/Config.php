@@ -24,19 +24,6 @@ class Config
             return self::$config;
         }
         return getMultidimensionalArrayValue(self::$config, $key);
-
-
-        // if (0 == substr_count($key, '.')) {
-        //     if (!isset(self::$config[$key])) {
-        //         throw new \Exception('配置参数' . $key . '不存在', 404);
-        //     }
-        //     return self::$config[$key];
-        // }
-        // $key_array = explode('.', $key);
-        // if (!isset(self::$config[$key_array[0]][$key_array[1]])) {
-        //     throw new \Exception('配置参数' . $key . '不存在', 404);
-        // }
-        // return self::$config[$key_array[0]][$key_array[1]];
     }
 
 

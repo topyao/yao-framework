@@ -19,13 +19,5 @@ class Env
     {
         $key = strtoupper($key);
         return getMultidimensionalArrayValue($this->env, $key, $default);
-
-
-        // if (1 === count($key)) {
-        //     $env = $this->env[strtoupper($key[0])] ?? $default;
-        // } else if (2 == count($key)) {
-        //     $env = $this->env[strtoupper($key[0])][strtoupper($key[1])] ?? $default;
-        // }
-        // return $env;
     }
 }
