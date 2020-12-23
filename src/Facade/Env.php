@@ -6,7 +6,7 @@ namespace Yao\Facade;
 
 /**
  * @method static load(string $envFile = ROOT . '.env')
- * @method static get(string $key, $default)
+ * @method string get(string $key, $default)
  * Class Env
  * @package Yao\Facade
  */

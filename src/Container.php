@@ -5,7 +5,6 @@ namespace Yao;
 
 class Container
 {
-
     const BINDCLASS = [
         'Request' => \Yao\Http\Request::class,
         'Validate' => \App\Http\Validate::class,
@@ -16,10 +15,14 @@ class Container
         'View' => View::class
     ];
 
+
     private function _getClass($class)
     {
         if (!is_string($class)) {
-            $class = $class->getType()->getName();
+            if (is_null($class = $class->getType())) {
+                throw new \Exception('传递的参数有问题');
+            }
+            $class = $class->getName();
         }
         if (!class_exists($class)) {
             $class = ltrim(strrchr($class, '\\'), '\\');
