@@ -87,7 +87,8 @@ class Request
 
     /**
      * get请求参数
-     * @param string|array $key
+     * @param string|array $key 请求的参数列表
+     * @param string $default 字符串参数的默认值
      * @return array|string
      */
     public function get($key = null, $default = null)
@@ -97,7 +98,8 @@ class Request
 
     /**
      * 获取post参数
-     * @param string $key
+     * @param string|array $key 请求的参数列表
+     * @param string $default 字符串参数的默认值
      * @return array|string
      */
     public function post($key = null, $default = null)
@@ -107,7 +109,8 @@ class Request
 
     /**
      * 获取请求中所有参数
-     * @param null $key
+     * @param string|array $key 请求的参数列表
+     * @param string $default 字符串参数的默认值
      * @return array|string
      */
     public function param($key = null, $default = null)
