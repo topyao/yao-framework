@@ -35,7 +35,7 @@ class Request
      */
     public function isMethod(string $method): bool
     {
-        return $this->method == strtoupper($method);
+        return $this->method == strtolower($method);
     }
 
     public function url(): string
@@ -57,7 +57,7 @@ class Request
 
     public function method(): string
     {
-        return strtolower($this->method);
+        return $this->method;
     }
 
     public function cookie($field = null)
