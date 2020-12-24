@@ -101,6 +101,9 @@ class Validate
     /**
      * 验证器主要方法
      * @param array $data 需要验证的参数
+     * @param array $notice 验证提示信息
+     * @param bool $checkAll 是否批量验证
+     * @param bool $throwAble 验证失败是否抛出异常
      * @return true|array 验证成功返回true，批量验证返回数组
      */
     public function check(?array $data = null, ?array $notice = null, ?bool $checkAll = null, ?bool $throwAble = null)
