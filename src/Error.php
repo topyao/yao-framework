@@ -4,21 +4,29 @@ namespace Yao;
 
 use Throwable;
 
-class Exception extends \Exception
+class Error
 {
 
     protected bool $debug;
     protected string $exceptionView;
+    private $error;
 
-    public function __construct($message = '', $code = 0, Throwable $previous = null)
+    private static function _getInstance()
     {
-        parent::__construct($message, $code, $previous);
+        return new self;
+    }
+
+    public static function register()
+    {
+        set_error_handler([self::_getInstance(), 'error']);
+        set_exception_handler([self::_getInstance(), 'exception']);
+        register_shutdown_function([self::_getInstance(), 'shutdown']);
+    }
+
+    private function __construct()
+    {
         $this->debug = \Yao\Facade\Config::get('app.debug');
         $this->exceptionView = \Yao\Facade\Config::get('app.exception_view');
-        set_error_handler([$this, 'error']);
-        set_exception_handler([$this, 'exception']);
-        register_shutdown_function([$this, 'shutdown']);
-
     }
 
     public function exception($exception)
@@ -51,6 +59,5 @@ class Exception extends \Exception
 
     public function shutdown()
     {
-
     }
 }

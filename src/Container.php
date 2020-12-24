@@ -15,6 +15,30 @@ class Container
         'View' => View::class
     ];
 
+    private $instance = [];
+
+    private static $container;
+
+    private static function _getInstance()
+    {
+        if (!static::$container instanceof static) {
+            static::$container = new static;
+        }
+        return static::$container;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        return call_user_func_array([static::_getInstance(), '_' . $name], $arguments);
+    }
+
+    private function __clone()
+    {
+    }
+
+    private function __construct()
+    {
+    }
 
     private function _getClass($class)
     {
@@ -51,7 +75,7 @@ class Container
     }
 
 
-    public function inject($class, $inject, $params, $method)
+    private function _inject($class, $inject, $params, $method)
     {
         foreach ($inject as $j) {
             $injectClass = $this->_getClass($j);
@@ -60,10 +84,10 @@ class Container
         return call_user_func_array([new $class(), $method], $params);
     }
 
-    public function create($class, $method, $params)
+    private function _create($class, $method, $params)
     {
         $methodParams = $this->get($class)->getMethod($method)->getParameters();
         $inject = array_diff_key($methodParams, $params);
-        return $this->inject($class, $inject, $params, $method);
+        return $this->_inject($class, $inject, $params, $method);
     }
 }

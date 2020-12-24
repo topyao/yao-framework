@@ -101,7 +101,7 @@ class Route
         if (!method_exists($obj, self::$action)) {
             throw new \Exception('控制器' . self::$controller . '中的方法' . self::$action . '不存在', 404);
         }
-        return response((new Container())->create(self::$controller, self::$action, self::$param));
+        return response(Container::create(self::$controller, self::$action, self::$param));
     }
 
     /**
@@ -153,7 +153,7 @@ class Route
      */
     public function rule(string $uri, $location, array $requestMethods = ['get', 'post']): Route
     {
-        $this->_setMethodAndPath($type, $uri);
+        $this->_setMethodAndPath($requestMethods, $uri);
         foreach ($this->method as $method) {
             //遍历请求类型并注册路由
             self::$route[strtolower($method)][$this->path] = $location;
@@ -162,14 +162,14 @@ class Route
     }
 
 
-//    public function source(string $uri, $location)
-//    {
-//        $uri = '/' . trim($uri, '/');
-//        self::$get[$uri] = $location . '/index';
-//        self::$get[$uri . '/create'] = $location . '/create';
-//        self::$post[$uri] = $location . '/save';
-//        self::$get[$uri . '/edit'] = $location . '/edit';
-//        self::$delete[$uri . '/delete'] = $location . 'delete';
-//        self::$put[$uri . '/edit'] = $location . '/update';
-//    }
+    //    public function source(string $uri, $location)
+    //    {
+    //        $uri = '/' . trim($uri, '/');
+    //        self::$get[$uri] = $location . '/index';
+    //        self::$get[$uri . '/create'] = $location . '/create';
+    //        self::$post[$uri] = $location . '/save';
+    //        self::$get[$uri . '/edit'] = $location . '/edit';
+    //        self::$delete[$uri . '/delete'] = $location . 'delete';
+    //        self::$put[$uri . '/edit'] = $location . '/update';
+    //    }
 }
