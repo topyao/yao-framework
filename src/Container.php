@@ -57,7 +57,7 @@ class Container
             $injectClass = $this->_getClass($j);
             $params[] = new $injectClass;
         }
-        return (new $class())->$method(...$params);
+        return call_user_func_array([new $class(), $method], $params);
     }
 
     public function create($class, $method, $params)
@@ -66,5 +66,4 @@ class Container
         $inject = array_diff_key($methodParams, $params);
         return $this->inject($class, $inject, $params, $method);
     }
-
 }

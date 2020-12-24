@@ -101,11 +101,7 @@ class Route
         if (!method_exists($obj, self::$action)) {
             throw new \Exception('控制器' . self::$controller . '中的方法' . self::$action . '不存在', 404);
         }
-//        dump((new Container())->create(self::$controller, self::$action, self::$param));
         return response((new Container())->create(self::$controller, self::$action, self::$param));
-
-        //调用控制器方法并传入参数
-//        return response(call_user_func_array([$obj, self::$action], [...self::$param, new \Yao\Http\Request()]));
     }
 
     /**
