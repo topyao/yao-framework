@@ -49,7 +49,7 @@ class File
     {
         $this->_setNewName($name);
         $this->_mkdir($path);
-        if (false == move_uploaded_file($this->file['tmp_name'], $paths . $name)) {
+        if (false == move_uploaded_file($this->file['tmp_name'], $path . $name)) {
             throw new \Exception('文件移动失败！');
         }
         return ['address' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
