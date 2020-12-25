@@ -52,7 +52,7 @@ class File
         if (false == move_uploaded_file($this->file['tmp_name'], $path . $name)) {
             throw new \Exception('文件移动失败！');
         }
-        return ['address' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
+        return ['path' => $path . DIRECTORY_SEPARATOR . $name, 'filename' => $this->file['name']];
     }
 
     private function _mkdir($path)

@@ -163,11 +163,11 @@ class Db
      * @param bool $all
      * @return mixed
      */
-    private function _query(string $sql, ?array $data = [], bool $all = false)
+    private function _query(string $sql, ?array $data = [], bool $all = true)
     {
         $PDOstatement = $this->_prepare($sql, $data);
         $this->_flush();
-        return (false === $all) ? $PDOstatement->fetch(PDO::FETCH_ASSOC) : $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        return $all ? $PDOstatement->fetchAll(PDO::FETCH_ASSOC) : $PDOstatement->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
