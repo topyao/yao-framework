@@ -91,6 +91,16 @@ class Db
         return $collection;
     }
 
+    public function value()
+    {
+        $collection = new Collection();
+        $sql = 'SELECT ' . self::$field . ' FROM ' . self::$name . $this->_condition();
+        $res = $this->_prepare($sql, self::$bindParam);
+        $collection->data = $res->fetchAll(PDO::FETCH_ASSOC)[self::$field];
+        $collection->query = $sql;
+        $this->_flush();
+        return $collection;
+    }
 
     /**
      * 查询单条
