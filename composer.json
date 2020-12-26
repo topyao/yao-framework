@@ -3,6 +3,7 @@
   "description": "Are you okay!",
   "type": "library",
   "license": "Apache-2.0",
+  "version": "0.0.1",
   "authors": [
     {
       "name": "chengyao",
