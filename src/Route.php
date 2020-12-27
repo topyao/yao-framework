@@ -13,20 +13,20 @@ class Route
      * @var array
      * 存放路由注册树的数组
      */
-    protected static array $routes = [];
-    private static array $alias = [];
-    private static array $middleware = [];
+    protected array $routes = [];
+    private array $alias = [];
+    private array $middleware = [];
 
-    public static string $controller = '';
-    public static string $action = '';
-    public static array $param = [];
+    public string $controller = '';
+    public string $action = '';
+    public array $param = [];
 
     private $method;
     private string $path = '';
 
     public function getRoute($requestMethod = null, $requestPath = null)
     {
-        return $requestPath ? self::$routes[$requestMethod][$requestPath] : ($requestMethod ? self::$routes[$requestMethod] : self::$routes);
+        return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
     }
 
     public function __construct()
@@ -37,14 +37,14 @@ class Route
     {
         //请求类型转为小写
         $method = \Yao\Facade\Request::method();
-        if (!array_key_exists($method, self::$routes)) {
+        if (!array_key_exists($method, $this->routes)) {
             throw new \Exception('请求类型' . $method . '暂时不支持', 403);
         }
 
-        if (isset(self::$routes[$method][\Yao\Facade\Request::path()])) {
-            $this->_locate(self::$routes[$method][\Yao\Facade\Request::path()]);
+        if (isset($this->routes[$method][\Yao\Facade\Request::path()])) {
+            $this->_locate($this->routes[$method][\Yao\Facade\Request::path()]);
         } else {
-            foreach (self::$routes[$method] as $uri => $location) {
+            foreach ($this->routes[$method] as $uri => $location) {
                 //设置路由匹配正则
                 $uriRegexp = '@^' . $uri . '$@i';
                 //路由和请求一致或者匹配到正则
@@ -52,7 +52,7 @@ class Route
                     //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
                     if (isset($match)) {
                         array_shift($match);
-                        self::$param = $match;
+                        $this->param = $match;
                     }
                     $this->_locate($location);
                     break;
@@ -65,9 +65,9 @@ class Route
     private function _locate($location)
     {
         if ($location instanceof \Closure) {
-            return response(call_user_func_array($location, self::$param));
+            return response(call_user_func_array($location, $this->param));
         } else if (is_array($location) && 2 == count($location)) {
-            [self::$controller, self::$action] = $location;
+            [$this->controller, $this->action] = $location;
         } else if (is_string($location)) {
             $module = '';
             if (strpos($location, '@')) {
@@ -75,8 +75,8 @@ class Route
                 $module = $dir[0] . '\\';
                 $location = $dir[1];
             }
-            [$controller, self::$action] = explode('/', $location);
-            self::$controller = 'App' . '\\' . ucfirst($module) . 'Controller' . '\\' . ucfirst($controller);
+            [$controller, $this->action] = explode('/', $location);
+            $this->controller = 'App' . '\\' . ucfirst($module) . 'Controller' . '\\' . ucfirst($controller);
         } else {
             throw new \Exception('路由配置有问题！');
         }
@@ -84,15 +84,15 @@ class Route
 
     public function dispatch()
     {
-        if (empty(self::$controller)) {
+        if (empty($this->controller)) {
             throw new \Exception('页面不存在', 404);
         }
         //创建控制器类实例
-        $obj = new self::$controller();
-        if (!method_exists($obj, self::$action)) {
-            throw new \Exception('控制器' . self::$controller . '中的方法' . self::$action . '不存在', 404);
+        $obj = new $this->controller();
+        if (!method_exists($obj, $this->action)) {
+            throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
-        return response(Container::create(self::$controller, self::$action, self::$param));
+        return response(Container::create($this->controller, $this->action, $this->param));
     }
 
     /**
@@ -105,7 +105,7 @@ class Route
     public function __call(string $method, array $route): Route
     {
         $this->_setMethodAndPath($method, $route[0]);
-        self::$routes[$this->method][$this->path] = $route[1];
+        $this->routes[$this->method][$this->path] = $route[1];
         return $this;
     }
 
@@ -115,18 +115,24 @@ class Route
         $this->path = '/' . trim($path, '/');
     }
 
-    public function alias($alias): Route
+    public function alias($name): Route
     {
-        self::$alias[$alias] = [
+        $this->alias[$name] = [
             'method' => $this->method,
             'path' => $this->path,
         ];
         return $this;
     }
 
+    public function cross(): Route
+    {
+        $this->cross[$this->method][$this->path] = true;
+        return $this;
+    }
+
     public function middleware($middleware): Route
     {
-        self::$middleware[$this->path] = [
+        $this->middleware[$this->path] = [
             'method' => $this->method,
             'middleware' => $middleware,
         ];
@@ -147,7 +153,7 @@ class Route
         $this->_setMethodAndPath($requestMethods, $uri);
         foreach ($this->method as $method) {
             //遍历请求类型并注册路由
-            self::$routes[strtolower($method)][$this->path] = $location;
+            $this->routes[strtolower($method)][$this->path] = $location;
         }
         return $this;
     }
@@ -156,11 +162,11 @@ class Route
 //    public function restful(string $uri, $location)
 //    {
 //        $uri = '/'.trim($uri, '/').'/';
-//        self::$routes['get'][$uri] = $location . '/index';
-//        self::$routes['get'][$uri . 'create'] = $location . '/create';
-//        self::$routes['post'][$uri] = $location . '/save';
-//        self::$routes['get'][$uri . 'edit'] = $location . '/edit';
-//        self::$routes['delete'][$uri . 'delete'] = $location . '/delete';
-//        self::$routes['put'][$uri . 'edit'] = $location . '/update';
+//        $this->routes['get'][$uri] = $location . '/index';
+//        $this->routes['get'][$uri . 'create'] = $location . '/create';
+//        $this->routes['post'][$uri] = $location . '/save';
+//        $this->routes['get'][$uri . 'edit'] = $location . '/edit';
+//        $this->routes['delete'][$uri . 'delete'] = $location . '/delete';
+//        $this->routes['put'][$uri . 'edit'] = $location . '/update';
 //    }
 }
