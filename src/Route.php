@@ -13,22 +13,9 @@ class Route
      * @var array
      * 存放路由注册树的数组
      */
-    protected static array $route = [
-        'get' => [],
-        'post' => [],
-        'put' => [],
-        'delete' => [],
-        'patch' => [],
-    ];
+    protected static array $routes = [];
     private static array $alias = [];
     private static array $middleware = [];
-
-
-    public function getRoute($requestMethod = null, $requestPath = null)
-    {
-        return $requestPath ? self::$route[$requestMethod][$requestPath] : ($requestMethod ? self::$route[$requestMethod] : self::$route);
-    }
-
 
     public static string $controller = '';
     public static string $action = '';
@@ -37,6 +24,10 @@ class Route
     private $method;
     private string $path = '';
 
+    public function getRoute($requestMethod = null, $requestPath = null)
+    {
+        return $requestPath ? self::$routes[$requestMethod][$requestPath] : ($requestMethod ? self::$routes[$requestMethod] : self::$routes);
+    }
 
     public function __construct()
     {
@@ -46,14 +37,14 @@ class Route
     {
         //请求类型转为小写
         $method = \Yao\Facade\Request::method();
-        if (!array_key_exists($method, self::$route)) {
+        if (!array_key_exists($method, self::$routes)) {
             throw new \Exception('请求类型' . $method . '暂时不支持', 403);
         }
 
-        if (isset(self::$route[$method][\Yao\Facade\Request::path()])) {
-            $this->_locate(self::$route[$method][\Yao\Facade\Request::path()]);
+        if (isset(self::$routes[$method][\Yao\Facade\Request::path()])) {
+            $this->_locate(self::$routes[$method][\Yao\Facade\Request::path()]);
         } else {
-            foreach (self::$route[$method] as $uri => $location) {
+            foreach (self::$routes[$method] as $uri => $location) {
                 //设置路由匹配正则
                 $uriRegexp = '@^' . $uri . '$@i';
                 //路由和请求一致或者匹配到正则
@@ -114,7 +105,7 @@ class Route
     public function __call(string $method, array $route): Route
     {
         $this->_setMethodAndPath($method, $route[0]);
-        self::$route[$this->method][$this->path] = $route[1];
+        self::$routes[$this->method][$this->path] = $route[1];
         return $this;
     }
 
@@ -156,20 +147,20 @@ class Route
         $this->_setMethodAndPath($requestMethods, $uri);
         foreach ($this->method as $method) {
             //遍历请求类型并注册路由
-            self::$route[strtolower($method)][$this->path] = $location;
+            self::$routes[strtolower($method)][$this->path] = $location;
         }
         return $this;
     }
 
 
-    //    public function source(string $uri, $location)
-    //    {
-    //        $uri = '/' . trim($uri, '/');
-    //        self::$get[$uri] = $location . '/index';
-    //        self::$get[$uri . '/create'] = $location . '/create';
-    //        self::$post[$uri] = $location . '/save';
-    //        self::$get[$uri . '/edit'] = $location . '/edit';
-    //        self::$delete[$uri . '/delete'] = $location . 'delete';
-    //        self::$put[$uri . '/edit'] = $location . '/update';
-    //    }
+//    public function restful(string $uri, $location)
+//    {
+//        $uri = '/'.trim($uri, '/').'/';
+//        self::$routes['get'][$uri] = $location . '/index';
+//        self::$routes['get'][$uri . 'create'] = $location . '/create';
+//        self::$routes['post'][$uri] = $location . '/save';
+//        self::$routes['get'][$uri . 'edit'] = $location . '/edit';
+//        self::$routes['delete'][$uri . 'delete'] = $location . '/delete';
+//        self::$routes['put'][$uri . 'edit'] = $location . '/update';
+//    }
 }

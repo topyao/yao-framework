@@ -21,7 +21,7 @@ class Event
 
     public function serve()
     {
-        $services = [...($this->builtInServices() ?: []), ...$this->services()];
+        $services = [...($this->services() ?: []), ...$this->builtInServices()];
         foreach ($services as $service) {
             call_user_func([new $service, 'boot']);
         }

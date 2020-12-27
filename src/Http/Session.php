@@ -2,8 +2,11 @@
 
 namespace Yao\Http;
 
+use Yao\traits\Parse;
+
 class Session
 {
+    use Parse;
 
     public function __construct()
     {
@@ -13,7 +16,7 @@ class Session
 
     public function get($name)
     {
-        return getMultidimensionalArrayValue($_SESSION, $name);
+        return $this->getMultidimensionalArrayValue($_SESSION, $name);
     }
 
 

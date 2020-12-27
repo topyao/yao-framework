@@ -21,8 +21,8 @@ class Middleware
 
     }
 
-    public function middleware($request)
+    public function middleware($request, \Closure $closure)
     {
-
+        
     }
 }

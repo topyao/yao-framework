@@ -3,7 +3,7 @@
 namespace Yao\Facade;
 
 /**
- * @method static get(string $key)
+ * @method static get(string $key = null, $default = null)
  * Class Config
  * @package Yao\Facade
  */

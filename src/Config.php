@@ -2,8 +2,11 @@
 
 namespace Yao;
 
+use Yao\traits\Parse;
+
 class Config
 {
+    use Parse;
 
     /**
      * 存放配置的数组
@@ -17,13 +20,13 @@ class Config
      * 使用点语法获取配置文件名下的配置文件，例如app.auto_start
      * @return array|mixed
      */
-    public function get(?string $key = null)
+    public function get(?string $key = null, $default = null)
     {
         $this->_load($key);
         if (!isset($key)) {
             return self::$config;
         }
-        return getMultidimensionalArrayValue(self::$config, $key);
+        return $this->getMultidimensionalArrayValue(self::$config, $key, $default);
     }
 
 

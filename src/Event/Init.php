@@ -25,6 +25,6 @@ class Init implements Service
             \Yao\Facade\Session::flashCheck();
         }
         //设置默认时区
-        date_default_timezone_set(\Yao\Facade\Config::get('app.default_timezone'));
+        date_default_timezone_set(\Yao\Facade\Config::get('app.default_timezone', 'PRC'));
     }
 }

@@ -2,8 +2,11 @@
 
 namespace Yao;
 
+use Yao\traits\Parse;
+
 class Env
 {
+    use Parse;
 
     protected array $env = [];
 
@@ -18,6 +21,6 @@ class Env
     public function get(string $key, $default = false)
     {
         $key = strtoupper($key);
-        return getMultidimensionalArrayValue($this->env, $key, $default);
+        return $this->getMultidimensionalArrayValue($this->env, $key, $default);
     }
 }

@@ -20,9 +20,9 @@ if (!function_exists('config')) {
      * 配置文件名
      * @return mixed
      */
-    function config(string $key = '')
+    function config(?string $key = null, $default = null)
     {
-        return Yao\Facade\Config::get($key);
+        return Yao\Facade\Config::get($key, $default);
     }
 }
 
@@ -100,19 +100,3 @@ function redirect($url)
     exit;
 }
 
-
-if (false === function_exists('getMultidimensionalArrayValue')) {
-    function getMultidimensionalArrayValue($value, $string, $default = null)
-    {
-        $field = explode('.', $string);
-        foreach ($field as $v) {
-            if (isset($value[$v])) {
-                $value = $value[$v];
-            } else {
-                $value = $default;
-                break;
-            }
-        }
-        return $value;
-    }
-}
