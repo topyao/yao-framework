@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Yao\traits;
+namespace Yao\Traits;
 
 
 trait Parse

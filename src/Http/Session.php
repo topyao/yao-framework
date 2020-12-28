@@ -2,11 +2,10 @@
 
 namespace Yao\Http;
 
-use Yao\traits\Parse;
 
 class Session
 {
-    use Parse;
+    use \Yao\Traits\Parse;
 
     public function __construct()
     {

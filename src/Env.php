@@ -2,11 +2,9 @@
 
 namespace Yao;
 
-use Yao\traits\Parse;
-
 class Env
 {
-    use Parse;
+    use \Yao\Traits\Parse;
 
     protected array $env = [];
 

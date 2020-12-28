@@ -2,11 +2,9 @@
 
 namespace Yao;
 
-use Yao\traits\Parse;
-
 class Config
 {
-    use Parse;
+    use \Yao\Traits\Parse;
 
     /**
      * 存放配置的数组

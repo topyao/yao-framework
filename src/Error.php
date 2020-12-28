@@ -26,6 +26,13 @@ class Error
     private function __construct()
     {
         $this->debug = \Yao\Facade\Config::get('app.debug');
+        if ($this->debug) {
+            ini_set('display_errors', 'On');
+            error_reporting(E_ALL);
+        } else {
+            ini_set('display_errors', 'Off');
+            error_reporting(0);
+        }
         $this->exceptionView = \Yao\Facade\Config::get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
 
@@ -36,23 +43,16 @@ class Error
         \Yao\Facade\Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" >错误信息：' . $message . ' <br>错误代码：' . $code . ' <br>文件位置：' . $exception->getFile() . ' <br>错误行：' . $exception->getLine() . ' <br>Stack trace:' . $exception->getTraceAsString() . ' </pre> ');
+            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <br><b>Trace:</b>' . $exception->getTraceAsString() . ' </pre> ');
         }
         exit(include_once $this->exceptionView);
     }
 
     public function error($code, $message, $file, $line, $errContext)
     {
-        if ($this->debug) {
-            ini_set('display_errors', 'On');
-            error_reporting(E_ALL);
-        } else {
-            ini_set('display_errors', 'Off');
-            error_reporting(0);
-        }
         \Yao\Facade\Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" > 错误信息：' . $message . ' <br>错误代码：' . $code . ' <br>文件位置：' . $file . ' <br>错误行：' . $line . ' </pre> ');
+            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '</pre>');
         }
         exit(include_once $this->exceptionView);
     }
