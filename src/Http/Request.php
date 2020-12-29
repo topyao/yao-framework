@@ -26,9 +26,7 @@ class Request
     public function __construct(?array $filters = null)
     {
         $this->server = $_SERVER;
-        unset($_SERVER);
-        //$this->method = strtolower($_SERVER['REQUEST_METHOD']);
-        $this->url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
+        $this->url = ($this->server['REQUEST_SCHEME'] ?? 'http') . '://' . $this->server['HTTP_HOST'] . '/';
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
 
@@ -36,7 +34,7 @@ class Request
     {
         return $name ? ($this->server[strtoupper($name)] ?? null) : $this->server;
     }
-    
+
     /** 请求类型判断
      * @param string $method
      * @return bool
@@ -54,7 +52,7 @@ class Request
     public function path()
     {
         //解析url中的path
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $path = parse_url($this->server['REQUEST_URI'], PHP_URL_PATH);
         //解析出错抛出异常终止脚本
         if (!$path) {
             throw new \Exception('页面不存在', 404);
@@ -65,7 +63,7 @@ class Request
 
     public function method(): string
     {
-        return $this->server['REQUEST_METHOD'];
+        return strtolower($this->server['REQUEST_METHOD']);
     }
 
     public function cookie($field = null)
@@ -90,7 +88,7 @@ class Request
      */
     public function isAjax(): bool
     {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+        return !empty($this->server['HTTP_X_REQUESTED_WITH']) && $this->server['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
     }
 
     /**

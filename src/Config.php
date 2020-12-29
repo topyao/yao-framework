@@ -10,7 +10,16 @@ class Config
      * 存放配置的数组
      * @var array
      */
-    private static ?array $config = [];
+    private array $config = [];
+
+    public function __construct()
+    {
+        array_map(function ($config) {
+            $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+            $this->config[$config_suffix] = require_once($config);
+        }, glob($this->_getConfig('*')));
+    }
+
 
     /**
      * 配置文件获取方法
@@ -20,11 +29,11 @@ class Config
      */
     public function get(?string $key = null, $default = null)
     {
-        $this->_load($key);
+//        $this->_load($key);
         if (!isset($key)) {
-            return self::$config;
+            return $this->config;
         }
-        return $this->getMultidimensionalArrayValue(self::$config, $key, $default);
+        return $this->getMultidimensionalArrayValue($this->config, $key, $default);
     }
 
 
@@ -33,26 +42,26 @@ class Config
      * @param string|null $key
      * @throws \Exception
      */
-    private function _load(?string $key = null): void
-    {
-        if (!isset($key)) {
-            foreach (glob($this->_getConfig('*')) as $config) {
-                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
-                if (!isset(self::$config[$config_suffix])) {
-                    self::$config[$config_suffix] = require_once($config);
-                }
-            }
-        } else {
-            $offset = strpos($key, '.');
-            $key = $offset ? substr($key, 0, $offset) : $key;
-            if (empty($key) || !file_exists($this->_getConfig($key))) {
-                throw new \Exception("配置文件{$this->_getConfig($key)}不存在");
-            }
-            if (!isset(self::$config[$key])) {
-                self::$config[$key] = include_once $this->_getConfig($key);
-            }
-        }
-    }
+//    private function _load(?string $key = null): void
+//    {
+//        if (!isset($key)) {
+//            foreach (glob($this->_getConfig('*')) as $config) {
+//                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+//                if (!isset(self::$config[$config_suffix])) {
+//                    self::$config[$config_suffix] = require_once($config);
+//                }
+//            }
+//        } else {
+//            $offset = strpos($key, '.');
+//            $key = $offset ? substr($key, 0, $offset) : $key;
+//            if (empty($key) || !file_exists($this->_getConfig($key))) {
+//                throw new \Exception("配置文件{$this->_getConfig($key)}不存在");
+//            }
+//            if (!isset(self::$config[$key])) {
+//                self::$config[$key] = include_once $this->_getConfig($key);
+//            }
+//        }
+//    }
 
     /**
      * 获取配置文件路径
