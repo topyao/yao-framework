@@ -17,6 +17,7 @@ class Request
     protected ?string $url = '';
 
     protected array $filters = [];
+    protected array $server = [];
 
     /**
      * 初始化请求类型
@@ -24,11 +25,17 @@ class Request
      */
     public function __construct(?array $filters = null)
     {
+        $this->server = $_SERVER;
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
         $this->url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
 
+    public function server($name = null)
+    {
+        return $name ? ($this->server[strtoupper($name)] ?? null) : $this->server;
+    }
+    
     /** 请求类型判断
      * @param string $method
      * @return bool
@@ -57,7 +64,7 @@ class Request
 
     public function method(): string
     {
-        return $this->method;
+        return $this->server['REQUEST_METHOD'];
     }
 
     public function cookie($field = null)
