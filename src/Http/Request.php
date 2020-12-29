@@ -13,7 +13,7 @@ class Request
      * 请求类型
      * @var mixed|string|null
      */
-    protected ?string $method = '';
+    //protected ?string $method = '';
     protected ?string $url = '';
 
     protected array $filters = [];
@@ -26,7 +26,8 @@ class Request
     public function __construct(?array $filters = null)
     {
         $this->server = $_SERVER;
-        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+        unset($_SERVER);
+        //$this->method = strtolower($_SERVER['REQUEST_METHOD']);
         $this->url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
@@ -42,7 +43,7 @@ class Request
      */
     public function isMethod(string $method): bool
     {
-        return $this->method == strtolower($method);
+        return $this->server['REQUEST_METHOD'] == strtoupper($method);
     }
 
     public function url(): string
