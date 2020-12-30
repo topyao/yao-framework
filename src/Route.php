@@ -2,6 +2,7 @@
 
 namespace Yao;
 
+use Yao\Route\Alias;
 
 /**
  * Class Route
@@ -14,6 +15,7 @@ class Route
      * @var array
      */
     protected array $routes = [];
+    protected $alias;
 
     public string $controller = '';
     public string $action = '';
@@ -22,6 +24,16 @@ class Route
     private $method;
     private string $path = '';
     private $location;
+
+
+
+
+    public function __construct()
+    {
+        $this->alias = new Alias;
+    }
+
+
 
     public function getRoute($requestMethod = null, $requestPath = null)
     {
@@ -66,9 +78,9 @@ class Route
 
     public function group(array $appendix, \Closure $closure)
     {
-//        $obj = (new \ReflectionFunction($closure));
-//        dump($obj);
-////        $closure();
+        //        $obj = (new \ReflectionFunction($closure));
+        //        dump($obj);
+        ////        $closure();
     }
 
 
@@ -126,8 +138,12 @@ class Route
 
     public function alias($name): Route
     {
-        $this->_setParam('alias', $name);
+        $this->alias->set($name, $this->path);
         return $this;
+    }
+    public function getAlias(?string $alias = null)
+    {
+        return $this->alias->get($alias);
     }
 
     private function _setParam($property, $value)
@@ -170,14 +186,23 @@ class Route
     }
 
 
-//    public function restful(string $uri, $location)
-//    {
-//        $uri = '/'.trim($uri, '/').'/';
-//        $this->routes['get'][$uri] = $location . '/index';
-//        $this->routes['get'][$uri . 'create'] = $location . '/create';
-//        $this->routes['post'][$uri] = $location . '/save';
-//        $this->routes['get'][$uri . 'edit'] = $location . '/edit';
-//        $this->routes['delete'][$uri . 'delete'] = $location . '/delete';
-//        $this->routes['put'][$uri . 'edit'] = $location . '/update';
-//    }
+    //    public function restful(string $uri, $location)
+    //    {
+    //        $uri = '/'.trim($uri, '/').'/';
+    //        $this->routes['get'][$uri] = $location . '/index';
+    //        $this->routes['get'][$uri . 'create'] = $location . '/create';
+    //        $this->routes['post'][$uri] = $location . '/save';
+    //        $this->routes['get'][$uri . 'edit'] = $location . '/edit';
+    //        $this->routes['delete'][$uri . 'delete'] = $location . '/delete';
+    //        $this->routes['put'][$uri . 'edit'] = $location . '/update';
+    //    }
+
+
+    public function register()
+    {
+        array_map(
+            fn ($routes) => require_once($routes),
+            glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
+        );
+    }
 }

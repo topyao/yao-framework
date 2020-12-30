@@ -4,6 +4,7 @@
  * 内置函数
 */
 
+use Yao\Facade\Route;
 use Yao\Facade\Session;
 
 if (!function_exists('abort')) {
@@ -100,3 +101,8 @@ function redirect($url)
     exit;
 }
 
+
+function url($url)
+{
+    return Route::getAlias($url) ?? $url;
+}
