@@ -16,8 +16,11 @@ class Env
         }
     }
 
-    public function get(string $key, $default = false)
+    public function get(?string $key = null, $default = false)
     {
+        if (is_null($key)) {
+            return $this->env;
+        }
         $key = strtoupper($key);
         return $this->getMultidimensionalArrayValue($this->env, $key, $default);
     }
