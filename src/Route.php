@@ -15,7 +15,10 @@ class Route
      * @var array
      */
     protected array $routes = [];
-    protected $alias;
+    /**
+     * 别名路由对象
+     */
+    private Alias $alias;
 
     public string $controller = '';
     public string $action = '';
@@ -135,6 +138,14 @@ class Route
     {
         [$this->method, $this->path, $this->location] = [$method, '/' . trim($path, '/'), $location];
     }
+
+    // public function view($path, $view, $args = [])
+    // {
+    //     $this->_setParams('get', $path, fn () => \Yao\Facade\View::fetch($view, $args));
+    //     $this->_setParam('route', $this->location);
+    //     return $this;
+    // }
+
 
     public function alias($name): Route
     {
