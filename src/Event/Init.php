@@ -17,6 +17,7 @@ class Init implements Service
         }
         \Yao\Facade\Env::load();
         \Yao\Error::register();
+        \Yao\Facade\Route::register();
         \Yao\Facade\Route::match();
         //是否默认开启session
         if (\Yao\Facade\Config::get('app.auto_start')) {

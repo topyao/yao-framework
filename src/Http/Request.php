@@ -13,9 +13,6 @@ class Request
      * 请求类型
      * @var mixed|string|null
      */
-    //protected ?string $method = '';
-    //protected ?string $url = '';
-
     protected array $filters = [];
     protected array $server = [];
 
@@ -26,7 +23,6 @@ class Request
     public function __construct(?array $filters = null)
     {
         $this->server = $_SERVER;
-        //$this->url = ($this->server['REQUEST_SCHEME'] ?? 'http') . '://' . $this->server['HTTP_HOST'] . '/';
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
 
