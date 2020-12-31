@@ -2,6 +2,7 @@
 
 namespace Yao;
 
+use Yao\Facade\Request;
 use Yao\Route\Alias;
 
 /**
@@ -29,13 +30,10 @@ class Route
     private $location;
 
 
-
-
     public function __construct()
     {
         $this->alias = new Alias;
     }
-
 
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -43,17 +41,25 @@ class Route
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
     }
 
+    public function setRoute()
+    {
+
+    }
+
+    public function allowCors()
+    {
+//        dump($this->getRoute());
+        if (Request::isMethod('options') || Request::isMethod('get')) {
+            if (isset($this->routes['options'][Request::method()][Request::path()])) {
+                header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::method()][Request::path()]['originUrl']);
+            }
+        }
+    }
+
     public function match()
     {
         $method = \Yao\Facade\Request::method();
-        if (\Yao\Facade\Request::isMethod('options')) {
-            if (isset($this->routes[$method]['options'][\Yao\Facade\Request::path()])) {
-                $cors = $this->routes[$method]['options'][\Yao\Facade\Request::path()];
-                header('Access-Control-Allow-Origin:' . $cors['url']);
-                header('Access-Control-Allow-Headers:' . $cors['url']);
-            }
-        }
-
+        $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
             throw new \Exception('请求类型' . $method . '没有定义任何路由', 404);
         }
@@ -117,7 +123,8 @@ class Route
         if (!method_exists($obj, $this->action)) {
             throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
-        return response(Container::create($this->controller, $this->action, $this->param));
+        //debug 其他类型的返回
+        return \Yao\Facade\Response::data((Container::create($this->controller, $this->action, $this->param)));
     }
 
     /**
@@ -152,9 +159,22 @@ class Route
         $this->alias->set($name, $this->path);
         return $this;
     }
+
     public function getAlias(?string $alias = null)
     {
         return $this->alias->get($alias);
+    }
+
+    public function cross($originUrl = '*'): Route
+    {
+        if (is_array($this->method)) {
+            foreach ($this->method as $method) {
+                $this->routes['options'][$method][$this->path] = [$originUrl];
+            }
+        } else {
+            $this->routes['options'][$this->method][$this->path] = ['originUrl' => $originUrl];
+        }
+        return $this;
     }
 
     private function _setParam($property, $value)
@@ -168,11 +188,6 @@ class Route
         }
     }
 
-    public function cross($corsParams): Route
-    {
-        $this->routes['options'][$this->method][$this->path] = $corsParams;
-        return $this;
-    }
 
     public function middleware($middleware): Route
     {
@@ -212,7 +227,7 @@ class Route
     public function register()
     {
         array_map(
-            fn ($routes) => require_once($routes),
+            fn($routes) => require_once($routes),
             glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
         );
     }
