@@ -8,6 +8,7 @@ class View
     private $twig;
     private $config = [];
     private $module = '';
+    private $template_suffix = 'html';
 
     public function __construct()
     {
@@ -31,7 +32,6 @@ class View
             $template = $dir[1];
         }
         $this->_setOptions();
-        return $this->twig->render($template . '.' . $this->config['template_suffix'], $arguments);
+        return $this->twig->render($template . '.' . $this->config['template_suffix'] ?: $this->template_suffix, $arguments);
     }
-
 }

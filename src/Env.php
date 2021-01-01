@@ -21,7 +21,6 @@ class Env
         if (is_null($key)) {
             return $this->env;
         }
-        $key = strtoupper($key);
-        return $this->getMultidimensionalArrayValue($this->env, $key, $default);
+        return $this->getMultidimensionalArrayValue($this->env, strtoupper($key), $default);
     }
 }

@@ -23,13 +23,13 @@ if (!function_exists('config')) {
      */
     function config(?string $key = null, $default = null)
     {
-        return Yao\Facade\Config::get($key, $default);
+        return \Yao\Facade\Config::get($key, $default);
     }
 }
 
 
 if (!function_exists('env')) {
-    function env(string $key, $default = null)
+    function env(string $key = null, $default = null)
     {
         return \Yao\Facade\Env::get($key, $default);
     }
@@ -73,14 +73,14 @@ if (!function_exists('response')) {
     function response($response)
     {
 
-//        if (is_array($response)) {
-//            header("Content-Type:text/json;charset=UTF-8");
-//            echo json_encode($response, 256);
-//        } else if (is_string($response)) {
-//            echo $response;
-//        }
-//
-//        exit;
+        //        if (is_array($response)) {
+        //            header("Content-Type:text/json;charset=UTF-8");
+        //            echo json_encode($response, 256);
+        //        } else if (is_string($response)) {
+        //            echo $response;
+        //        }
+        //
+        //        exit;
         return $response;
     }
 }
