@@ -14,6 +14,7 @@ namespace Yao\Facade;
  * @method static \Yao\Route source(string $uri, mixed $location)
  * @method static \Yao\Route alias(string $alias)
  * @method static getRoute(string $requestMethod = null, string $requestPath = null)
+ * @method static getAlias(string $url)
  * Class Route
  * @package \Yao\Facade
  */

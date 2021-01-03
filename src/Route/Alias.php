@@ -21,6 +21,6 @@ class Alias
         if (is_null($alias)) {
             return $this->alias;
         }
-        return $this->alias[$alias] ?? null;
+        return $this->alias[$alias] ?? $alias;
     }
 }

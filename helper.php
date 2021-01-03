@@ -105,8 +105,9 @@ function redirect($url)
     exit;
 }
 
-
-function url($url)
-{
-    return Route::getAlias($url) ?? $url;
+if (false === function_exists('url')) {
+    function url($alias)
+    {
+        return Route::getAlias($alias);
+    }
 }
