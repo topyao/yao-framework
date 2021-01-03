@@ -37,9 +37,9 @@ class Config
 
     public function load($config)
     {
-        $file = ROOT . 'config' . DIRECTORY_SEPARATOR . $config . '.php';
+        $file = $this->_getConfig($config);
         if (file_exists($file)) {
-            $this->config[$config] = include($file);
+            $this->config[$config] = include_once($file);
         } else {
             throw new \Exception('配置文件' . $config . '.php不存在');
         }
