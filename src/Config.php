@@ -12,13 +12,13 @@ class Config
      */
     private array $config = [];
 
-    public function __construct()
-    {
-        array_map(function ($config) {
-            $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
-            $this->config[$config_suffix] = require_once($config);
-        }, glob($this->_getConfig('*')));
-    }
+//    public function __construct()
+//    {
+//        array_map(function ($config) {
+//            $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+//            $this->config[$config_suffix] = require_once($config);
+//        }, glob($this->_getConfig('*')));
+//    }
 
 
     /**
@@ -34,6 +34,17 @@ class Config
         }
         return $this->getMultidimensionalArrayValue($this->config, $key, $default);
     }
+
+    public function load($config)
+    {
+        $file = ROOT . 'config' . DIRECTORY_SEPARATOR . $config . '.php';
+        if (file_exists($file)) {
+            $this->config[$config] = include($file);
+        } else {
+            throw new \Exception('配置文件' . $config . '.php不存在');
+        }
+    }
+
 
     /**
      * 获取配置文件路径

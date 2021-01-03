@@ -2,6 +2,7 @@
 
 namespace Yao\Event;
 
+use Yao\Facade\Config;
 use Yao\Interfaces\Service;
 
 class Init implements Service
@@ -13,6 +14,7 @@ class Init implements Service
     public function boot()
     {
         ob_start();
+        Config::load('app');
         if (PHP_VERSION < 7.4) {
             throw new \Exception('PHP版本太低，建议升级到PHP7.4', 110);
         }

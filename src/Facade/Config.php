@@ -4,6 +4,7 @@ namespace Yao\Facade;
 
 /**
  * @method static get(string $key = null, $default = null)
+ * @method static load(string $config)
  * Class Config
  * @package Yao\Facade
  */

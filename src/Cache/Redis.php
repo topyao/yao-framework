@@ -12,6 +12,7 @@ class Redis
 
     private function __construct()
     {
+        Config::load('cache');
         $config = Config::get('cache.' . Config::get('cache.type'));
         $this->redis = new \Redis();
         $this->redis->connect($config['host'], $config['port']);

@@ -12,6 +12,8 @@ class View
 
     public function __construct()
     {
+        \Yao\Facade\Config::load('view');
+        dump(\Yao\Facade\Config::get());
         $this->config = \Yao\Facade\Config::get('view');
     }
 

@@ -45,6 +45,7 @@ class Db
      */
     private function __construct()
     {
+        Config::load('database');
         $this->type = Config::get('database.type');
         $this->config = Config::get('database.' . $this->type);
         $this->_connect();
