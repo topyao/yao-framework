@@ -6,7 +6,7 @@ class App
 {
     public static function run()
     {
-        \Yao\Facade\Event::serve();
+        \Yao\Facade\Provider::serve();
         \Yao\Facade\Route::dispatch();
     }
 }

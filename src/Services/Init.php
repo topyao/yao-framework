@@ -1,6 +1,6 @@
 <?php
 
-namespace Yao\Event;
+namespace Yao\Services;
 
 use Yao\Facade\Config;
 use Yao\Interfaces\Service;
@@ -18,7 +18,6 @@ class Init implements Service
         if (PHP_VERSION < 7.4) {
             throw new \Exception('PHP版本太低，建议升级到PHP7.4', 110);
         }
-        \Yao\Facade\Env::load();
         \Yao\Error::register();
         \Yao\Facade\Route::register();
         \Yao\Facade\Route::match();

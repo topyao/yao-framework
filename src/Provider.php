@@ -4,7 +4,7 @@
 namespace Yao;
 
 
-class Event
+class Provider
 {
 
     public function services()
@@ -15,7 +15,7 @@ class Event
     public function builtInServices()
     {
         return [
-            \Yao\Event\Init::class
+            \Yao\Services\Init::class
         ];
     }
 
