@@ -7,7 +7,7 @@ class Response
 
     protected $response;
     protected $code = 200;
-    protected $header;
+    protected $header = ['Content-Type:text/html'];
     protected $data;
 
 
@@ -25,15 +25,16 @@ class Response
 
     public function header($header)
     {
-        $this->header = $header;
+        if (is_string($header)) {
+            $this->header[] = $header;
+        } else {
+            $this->header += $header;
+        }
         return $this;
     }
 
-    protected function create($data = null, $code = null, $header = null)
+    protected function create()
     {
-//        $data ??= $this->data;
-//        $code ??= $this->code;
-//        $header ??= $this->header;
         \Yao\Facade\Route::allowCors();
         http_response_code($this->code);
         if (is_array($this->header)) {
@@ -41,16 +42,9 @@ class Response
                 header($header);
             }
         } else if (is_string($this->header)) {
-            header($header);
+            header($this->header);
         }
     }
-
-//    public function return($request)
-//    {
-//        if (is_string($request)) {
-//            return $this->create();
-//        }
-//    }
 
     public function __destruct()
     {

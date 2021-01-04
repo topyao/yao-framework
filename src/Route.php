@@ -3,6 +3,7 @@
 namespace Yao;
 
 use Yao\Facade\Request;
+use Yao\Http\Response\Json;
 use Yao\Route\Alias;
 
 /**
@@ -43,12 +44,11 @@ class Route
 
     public function setRoute()
     {
-
     }
 
     public function allowCors()
     {
-//        dump($this->getRoute());
+        //        dump($this->getRoute());
         if (Request::isMethod('options') || Request::isMethod('get')) {
             if (isset($this->routes['options'][Request::method()][Request::path()])) {
                 header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::method()][Request::path()]['originUrl']);
@@ -123,8 +123,12 @@ class Route
         if (!method_exists($obj, $this->action)) {
             throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
-        //debug 其他类型的返回
-        return \Yao\Facade\Response::data((Container::create($this->controller, $this->action, $this->param)));
+        $resData = Container::create($this->controller, $this->action, $this->param);
+        if (is_array($resData)) {
+            return (new Json())->data($resData);
+        } else if (is_scalar($resData)) {
+            return \Yao\Facade\Response::data($resData);
+        }
     }
 
     /**
@@ -227,7 +231,7 @@ class Route
     public function register()
     {
         array_map(
-            fn($routes) => require_once($routes),
+            fn ($routes) => require_once($routes),
             glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
         );
     }

@@ -5,11 +5,12 @@ namespace Yao\Http\Response;
 class Json extends \Yao\Http\Response
 {
 
+
+    public $header = ['Content-Type:application/json'];
+
     protected $options = [
         'json_encode_param' => JSON_UNESCAPED_UNICODE,
     ];
-
-    protected $contentType = 'application/json';
 
     /**
      * 处理数据
@@ -34,5 +35,4 @@ class Json extends \Yao\Http\Response
         }
         parent::data($res);
     }
-
 }
