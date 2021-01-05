@@ -3,7 +3,6 @@
 namespace Yao;
 
 use Yao\Facade\Request;
-use Yao\Http\Response\Json;
 use Yao\Route\Alias;
 
 /**
@@ -124,8 +123,8 @@ class Route
             throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
         $resData = Container::create($this->controller, $this->action, $this->param);
-        if (is_array($resData)) {
-            return (new Json())->data($resData);
+        if (is_array($resData) || $resData instanceof \Yao\Collection) {
+            return \Yao\Facade\Json::data($resData);
         } else if (is_scalar($resData)) {
             return \Yao\Facade\Response::data($resData);
         }

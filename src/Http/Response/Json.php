@@ -33,6 +33,7 @@ class Json extends \Yao\Http\Response
             }
             throw $e;
         }
-        parent::data($res);
+        $this->data = $res;
+        return $this;
     }
 }
