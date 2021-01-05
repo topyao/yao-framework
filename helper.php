@@ -4,6 +4,8 @@
  * 内置函数
 */
 
+use Yao\Facade\Json;
+use Yao\Facade\Response;
 use Yao\Facade\Route;
 use Yao\Facade\Session;
 
@@ -86,8 +88,13 @@ if (!function_exists('response')) {
 }
 
 
-function json($args)
+function json($data)
 {
+    return Json::data($data);
+}
+function response($data)
+{
+    return Response::data($data);
 }
 
 function session($field, $value = null)
