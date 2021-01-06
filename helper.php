@@ -92,6 +92,7 @@ function json($data)
 {
     return Json::data($data);
 }
+
 function response($data)
 {
     return Response::data($data);
@@ -115,6 +116,7 @@ function redirect($url)
 if (false === function_exists('url')) {
     function url($alias)
     {
-        return Route::getAlias($alias);
+        return \Yao\Route\Alias::instance()->get($alias);
+//        return Route::getAlias($alias);
     }
 }

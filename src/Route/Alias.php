@@ -2,8 +2,12 @@
 
 namespace Yao\Route;
 
+
 class Alias
 {
+
+    use \Yao\Traits\SingleInstance;
+
     protected array $alias = [];
 
     public function set($alias, string $path)

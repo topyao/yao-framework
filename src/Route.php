@@ -19,7 +19,7 @@ class Route
     /**
      * 别名路由对象
      */
-    private Alias $alias;
+//    private Alias $alias;
 
     public string $controller = '';
     public string $action = '';
@@ -30,10 +30,10 @@ class Route
     private $location;
 
 
-    public function __construct()
-    {
-        $this->alias = new Alias;
-    }
+//    public function __construct()
+//    {
+//        $this->alias = new Alias;
+//    }
 
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -160,13 +160,9 @@ class Route
 
     public function alias($name): Route
     {
-        $this->alias->set($name, $this->path);
+        Alias::instance()->set($name, $this->path);
+//        $this->alias->set($name, $this->path);
         return $this;
-    }
-
-    public function getAlias(?string $alias = null)
-    {
-        return $this->alias->get($alias);
     }
 
     public function cross($originUrl = '*'): Route

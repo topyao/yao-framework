@@ -2,80 +2,30 @@
 
 namespace Yao;
 
-use PDO;
-use PDOException;
-use Yao\Facade\Config;
+use Yao\Db\Query;
 
 /**
- * @method array query(string $sql, array $data = [], bool $all = false)
- * @method int exec(string $sql, array $data = [])
  * Class Db
  * @package yao
  */
 class Db
 {
-
-    //保存存放Db类对象
-    private static ?Db $obj = null;
-
-    //配置文件
-    private ?array $config = [];
-
-    private string $type = '';
-
-    //pdo实例
-    private ?object $link = null;
-
     //表名
-    private static string $name;
-    private static string $field = '*';
-    private static array $bindParam = [];
-
+    private string $name;
+    private string $field = '*';
+    private array $bindParam = [];
+    private $collection;
     //存放拼接sql的必要数组
-    private static array $call = [
+    private array $call = [
         'where' => '',
         'group' => '',
         'order' => '',
         'limit' => ''
     ];
 
-    /**
-     * 构造，不能使用new关键字创建对象
-     * Db constructor.
-     */
-    private function __construct()
+    public function __construct()
     {
-        Config::load('database');
-        $this->type = Config::get('database.type');
-        $this->config = Config::get('database.' . $this->type);
-        $this->_connect();
         $this->collection = new Collection();
-    }
-
-    /**
-     * 数据库连接方法
-     * @throws /PDOException
-     */
-    private function _connect()
-    {
-        $dsn = $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname']; /*. ';charset=' . $this->charset*/
-        $this->link = new PDO($dsn, $this->config['user'], $this->config['pass'], $this->config['options']);
-    }
-
-    /**
-     * ['query','exec']方法静态调用
-     * @param $method
-     * @param $args
-     * @return mixed
-     * @throws \Exception
-     */
-    public static function __callStatic($method, $args)
-    {
-        $callable = ['query', 'exec'];
-        if (in_array($method, $callable)) {
-            return call_user_func_array([self::instance(), '_' . $method], $args);
-        }
-        throw new \Exception("请求的方法{$method}不能被静态调用");
     }
 
     /** 多条查询
@@ -83,24 +33,20 @@ class Db
      */
     public function select()
     {
-        $collection = new Collection();
-        $sql = 'SELECT ' . self::$field . ' FROM ' . self::$name . $this->_condition();
-        $res = $this->_prepare($sql, self::$bindParam);
-        $collection->data = $res->fetchAll(PDO::FETCH_ASSOC);
-        $collection->query = $sql;
-        $this->_flush();
-        return $collection;
+        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
+        $res = Query::instance()->prepare($sql, $this->bindParam);
+        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC);
+        $this->collection->query = $sql;
+        return $this->collection;
     }
 
     public function value()
     {
-        $collection = new Collection();
-        $sql = 'SELECT ' . self::$field . ' FROM ' . self::$name . $this->_condition();
-        $res = $this->_prepare($sql, self::$bindParam);
-        $collection->data = $res->fetchAll(PDO::FETCH_ASSOC)[self::$field];
-        $collection->query = $sql;
-        $this->_flush();
-        return $collection;
+        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
+        $res = Query::instance()->prepare($sql, $this->bindParam);
+        $this->collection->data = $res->fetchAll(PDO::FETCH_ASSOC)[$this->field];
+        $this->collection->query = $sql;
+        return $this->collection;
     }
 
     /**
@@ -109,16 +55,14 @@ class Db
      */
     public function find()
     {
-        $sql = 'SELECT ' . self::$field . ' FROM ' . self::$name . $this->_condition();
-        $res = $this->_prepare($sql, self::$bindParam);
+        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
+        $res = Query::instance()->prepare($sql, $this->bindParam);
         $data = $res->fetch(PDO::FETCH_ASSOC);
         if (false == $data) {
             return false;
         } else {
-            $collection = new Collection();
-            $collection->data = $data;
-            $this->_flush();
-            return $collection;
+            $this->collection->data = $data;
+            return $this->collection;
         }
     }
 
@@ -133,11 +77,11 @@ class Db
         }
         $set = substr($set, 0, -3);
         //将绑定参数从头部加入到静态属性中
-        array_unshift(self::$bindParam, ...$params);
-        $sql = 'UPDATE ' . self::$name . ' SET ' . $set . $this->_condition();
-        $res = $this->_prepare($sql, self::$bindParam);
-        $this->_flush();
-        return $res->rowCount();
+        array_unshift($this->bindParam, ...$params);
+        $sql = 'UPDATE ' . $this->name . ' SET ' . $set . $this->_condition();
+        return Query::instance()
+            ->prepare($sql, $this->bindParam)
+            ->rowCount();
     }
 
     public function insert(array $data)
@@ -145,12 +89,11 @@ class Db
         $fields = '(' . implode(',', array_keys($data)) . ')';
         $params = '(' . rtrim(str_repeat('?,', count($data)), ',') . ')';
         foreach ($data as $value) {
-            self::$bindParam[] = $value;
+            $this->bindParam[] = $value;
         }
-        $sql = 'INSERT INTO ' . self::$name . ' ' . $fields . ' ' . 'VALUES ' . $params;
-        $res = $this->_prepare($sql, self::$bindParam);
-        $this->_flush();
-        return $this->link->lastinsertid();
+        $sql = 'INSERT INTO ' . $this->name . ' ' . $fields . ' ' . 'VALUES ' . $params;
+        $res = Query::instance()->prepare($sql, $this->bindParam);
+        return $this->pdo->lastinsertid();
     }
 
     /**
@@ -161,11 +104,11 @@ class Db
      */
     public function delete()
     {
-        $sql = 'DELETE FROM ' . self::$name . self::$call['where'];
-        unset(self::$call['where']);
-        $res = $this->_prepare($sql, self::$bindParam);
-        $this->_flush();
-        return $res->rowCount();
+        $sql = 'DELETE FROM ' . $this->name . $this->call['where'];
+        unset($this->call['where']);
+        return Query::instance()
+            ->prepare($sql, $this->bindParam)
+            ->rowCount();
     }
 
     /**
@@ -174,10 +117,9 @@ class Db
      * @param bool $all
      * @return mixed
      */
-    private function _query(string $sql, ?array $data = [], bool $all = true)
+    public function query(string $sql, ?array $data = [], bool $all = true)
     {
-        $PDOstatement = $this->_prepare($sql, $data);
-        $this->_flush();
+        $PDOstatement = Query::instance()->prepare($sql, $data);
         return $all ? $PDOstatement->fetchAll(PDO::FETCH_ASSOC) : $PDOstatement->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -187,11 +129,11 @@ class Db
      * @param array $data
      * @return int
      */
-    private function _exec(string $sql, array $data = []): int
+    public function exec(string $sql, array $data = []): int
     {
-        $PDOstatement = $this->_prepare($sql, $data);
-        $this->_flush();
-        return $PDOstatement->rowCount();
+        return Query::instance()
+            ->prepare($sql, $data)
+            ->rowCount();
     }
 
     /**
@@ -201,10 +143,10 @@ class Db
      * @return Db|null
      * 返回实例化对象
      */
-    public static function name(string $table_name): Db
+    public function name(string $table_name): Db
     {
-        self::$name = $table_name;
-        return self::instance();
+        $this->name = $table_name;
+        return $this;
     }
 
     /**
@@ -215,8 +157,8 @@ class Db
     public function field($field): Db
     {
         $field = is_array($field) ? implode(',', $field) : $field;
-        self::$field = '' . $field . '';
-        return self::$obj;
+        $this->field = '' . $field . '';
+        return $this;
     }
 
     /**
@@ -230,16 +172,16 @@ class Db
         $this->_checkEmpty();
         if (!empty($where)) {
             if (is_string($where)) {
-                self::$call['where'] = self::$call['where'] . $where;
+                $this->call['where'] = $this->call['where'] . $where;
             } else if (is_array($where)) {
                 foreach ($where as $key => $value) {
-                    self::$bindParam[] = $value;
-                    self::$call['where'] .= $key . '=? and ';
+                    $this->bindParam[] = $value;
+                    $this->call['where'] .= $key . '=? and ';
                 }
-                self::$call['where'] = substr(self::$call['where'], 0, -5);
+                $this->call['where'] = substr($this->call['where'], 0, -5);
             }
         }
-        return self::$obj;
+        return $this;
     }
 
     /**
@@ -251,31 +193,31 @@ class Db
     {
         $this->_checkEmpty();
         foreach ($like as $key => $value) {
-            self::$call['where'] .= $key . ' LIKE ? AND ';
-            self::$bindParam[] = $value;
+            $this->call['where'] .= $key . ' LIKE ? AND ';
+            $this->bindParam[] = $value;
         }
-        self::$call['where'] = substr(self::$call['where'], 0, -5);
-        return self::$obj;
+        $this->call['where'] = substr($this->call['where'], 0, -5);
+        return $this;
     }
 
     public function whereNull(array $field): Db
     {
         $this->_checkEmpty();
         foreach ($field as $key) {
-            self::$call['where'] .= $key . ' IS NULL AND ';
+            $this->call['where'] .= $key . ' IS NULL AND ';
         }
-        self::$call['where'] = substr(self::$call['where'], 0, -5);
-        return self::$obj;
+        $this->call['where'] = substr($this->call['where'], 0, -5);
+        return $this;
     }
 
     public function whereNotNull(array $field): Db
     {
         $this->_checkEmpty();
         foreach ($field as $key) {
-            self::$call['where'] .= $key . ' IS NOT NULL AND ';
+            $this->call['where'] .= $key . ' IS NOT NULL AND ';
         }
-        self::$call['where'] = substr(self::$call['where'], 0, -5);
-        return self::$obj;
+        $this->call['where'] = substr($this->call['where'], 0, -5);
+        return $this;
     }
 
 
@@ -286,10 +228,10 @@ class Db
         foreach ($whereIn as $column => $range) {
             $bindStr = rtrim(str_repeat('?,', count($range)), ',');
             $condition .= $column . ' in (' . $bindStr . ') AND ';
-            array_push(self::$bindParam, ...$range);
+            array_push($this->bindParam, ...$range);
         }
-        self::$call['where'] .= substr($condition, 0, -5);
-        return self::$obj;
+        $this->call['where'] .= substr($condition, 0, -5);
+        return $this;
     }
 
     /**
@@ -299,13 +241,13 @@ class Db
      */
     public function limit(...$limit)
     {
-        self::$call['limit'] = ' LIMIT ';
+        $this->call['limit'] = ' LIMIT ';
         if (count($limit) == 2) {
-            self::$call['limit'] .= implode(',', $limit);
+            $this->call['limit'] .= implode(',', $limit);
         } else {
-            self::$call['limit'] .= $limit[0];
+            $this->call['limit'] .= $limit[0];
         }
-        return self::$obj;
+        return $this;
     }
 
     /**
@@ -317,13 +259,13 @@ class Db
     public function order(array $order = [])
     {
         if (!empty($order)) {
-            self::$call['order'] = ' order by ';
+            $this->call['order'] = ' order by ';
             foreach ($order as $ord => $by) {
-                self::$call['order'] .= $ord . ' ' . $by . ',';
+                $this->call['order'] .= $ord . ' ' . $by . ',';
             }
-            self::$call['order'] = rtrim(self::$call['order'], ',');
+            $this->call['order'] = rtrim($this->call['order'], ',');
         }
-        return self::$obj;
+        return $this;
     }
 
     /**
@@ -338,102 +280,61 @@ class Db
             throw new \Exception('group传入参数数量不正确');
         }
         if (count($group) == 2) {
-            self::$call['group'] = ' group by ' . $group[0] . ' having ' . $group[1];
+            $this->call['group'] = ' group by ' . $group[0] . ' having ' . $group[1];
         } else {
-            self::$call['group'] = ' group by ' . $group[0];
+            $this->call['group'] = ' group by ' . $group[0];
         }
-        return self::$obj;
+        return $this;
     }
 
     /**
-     * 根据self::$call数组生成查询语句
+     * 根据$this->call数组生成查询语句
      * @return string
      */
     private function _condition(): string
     {
-        $condition = implode(' ', array_filter(self::$call));
-        return $condition;
+        return implode(' ', array_filter($this->call));
     }
 
-    /**
-     * 预处理
-     * @param $sql
-     * @param array $data
-     * @return object
-     */
-    private function _prepare(string $sql, array $data = []): \PDOStatement
-    {
-        $PDOstatement = $this->link->prepare($sql);
-        empty($data) ? $PDOstatement->execute() : $PDOstatement->execute($data);
-        return $PDOstatement;
-    }
 
-    /**
-     * @return Db
-     * 单例模式创建对象
-     */
-    private static function instance(): Db
-    {
-        if (!(self::$obj instanceof self)) {
-            self::$obj = new self();
-        }
-        return self::$obj;
-    }
-
-    /**
-     * 屏蔽克隆对象
-     */
-    private function __clone()
-    {
-    }
 
     // public function transaction(array $transaction)
     // {
-    //     $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+    //     $this->pdo->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
     //     try {
-    //         $this->link->beginTransaction(); //开启事务
+    //         $this->pdo->beginTransaction(); //开启事务
     //         foreach (func_get_args() as $key => $sql) {
-    //             $this->link->exec($sql);
+    //             $this->pdo->exec($sql);
     //         }
-    //         $this->link->commit();
+    //         $this->pdo->commit();
     //     } catch (PDOException $e) {
-    //         $this->link->rollback();
-    //         self::$message = $e->getMessage();
+    //         $this->pdo->rollback();
+    //         $this->message = $e->getMessage();
     //         return FALSE;
     //     }
-    //     $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+    //     $this->pdo->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
     //     return TRUE;
     // }
-
-
-    public function __destruct()
-    {
-        self::$obj = null;
-    }
 
     /**
      * 检查where属性是否为空并提供拼接的前缀
      */
     private function _checkEmpty()
     {
-        if (!isset(self::$call['where']) || empty(self::$call['where'])) {
-            self::$call['where'] = ' WHERE ';
+        if (!isset($this->call['where']) || empty($this->call['where'])) {
+            $this->call['where'] = ' WHERE ';
         } else {
-            self::$call['where'] .= ' AND ';
+            $this->call['where'] .= ' AND ';
         }
     }
 
-
-    private function _flush()
-    {
-        self::$name = '';
-        self::$field = '*';
-        self::$bindParam = [];
-        self::$call = [
-            'where' => '',
-            'group' => '',
-            'order' => '',
-            'limit' => ''
-        ];
-    }
+//
+//    public function __destruct()
+//    {
+//        $this->name = '';
+//        $this->field = '*';
+//        $this->bindParam = [];
+//        $this->collection = null;
+//        $this->call = [];
+//    }
 }
