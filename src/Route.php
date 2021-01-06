@@ -47,12 +47,13 @@ class Route
 
     public function allowCors()
     {
-        //        dump($this->getRoute());
-        if (Request::isMethod('options') || Request::isMethod('get')) {
-            if (isset($this->routes['options'][Request::method()][Request::path()])) {
-                header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::method()][Request::path()]['originUrl']);
-            }
+//        if (Request::isMethod('options') || Request::isMethod('get')) {
+        if (isset($this->routes['options'][Request::path()])) {
+            header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::path()]['originUrl']);
+            header('Access-Control-Allow-Credentials:true');
+            header('Access-Control-Allow-Headers:Origin,Content-Type,Accept,token,X-Requested-With');
         }
+//        }
     }
 
     public function match()
@@ -172,10 +173,10 @@ class Route
     {
         if (is_array($this->method)) {
             foreach ($this->method as $method) {
-                $this->routes['options'][$method][$this->path] = [$originUrl];
+                $this->routes['options'][$this->path] = [$originUrl];
             }
         } else {
-            $this->routes['options'][$this->method][$this->path] = ['originUrl' => $originUrl];
+            $this->routes['options'][$this->path] = ['originUrl' => $originUrl];
         }
         return $this;
     }
@@ -230,7 +231,7 @@ class Route
     public function register()
     {
         array_map(
-            fn ($routes) => require_once($routes),
+            fn($routes) => require_once($routes),
             glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
         );
     }
