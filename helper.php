@@ -67,7 +67,7 @@ if (!function_exists('db')) {
      */
     function db(string $tableName): \Yao\Db
     {
-        return \Yao\Db::name($tableName);
+        return \Yao\Facade\Db::name($tableName);
     }
 }
 
