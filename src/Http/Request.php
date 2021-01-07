@@ -2,6 +2,8 @@
 
 namespace Yao\Http;
 
+use Yao\Traits\SingleInstance;
+
 /**
  * 请求类
  * Class Request
@@ -9,6 +11,8 @@ namespace Yao\Http;
  */
 class Request
 {
+    use SingleInstance;
+
     /**
      * 请求类型
      * @var mixed|string|null
@@ -20,7 +24,7 @@ class Request
      * 初始化请求类型
      * Request constructor.
      */
-    public function __construct(?array $filters = null)
+    private function __construct(?array $filters = null)
     {
         $this->server = $_SERVER;
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
@@ -153,10 +157,10 @@ class Request
     }
 
 
-    public function instance()
-    {
-        return $this;
-    }
+//    public static function instance()
+//    {
+//        return new self;
+//    }
 
     /**
      * 请求参数过滤方法

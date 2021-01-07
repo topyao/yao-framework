@@ -22,10 +22,9 @@ namespace Yao\Facade;
 class Request extends \Yao\Facade
 {
 
-    protected static $singleInstance = true;
-
-    protected static function getFacadeClass()
+    public static function __callStatic($method, $params)
     {
-        return \Yao\Http\Request::class;
+        return call_user_func_array([\Yao\Http\Request::instance(), $method], $params);
     }
+
 }

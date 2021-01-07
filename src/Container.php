@@ -66,7 +66,11 @@ class Container
     {
         foreach ($inject as $j) {
             $injectClass = $this->_getClass($j);
-            $params[] = new $injectClass;
+            if ((new \ReflectionClass($injectClass))->hasMethod('instance')) {
+                $params[] = $injectClass::instance();
+            } else {
+                $params[] = new $injectClass;
+            }
         }
         return call_user_func_array([new $class(), $method], $params);
     }
