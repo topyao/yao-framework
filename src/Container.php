@@ -3,8 +3,13 @@
 namespace Yao;
 
 
+use Yao\Traits\SingleInstance;
+
 class Container
 {
+
+    use SingleInstance;
+
     const BINDCLASS = [
         'Request' => \Yao\Http\Request::class,
         'Validate' => \App\Http\Validate::class,
@@ -15,30 +20,12 @@ class Container
         'View' => View::class
     ];
 
-    private $instance = [];
-
-    private static $container;
-
-    private static function _getInstance()
-    {
-        if (!static::$container instanceof static) {
-            static::$container = new static;
-        }
-        return static::$container;
-    }
 
     public static function __callStatic($name, $arguments)
     {
-        return call_user_func_array([static::_getInstance(), '_' . $name], $arguments);
+        return call_user_func_array([static::instance(), '_' . $name], $arguments);
     }
 
-    private function __clone()
-    {
-    }
-
-    private function __construct()
-    {
-    }
 
     private function _getClass($class)
     {

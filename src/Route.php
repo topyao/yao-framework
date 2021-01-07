@@ -96,7 +96,7 @@ class Route
     private function _locate($location)
     {
         if ($location instanceof \Closure) {
-            return response(call_user_func_array($location, $this->param));
+            return call_user_func_array($location, $this->param);
         } else if (is_array($location) && 2 == count($location)) {
             [$this->controller, $this->action] = $location;
         } else if (is_string($location)) {
@@ -111,6 +111,11 @@ class Route
         } else {
             throw new \Exception('页面找不到了', 404);
         }
+    }
+
+    public function getMiddleware(): array
+    {
+        return $this->routes[Request::method()][Request::path()]['middleware'] ?? [];
     }
 
     public function dispatch()

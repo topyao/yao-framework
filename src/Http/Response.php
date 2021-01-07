@@ -2,6 +2,8 @@
 
 namespace Yao\Http;
 
+use Yao\Facade\Route;
+
 class Response
 {
 
@@ -23,6 +25,11 @@ class Response
         return $this;
     }
 
+    public function middleware()
+    {
+        return Route::getMiddleware();
+    }
+
     public function header($header)
     {
         if (is_string($header)) {
@@ -35,6 +42,7 @@ class Response
 
     protected function create()
     {
+
         \Yao\Facade\Route::allowCors();
         http_response_code($this->code);
         if (is_array($this->header)) {

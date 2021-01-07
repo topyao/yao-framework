@@ -71,23 +71,6 @@ if (!function_exists('db')) {
     }
 }
 
-if (!function_exists('response')) {
-    function response($response)
-    {
-
-        //        if (is_array($response)) {
-        //            header("Content-Type:text/json;charset=UTF-8");
-        //            echo json_encode($response, 256);
-        //        } else if (is_string($response)) {
-        //            echo $response;
-        //        }
-        //
-        //        exit;
-        return $response;
-    }
-}
-
-
 function json($data)
 {
     return Json::data($data);
