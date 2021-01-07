@@ -16,6 +16,8 @@ class Query
 
     private string $type = '';
 
+    private $PDOstatement;
+
     private function __construct()
     {
         Config::load('database');
@@ -42,8 +44,20 @@ class Query
      */
     public function prepare(string $sql, array $data = []): \PDOStatement
     {
-        $PDOstatement = $this->pdo->prepare($sql);
-        empty($data) ? $PDOstatement->execute() : $PDOstatement->execute($data);
-        return $PDOstatement;
+        $this->PDOstatement = $this->pdo->prepare($sql);
+        $this->PDOstatement->execute($data);
+        return $this->PDOstatement;
+    }
+
+    public function fetchAll($sql, $params, $fetchType)
+    {
+        return $this->prepare($sql, $params)->fetchAll($fetchType);
+//        return $this->PDOstatement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function fetch($sql, $params, $fetchType)
+    {
+        return $this->prepare($sql, $params)->fetch($fetchType);
+//        return $this->PDOstatement->fetch(\PDO::FETCH_ASSOC);
     }
 }

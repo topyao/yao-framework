@@ -9,6 +9,17 @@ class Middleware
 
     public $middleware = [];
 
+    public function handle()
+    {
+
+    }
+
+
+    public function make()
+    {
+
+    }
+
 
     public function before()
     {
@@ -23,6 +34,6 @@ class Middleware
 
     public function middleware($request, \Closure $closure)
     {
-        
+
     }
 }

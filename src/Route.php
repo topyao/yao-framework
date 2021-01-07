@@ -161,7 +161,6 @@ class Route
     public function alias($name): Route
     {
         Alias::instance()->set($name, $this->path);
-//        $this->alias->set($name, $this->path);
         return $this;
     }
 

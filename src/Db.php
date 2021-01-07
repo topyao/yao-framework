@@ -34,8 +34,9 @@ class Db
     public function select()
     {
         $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $res = Query::instance()->prepare($sql, $this->bindParam);
-        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC);
+        $this->collection->data = Query::instance()->fetchAll($sql, $this->bindParam, \PDO::FETCH_ASSOC);
+//        $res = Query::instance()->prepare($sql, $this->bindParam);
+//        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC);
         $this->collection->query = $sql;
         return $this->collection;
     }
@@ -44,7 +45,7 @@ class Db
     {
         $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
         $res = Query::instance()->prepare($sql, $this->bindParam);
-        $this->collection->data = $res->fetchAll(PDO::FETCH_ASSOC)[$this->field];
+        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC)[$this->field];
         $this->collection->query = $sql;
         return $this->collection;
     }
@@ -56,14 +57,16 @@ class Db
     public function find()
     {
         $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $res = Query::instance()->prepare($sql, $this->bindParam);
-        $data = $res->fetch(PDO::FETCH_ASSOC);
-        if (false == $data) {
-            return false;
-        } else {
-            $this->collection->data = $data;
-            return $this->collection;
-        }
+        $this->collection->data = Query::instance()->fetch($sql, $this->bindParam, \PDO::FETCH_ASSOC);
+        $this->collection->query = $sql;
+//        $res = Query::instance()->prepare($sql, $this->bindParam);
+//        $data = $res->fetch(\PDO::FETCH_ASSOC);
+//        if (false == $data) {
+//            return false;
+//        } else {
+//        $this->collection->data = $data;
+        return $this->collection;
+//        }
     }
 
 
@@ -120,7 +123,7 @@ class Db
     public function query(string $sql, ?array $data = [], bool $all = true)
     {
         $PDOstatement = Query::instance()->prepare($sql, $data);
-        return $all ? $PDOstatement->fetchAll(PDO::FETCH_ASSOC) : $PDOstatement->fetch(PDO::FETCH_ASSOC);
+        return $all ? $PDOstatement->fetchAll(\PDO::FETCH_ASSOC) : $PDOstatement->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -161,6 +164,18 @@ class Db
         return $this;
     }
 
+    private function _checkWhereEmpty(\Closure $closure)
+    {
+        if (!isset($this->call['where']) || empty($this->call['where'])) {
+            $this->call['where'] = ' WHERE ';
+        } else {
+            $this->call['where'] .= ' AND ';
+        }
+        $closure();
+        return $this;
+    }
+
+
     /**
      * where条件表达式，使用数组参数的时候会自动使用预处理
      * @param string|array $where
@@ -169,19 +184,19 @@ class Db
      */
     public function where($where): Db
     {
-        $this->_checkEmpty();
-        if (!empty($where)) {
-            if (is_string($where)) {
-                $this->call['where'] = $this->call['where'] . $where;
-            } else if (is_array($where)) {
-                foreach ($where as $key => $value) {
-                    $this->bindParam[] = $value;
-                    $this->call['where'] .= $key . '=? and ';
+        return $this->_checkWhereEmpty(function () use ($where) {
+            if (!empty($where)) {
+                if (is_string($where)) {
+                    $this->call['where'] = $this->call['where'] . $where;
+                } else if (is_array($where)) {
+                    foreach ($where as $key => $value) {
+                        $this->bindParam[] = $value;
+                        $this->call['where'] .= $key . '=? and ';
+                    }
+                    $this->call['where'] = substr($this->call['where'], 0, -5);
                 }
-                $this->call['where'] = substr($this->call['where'], 0, -5);
             }
-        }
-        return $this;
+        });
     }
 
     /**
@@ -191,47 +206,47 @@ class Db
      */
     public function whereLike(array $like): Db
     {
-        $this->_checkEmpty();
-        foreach ($like as $key => $value) {
-            $this->call['where'] .= $key . ' LIKE ? AND ';
-            $this->bindParam[] = $value;
-        }
-        $this->call['where'] = substr($this->call['where'], 0, -5);
-        return $this;
+        return $this->_checkWhereEmpty(function () use ($like) {
+            foreach ($like as $key => $value) {
+                $this->call['where'] .= $key . ' LIKE ? AND ';
+                $this->bindParam[] = $value;
+            }
+            $this->call['where'] = substr($this->call['where'], 0, -5);
+        });
     }
 
     public function whereNull(array $field): Db
     {
-        $this->_checkEmpty();
-        foreach ($field as $key) {
-            $this->call['where'] .= $key . ' IS NULL AND ';
-        }
-        $this->call['where'] = substr($this->call['where'], 0, -5);
-        return $this;
+        return $this->_checkWhereEmpty(function () {
+            foreach ($field as $key) {
+                $this->call['where'] .= $key . ' IS NULL AND ';
+            }
+            $this->call['where'] = substr($this->call['where'], 0, -5);
+        });
     }
 
     public function whereNotNull(array $field): Db
     {
-        $this->_checkEmpty();
-        foreach ($field as $key) {
-            $this->call['where'] .= $key . ' IS NOT NULL AND ';
-        }
-        $this->call['where'] = substr($this->call['where'], 0, -5);
-        return $this;
+        return $this->_checkWhereEmpty(function () use ($field) {
+            foreach ($field as $key) {
+                $this->call['where'] .= $key . ' IS NOT NULL AND ';
+            }
+            $this->call['where'] = substr($this->call['where'], 0, -5);
+        });
     }
 
 
     public function whereIn(array $whereIn = [])
     {
-        $this->_checkEmpty();
-        $condition = '';
-        foreach ($whereIn as $column => $range) {
-            $bindStr = rtrim(str_repeat('?,', count($range)), ',');
-            $condition .= $column . ' in (' . $bindStr . ') AND ';
-            array_push($this->bindParam, ...$range);
-        }
-        $this->call['where'] .= substr($condition, 0, -5);
-        return $this;
+        return $this->_checkWhereEmpty(function () use ($whereIn) {
+            $condition = '';
+            foreach ($whereIn as $column => $range) {
+                $bindStr = rtrim(str_repeat('?,', count($range)), ',');
+                $condition .= $column . ' in (' . $bindStr . ') AND ';
+                array_push($this->bindParam, ...$range);
+            }
+            $this->call['where'] .= substr($condition, 0, -5);
+        });
     }
 
     /**
@@ -300,41 +315,20 @@ class Db
 
     // public function transaction(array $transaction)
     // {
-    //     $this->pdo->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+    //     $this->pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 0);
     //     try {
     //         $this->pdo->beginTransaction(); //开启事务
     //         foreach (func_get_args() as $key => $sql) {
     //             $this->pdo->exec($sql);
     //         }
     //         $this->pdo->commit();
-    //     } catch (PDOException $e) {
+    //     } catch (\PDOException $e) {
     //         $this->pdo->rollback();
     //         $this->message = $e->getMessage();
     //         return FALSE;
     //     }
-    //     $this->pdo->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+    //     $this->pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 1);
     //     return TRUE;
     // }
 
-    /**
-     * 检查where属性是否为空并提供拼接的前缀
-     */
-    private function _checkEmpty()
-    {
-        if (!isset($this->call['where']) || empty($this->call['where'])) {
-            $this->call['where'] = ' WHERE ';
-        } else {
-            $this->call['where'] .= ' AND ';
-        }
-    }
-
-//
-//    public function __destruct()
-//    {
-//        $this->name = '';
-//        $this->field = '*';
-//        $this->bindParam = [];
-//        $this->collection = null;
-//        $this->call = [];
-//    }
 }
