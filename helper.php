@@ -100,6 +100,5 @@ if (false === function_exists('url')) {
     function url($alias, $args = [])
     {
         return \Yao\Route\Alias::instance()->get($alias, $args);
-        //        return Route::getAlias($alias);
     }
 }
