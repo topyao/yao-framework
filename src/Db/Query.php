@@ -18,6 +18,8 @@ class Query
 
     private $PDOstatement;
 
+    private \PDO $pdo;
+
     private function __construct()
     {
         Config::load('database');
@@ -52,12 +54,10 @@ class Query
     public function fetchAll($sql, $params, $fetchType)
     {
         return $this->prepare($sql, $params)->fetchAll($fetchType);
-//        return $this->PDOstatement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function fetch($sql, $params, $fetchType)
     {
         return $this->prepare($sql, $params)->fetch($fetchType);
-//        return $this->PDOstatement->fetch(\PDO::FETCH_ASSOC);
     }
 }
