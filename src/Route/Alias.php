@@ -30,9 +30,8 @@ class Alias
                     $match .= ($r . ($args[$k] ?? ''));
                 }
                 return $match;
-            } else {
-                return $this->alias[$alias];
             }
+            return $this->alias[$alias];
         }
         return $alias;
     }
