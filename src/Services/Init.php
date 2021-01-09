@@ -2,8 +2,11 @@
 
 namespace Yao\Services;
 
-use Yao\Facade\Config;
+use Yao\Facade\{
+    Config, Route, Session
+};
 use Yao\Interfaces\Service;
+use Yao\Error;
 
 class Init implements Service
 {
@@ -18,17 +21,17 @@ class Init implements Service
         if (PHP_VERSION < 7.4) {
             throw new \Exception('PHP版本太低，建议升级到PHP7.4', 110);
         }
-        \Yao\Error::register();
-        \Yao\Facade\Route::register();
-        \Yao\Facade\Route::match();
+        Error::register();
+        Route::register();
+        Route::match();
         //是否默认开启session
-        if (\Yao\Facade\Config::get('app.auto_start')) {
+        if (Config::get('app.auto_start')) {
             session_start();
             //session闪存检查
-            \Yao\Facade\Session::flashCheck();
+            Session::flashCheck();
         }
         //设置默认时区
-        date_default_timezone_set(\Yao\Facade\Config::get('app.default_timezone', 'PRC'));
+        date_default_timezone_set(Config::get('app.default_timezone', 'PRC'));
 
     }
 }
