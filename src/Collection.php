@@ -2,6 +2,12 @@
 
 namespace Yao;
 
+/**
+ * @property $data
+ * @property $query
+ * Class Collection
+ * @package Yao
+ */
 class Collection implements \ArrayAccess, \JsonSerializable
 {
 
@@ -63,11 +69,5 @@ class Collection implements \ArrayAccess, \JsonSerializable
     {
         return $this->data;
     }
-
-    //    public function __destruct()
-    //    {
-    //        $this->data = [];
-    //        $this->dump = '';
-    //    }
 
 }

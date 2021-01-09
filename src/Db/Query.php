@@ -8,9 +8,15 @@ use Yao\{
     Traits\SingleInstance
 };
 
+/**
+ * Class Query
+ * @package Yao\Db
+ */
 class Query
 {
     use SingleInstance;
+
+    const FETCHTYPE = \PDO::FETCH_ASSOC;
 
     private ?array $config = [];
 
@@ -51,12 +57,12 @@ class Query
         return $this->PDOstatement;
     }
 
-    public function fetchAll($sql, $params, $fetchType)
+    public function fetchAll($sql, $params, $fetchType = self::FETCHTYPE)
     {
         return $this->prepare($sql, $params)->fetchAll($fetchType);
     }
 
-    public function fetch($sql, $params, $fetchType)
+    public function fetch($sql, $params, $fetchType = self::FETCHTYPE)
     {
         return $this->prepare($sql, $params)->fetch($fetchType);
     }

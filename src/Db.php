@@ -33,20 +33,21 @@ class Db
      */
     public function select()
     {
-        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $this->collection->data = Query::instance()->fetchAll($sql, $this->bindParam, \PDO::FETCH_ASSOC);
-//        $res = Query::instance()->prepare($sql, $this->bindParam);
-//        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC);
-        $this->collection->query = $sql;
+        $query = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
+        $this->collection(Query::instance()->fetchAll($query, $this->bindParam), $query);
         return $this->collection;
     }
 
-    public function value()
+
+    private function _backQuote($string)
     {
-        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $res = Query::instance()->prepare($sql, $this->bindParam);
-        $this->collection->data = $res->fetchAll(\PDO::FETCH_ASSOC)[$this->field];
-        $this->collection->query = $sql;
+        return "`{$string}`";
+    }
+
+    public function value($value)
+    {
+        $query = 'SELECT ' . $this->_backQuote($value) . ' FROM ' . $this->name . $this->_condition();
+        $this->collection(($data = Query::instance()->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
         return $this->collection;
     }
 
@@ -56,23 +57,20 @@ class Db
      */
     public function find()
     {
-        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $this->collection->data = Query::instance()->fetch($sql, $this->bindParam, \PDO::FETCH_ASSOC);
-        $this->collection->query = $sql;
-//        $res = Query::instance()->prepare($sql, $this->bindParam);
-//        $data = $res->fetch(\PDO::FETCH_ASSOC);
-//        if (false == $data) {
-//            return false;
-//        } else {
-//        $this->collection->data = $data;
+        $query = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
+        $this->collection(Query::instance()->fetch($query, $this->bindParam), $query);
         return $this->collection;
-//        }
+    }
+
+    public function collection($data, $query)
+    {
+        $this->collection->data = $data;
+        $this->collection->query = $query;
     }
 
 
     public function update(array $data)
     {
-        //拼接预处理sql并添加绑定参数
         $set = '';
         foreach ($data as $field => $value) {
             $set .= $field . ' = ? , ';
@@ -95,8 +93,9 @@ class Db
             $this->bindParam[] = $value;
         }
         $sql = 'INSERT INTO ' . $this->name . ' ' . $fields . ' ' . 'VALUES ' . $params;
-        $res = Query::instance()->prepare($sql, $this->bindParam);
-        return $this->pdo->lastinsertid();
+        return Query::instance()
+            ->prepare($sql, $this->bindParam)
+            ->lastinsertid();
     }
 
     /**
@@ -122,8 +121,7 @@ class Db
      */
     public function query(string $sql, ?array $data = [], bool $all = true)
     {
-        $PDOstatement = Query::instance()->prepare($sql, $data);
-        return $all ? $PDOstatement->fetchAll(\PDO::FETCH_ASSOC) : $PDOstatement->fetch(\PDO::FETCH_ASSOC);
+        return $all ? Query::instance()->fetchAll($sql, $data) : Query::instance()->fetch($sql, $data);
     }
 
     /**
@@ -148,7 +146,7 @@ class Db
      */
     public function name(string $table_name): Db
     {
-        $this->name = $table_name;
+        $this->name = $this->_backQuote($table_name);
         return $this;
     }
 
@@ -217,7 +215,7 @@ class Db
 
     public function whereNull(array $field): Db
     {
-        return $this->_checkWhereEmpty(function () {
+        return $this->_checkWhereEmpty(function () use ($field) {
             foreach ($field as $key) {
                 $this->call['where'] .= $key . ' IS NULL AND ';
             }

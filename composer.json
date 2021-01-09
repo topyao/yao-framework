@@ -21,6 +21,8 @@
     "php": ">=7.4",
     "twig/twig": "^3.1",
     "monolog/monolog": "^2.1",
-    "symfony/var-dumper": "^5.1"
+    "symfony/var-dumper": "^5.1",
+    "ext-json": "*",
+    "ext-pdo": "*"
   }
 }
