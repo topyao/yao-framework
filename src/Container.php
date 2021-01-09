@@ -20,13 +20,6 @@ class Container
         'View' => View::class
     ];
 
-
-    public static function __callStatic($name, $arguments)
-    {
-        return call_user_func_array([static::instance(), '_' . $name], $arguments);
-    }
-
-
     private function _getClass($class)
     {
         if (!is_string($class)) {
@@ -75,7 +68,7 @@ class Container
         return call_user_func_array([new $class(), $method], $params);
     }
 
-    private function _create($class, $method, $params)
+    public function create($class, $method, $params)
     {
         $methodParams = $this->get($class)->getMethod($method)->getParameters();
         $inject = array_diff_key($methodParams, $params);
