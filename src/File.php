@@ -16,18 +16,11 @@ class File
 
     protected array $validate = [];
 
-
-    //    public function __construct(array $file = null)
-    //    {
-    //        $this->data($file);
-    //    }
-
     public function data(array $file)
     {
         if (!empty($file['name'])) {
             if ($file['error'] > 0) {
                 $this->_getError($file['error']);
-                //                throw new \Exception('文件上传失败！', $file['error']);
             }
             if (!is_uploaded_file($file['tmp_name'])) {
                 throw new \Exception('确定在上传文件？', 403);
