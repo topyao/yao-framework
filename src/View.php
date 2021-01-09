@@ -2,6 +2,10 @@
 
 namespace Yao;
 
+use Yao\Facade\Config;
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
 class View
 {
 
@@ -12,14 +16,14 @@ class View
 
     public function __construct()
     {
-        \Yao\Facade\Config::load('view');
-        $this->config = \Yao\Facade\Config::get('view');
+        Config::load('view');
+        $this->config = Config::get('view');
     }
 
     private function _setOptions()
     {
-        $loader = new \Twig\Loader\FilesystemLoader(ROOT . 'app' . DIRECTORY_SEPARATOR . ucfirst($this->module) . 'View');
-        $this->twig = new \Twig\Environment($loader, [
+        $loader = new FilesystemLoader(ROOT . 'app' . DIRECTORY_SEPARATOR . ucfirst($this->module) . 'View');
+        $this->twig = new Environment($loader, [
             'debug' => $this->config['debug'],
             'cache' => $this->config['cache'] ? $this->config['cache_dir'] : false,
         ]);

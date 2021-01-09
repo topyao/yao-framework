@@ -2,7 +2,9 @@
 
 namespace Yao;
 
-use Yao\Facade\Request;
+use Yao\Facade\{
+    Json, Request, Response
+};
 use Yao\Route\Alias;
 
 /**
@@ -46,20 +48,20 @@ class Route
 
     public function match()
     {
-        $method = \Yao\Facade\Request::method();
+        $method = Request::method();
         $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
             throw new \Exception('请求类型' . $method . '没有定义任何路由', 404);
         }
 
-        if (isset($this->routes[$method][\Yao\Facade\Request::path()]['route'])) {
-            return $this->_locate($this->routes[$method][\Yao\Facade\Request::path()]['route']);
+        if (isset($this->routes[$method][Request::path()]['route'])) {
+            return $this->_locate($this->routes[$method][Request::path()]['route']);
         } else {
             foreach ($this->routes[$method] as $uri => $location) {
                 //设置路由匹配正则
                 $uriRegexp = '#^' . $uri . '$#i';
                 //路由和请求一致或者匹配到正则
-                if (preg_match($uriRegexp, \Yao\Facade\Request::path(), $match)) {
+                if (preg_match($uriRegexp, Request::path(), $match)) {
                     //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
                     if (isset($match)) {
                         array_shift($match);
@@ -118,9 +120,9 @@ class Route
         }
         $resData = Container::instance()->create($this->controller, $this->action, $this->param);
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
-            return \Yao\Facade\Json::data($resData);
+            return Json::data($resData);
         } else if (is_scalar($resData)) {
-            return \Yao\Facade\Response::data($resData);
+            return Response::data($resData);
         }
     }
 
