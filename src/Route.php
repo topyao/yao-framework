@@ -16,10 +16,6 @@ class Route
      * @var array
      */
     protected array $routes = [];
-    /**
-     * 别名路由对象
-     */
-    //    private Alias $alias;
 
     public string $controller = '';
     public string $action = '';
@@ -28,12 +24,6 @@ class Route
     private $method;
     private string $path = '';
     private $location;
-
-
-    //    public function __construct()
-    //    {
-    //        $this->alias = new Alias;
-    //    }
 
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -51,7 +41,6 @@ class Route
             header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::path()]['originUrl']);
             header('Access-Control-Allow-Credentials:true');
             header('Access-Control-Allow-Headers:Origin,Content-Type,Accept,token,X-Requested-With');
-        } else {
         }
     }
 
@@ -127,7 +116,7 @@ class Route
         if (!method_exists($obj, $this->action)) {
             throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
-        $resData = Container::create($this->controller, $this->action, $this->param);
+        $resData = Container::instance()->create($this->controller, $this->action, $this->param);
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
             return \Yao\Facade\Json::data($resData);
         } else if (is_scalar($resData)) {
@@ -154,28 +143,20 @@ class Route
         [$this->method, $this->path, $this->location] = [$method, '/' . trim($path, '/'), $location];
     }
 
-    // public function view($path, $view, $args = [])
-    // {
-    //     $this->_setParams('get', $path, fn () => \Yao\Facade\View::fetch($view, $args));
-    //     $this->_setParam('route', $this->location);
-    //     return $this;
-    // }
-
-
     public function alias($name): Route
     {
         Alias::instance()->set($name, $this->path);
         return $this;
     }
 
-    public function cross($originUrl = '*'): Route
+    public function cross($origin_url = '*'): Route
     {
         if (is_array($this->method)) {
             foreach ($this->method as $method) {
-                $this->routes['options'][$this->path] = ['originUrl' => $originUrl];
+                $this->routes['options'][$this->path] = ['originUrl' => $origin_url];
             }
         } else {
-            $this->routes['options'][$this->path] = ['originUrl' => $originUrl];
+            $this->routes['options'][$this->path] = ['originUrl' => $origin_url];
         }
         return $this;
     }
@@ -230,7 +211,7 @@ class Route
     public function register()
     {
         array_map(
-            fn ($routes) => require_once($routes),
+            fn($routes) => require_once($routes),
             glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
         );
     }
