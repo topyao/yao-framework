@@ -20,24 +20,21 @@ class Alias
         }
     }
 
-    public function get(?string $alias = null, array $args = [])
+    public function get(string $alias, array $args = [])
     {
-        if (is_null($alias)) {
-            return $this->alias;
-        } else {
-            if (isset($this->alias[$alias])) {
-                if (preg_match('/\(.+\)/i', $this->alias[$alias])) {
-                    $rep = explode(',', preg_replace(['#\\\#', '#\(.+\)#Ui'], ['', ','], $this->alias[$alias]));
-                    $match = '';
-                    foreach ($rep as $k => $r) {
-                        $match .= ($r . ($args[$k] ?? ''));
-                    }
-                    return $match;
-                } else {
-                    return $this->alias[$alias];
+
+        if (isset($this->alias[$alias])) {
+            if (preg_match('/\(.+\)/i', $this->alias[$alias])) {
+                $rep = explode(',', preg_replace(['#\\\#', '#\(.+\)#Ui'], ['', ','], $this->alias[$alias]));
+                $match = '';
+                foreach ($rep as $k => $r) {
+                    $match .= ($r . ($args[$k] ?? ''));
                 }
+                return $match;
+            } else {
+                return $this->alias[$alias];
             }
         }
-        return $this->alias[$alias] ?? $alias;
+        return $alias;
     }
 }
