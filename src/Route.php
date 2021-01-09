@@ -19,7 +19,7 @@ class Route
     /**
      * 别名路由对象
      */
-//    private Alias $alias;
+    //    private Alias $alias;
 
     public string $controller = '';
     public string $action = '';
@@ -30,10 +30,10 @@ class Route
     private $location;
 
 
-//    public function __construct()
-//    {
-//        $this->alias = new Alias;
-//    }
+    //    public function __construct()
+    //    {
+    //        $this->alias = new Alias;
+    //    }
 
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -47,13 +47,13 @@ class Route
 
     public function allowCors()
     {
-//        if (Request::isMethod('options') || Request::isMethod('get')) {
+        //        if (Request::isMethod('options') || Request::isMethod('get')) {
         if (isset($this->routes['options'][Request::path()])) {
             header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::path()]['originUrl']);
             header('Access-Control-Allow-Credentials:true');
             header('Access-Control-Allow-Headers:Origin,Content-Type,Accept,token,X-Requested-With');
         }
-//        }
+        //        }
     }
 
     public function match()
@@ -69,7 +69,7 @@ class Route
         } else {
             foreach ($this->routes[$method] as $uri => $location) {
                 //设置路由匹配正则
-                $uriRegexp = '@^' . $uri . '$@i';
+                $uriRegexp = '#^' . $uri . '$#i';
                 //路由和请求一致或者匹配到正则
                 if (preg_match($uriRegexp, \Yao\Facade\Request::path(), $match)) {
                     //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
@@ -173,7 +173,7 @@ class Route
     {
         if (is_array($this->method)) {
             foreach ($this->method as $method) {
-                $this->routes['options'][$this->path] = [$originUrl];
+                $this->routes['options'][$this->path] = ['originUrl' => $originUrl];
             }
         } else {
             $this->routes['options'][$this->path] = ['originUrl' => $originUrl];
@@ -231,7 +231,7 @@ class Route
     public function register()
     {
         array_map(
-            fn($routes) => require_once($routes),
+            fn ($routes) => require_once($routes),
             glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
         );
     }

@@ -97,9 +97,9 @@ function redirect($url)
 }
 
 if (false === function_exists('url')) {
-    function url($alias)
+    function url($alias = null, $args = [])
     {
-        return \Yao\Route\Alias::instance()->get($alias);
-//        return Route::getAlias($alias);
+        return \Yao\Route\Alias::instance()->get($alias, $args);
+        //        return Route::getAlias($alias);
     }
 }
