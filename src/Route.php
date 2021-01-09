@@ -47,13 +47,12 @@ class Route
 
     public function allowCors()
     {
-        //        if (Request::isMethod('options') || Request::isMethod('get')) {
         if (isset($this->routes['options'][Request::path()])) {
             header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::path()]['originUrl']);
             header('Access-Control-Allow-Credentials:true');
             header('Access-Control-Allow-Headers:Origin,Content-Type,Accept,token,X-Requested-With');
+        } else {
         }
-        //        }
     }
 
     public function match()

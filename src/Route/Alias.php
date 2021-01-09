@@ -22,7 +22,6 @@ class Alias
 
     public function get(string $alias, array $args = [])
     {
-
         if (isset($this->alias[$alias])) {
             if (preg_match('/\(.+\)/i', $this->alias[$alias])) {
                 $rep = explode(',', preg_replace(['#\\\#', '#\(.+\)#Ui'], ['', ','], $this->alias[$alias]));
