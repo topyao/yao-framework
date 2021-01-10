@@ -70,6 +70,14 @@ if (!function_exists('db')) {
         return \Yao\Facade\Db::name($tableName);
     }
 }
+if(false === function_exists('dump')){
+    function dump(...$dump)
+    {
+        echo '<pre>';
+        var_dump($dump);
+    }
+}
+
 
 function json($data)
 {
