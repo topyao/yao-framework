@@ -31,7 +31,7 @@ class Container
         if (!class_exists($class)) {
             $class = strtolower($class);
             if (!array_key_exists($class, $this->bind)) {
-                throw new Exception('类不存在');
+                throw new \Exception('类不存在');
             }
             $class = $this->bind[$class];
         }
@@ -39,10 +39,11 @@ class Container
     }
 
     /**
-     * 构造方法注入
-     * @param $class
+     * @param string $class
+     * @param array $arguments
+     * @param bool $singleInstance
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function get(string $class, array $arguments = [], bool $singleInstance = false)
     {
