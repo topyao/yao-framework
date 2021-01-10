@@ -1,6 +1,6 @@
 {
   "name": "chengyao/framework",
-  "description": "Are you okay!",
+  "description": "Yao框架核心，需要配合框架使用。https://github.com/topyao/yao",
   "type": "library",
   "license": "Apache-2.0",
   "authors": [
