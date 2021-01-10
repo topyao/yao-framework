@@ -43,7 +43,7 @@ class Container
     {
         $this->_getClass($class);
         if (!$singleInstance || !array_key_exists($this->class, $this->app)) {
-            if (false !== ($method = $this->_getMethod('__construct'))) {
+            if (false != ($method = $this->_getMethod('__construct'))) {
                 $this->app[$this->class] = new $this->class(...$arguments, ...$this->_inject($method));
             } else {
                 $this->app[$this->class] = new $this->class();
