@@ -10,7 +10,6 @@ class App
     {
         \Yao\Facade\Provider::serve();
 
-
 //        foreach (\Yao\Facade\Route::getMiddleware() as $middleware) {
 //            $d = (new $middleware)->handle(\Yao\Facade\Request::instance(), function ($request) {
 //

@@ -27,7 +27,6 @@ class Route
     private string $path = '';
     private $location;
 
-
     public function getRoute($requestMethod = null, $requestPath = null)
     {
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
@@ -46,9 +45,9 @@ class Route
         }
     }
 
-    public function match()
+    public function match(\Yao\Http\Request $request)
     {
-        $method = Request::method();
+        $method = $request->method();
         $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
             throw new \Exception('请求类型' . $method . '没有定义任何路由', 404);
@@ -137,6 +136,13 @@ class Route
     {
         $this->_setParams($method, $route[0], $route);
         $this->_setParam('route', $route[1]);
+        return $this;
+    }
+
+    public function get($uri, $location)
+    {
+        $this->_setParams('get', $uri, $location);
+        $this->_setParam('route', $location);
         return $this;
     }
 

@@ -6,7 +6,7 @@ class Container
 {
     use \Yao\Traits\SingleInstance;
 
-    private array $app = [];
+    public array $app = [];
 
     private array $bind = [
         'request' => \Yao\Http\Request::class,
@@ -16,12 +16,17 @@ class Container
         'config' => Config::class,
         'app' => App::class,
         'view' => View::class,
+        'route' => \Yao\Route::class,
         'db' => \Yao\Db::class,
     ];
 
     private string $class;
 
-    private function _getClass($class): void
+    /**
+     * 获取完整类名
+     * @param $class
+     */
+    private function _getClassName($class): void
     {
         if (!class_exists($class)) {
             $class = strtolower($class);
@@ -41,13 +46,12 @@ class Container
      */
     public function get(string $class, array $arguments = [], bool $singleInstance = false)
     {
-        $this->_getClass($class);
+        $this->_getClassName($class);
         if (!$singleInstance || !array_key_exists($this->class, $this->app)) {
-            if (false != ($method = $this->_getMethod('__construct'))) {
-                $this->app[$this->class] = new $this->class(...$arguments, ...$this->_inject($method));
-            } else {
-                $this->app[$this->class] = new $this->class();
-            }
+            $this->app[$this->class] =
+                (false != ($method = $this->_getMethod('__construct')))
+                    ? new $this->class(...$arguments, ...$this->_inject($method))
+                    : new $this->class();
         }
         return self::$instance;
     }
@@ -64,7 +68,10 @@ class Container
                     }
                 }
                 if (class_exists($injectClass)) {
-                    $params[] = new $injectClass();
+                    if (!array_key_exists($injectClass, $this->app)) {
+                        $this->app[$injectClass] = new $injectClass();
+                    }
+                    $params[] = $this->app[$injectClass];
                 }
             }
         }

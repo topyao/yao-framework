@@ -4,6 +4,8 @@
 namespace Yao;
 
 
+use Yao\Interfaces\Service;
+
 class Provider
 {
 
@@ -23,7 +25,11 @@ class Provider
     {
         $services = [...($this->services() ?: []), ...$this->builtInServices()];
         foreach ($services as $service) {
-            call_user_func([new $service, 'boot']);
+            if (in_array(Service::class, class_implements($service))) {
+                call_user_func([new $service, 'boot']);
+            } else {
+                throw new \Exception("{$service}没有实现服务接口");
+            }
         }
     }
 }

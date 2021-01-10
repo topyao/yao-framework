@@ -2,7 +2,7 @@
 
 namespace Yao\Http;
 
-use Yao\Traits\SingleInstance;
+use Yao\Facade\Config;
 
 /**
  * 请求类
@@ -11,20 +11,18 @@ use Yao\Traits\SingleInstance;
  */
 class Request
 {
-    use SingleInstance;
-
     /**
      * 请求类型
      * @var mixed|string|null
      */
-    protected array $filters = [];
+    protected ?array $filters = [];
     protected array $server = [];
 
     /**
      * 初始化请求类型
      * Request constructor.
      */
-    private function __construct(?array $filters = null)
+    public function __construct(?array $filters = null)
     {
         $this->server = $_SERVER;
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
@@ -46,7 +44,7 @@ class Request
 
     public function url(): string
     {
-        return ($this->server['REQUEST_SCHEME'] ?? 'http') . '://' . $this->server['HTTP_HOST'] . '/';
+        return $this->server['REQUEST_SCHEME'] . '://' . $this->server['HTTP_HOST'] . '/';
     }
 
     public function path()

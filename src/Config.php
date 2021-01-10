@@ -2,9 +2,30 @@
 
 namespace Yao;
 
-class Config
+class Config implements \ArrayAccess
 {
     use \Yao\Traits\Parse;
+
+    public function offsetUnset($offset)
+    {
+        // TODO: Implement offsetUnset() method.
+    }
+
+    public function offsetExists($offset)
+    {
+        // TODO: Implement offsetExists() method.
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->getMultidimensionalArrayValue($this->config, $offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->config[$offset] = $value;
+    }
+
 
     /**
      * 存放配置的数组
