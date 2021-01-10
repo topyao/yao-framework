@@ -3,10 +3,12 @@
 namespace Yao\Route;
 
 
+use Exception;
+use Yao\Traits\SingleInstance;
+
 class Alias
 {
-
-    use \Yao\Traits\SingleInstance;
+    use SingleInstance;
 
     protected array $alias = [];
 
@@ -14,7 +16,7 @@ class Alias
     {
         if ($alias) {
             if (isset($this->alias[$alias])) {
-                throw new \Exception("Path:'{$path}'的别名'{$alias}'已经被注册！");
+                throw new Exception("Path:'{$path}'的别名'{$alias}'已经被注册！");
             }
             $this->alias[$alias] = $path;
         }
@@ -26,9 +28,10 @@ class Alias
             if (preg_match('/\(.+\)/i', $this->alias[$alias])) {
                 $rep = explode(',', preg_replace(['#\\\#', '#\(.+\)#Ui'], ['', ','], $this->alias[$alias]));
                 if (($argNums = count($rep) - 1) != count($args)) {
-                    throw new \Exception("别名:{$alias}需要传入{$argNums}个参数！");
+                    throw new Exception("别名:{$alias}需要传入{$argNums}个参数！");
                 }
                 $match = '';
+                $args = array_values($args);
                 foreach ($rep as $k => $r) {
                     $match .= ($r . ($args[$k] ?? ''));
                 }
