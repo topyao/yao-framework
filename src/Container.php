@@ -2,76 +2,99 @@
 
 namespace Yao;
 
-
-use Yao\Traits\SingleInstance;
-
 class Container
 {
+    use \Yao\Traits\SingleInstance;
 
-    use SingleInstance;
+    private array $app = [];
 
-    const BINDCLASS = [
-        'Request' => \Yao\Http\Request::class,
-        'Validate' => \App\Http\Validate::class,
-        'File' => File::class,
-        'Env' => Env::class,
-        'Config' => Config::class,
-        'App' => App::class,
-        'View' => View::class
+    private array $bind = [
+        'request' => \Yao\Http\Request::class,
+        'validate' => \App\Http\Validate::class,
+        'file' => File::class,
+        'env' => Env::class,
+        'config' => Config::class,
+        'app' => App::class,
+        'view' => View::class,
+        'db' => \Yao\Db::class,
     ];
 
-    private function _getClass($class)
+    private string $class;
+
+    private function _getClass($class): void
     {
-        if (!is_string($class)) {
-            if (is_null($class = $class->getType())) {
-                throw new \Exception('传递的参数有问题');
-            }
-            $class = $class->getName();
-        }
         if (!class_exists($class)) {
-            $class = ltrim(strrchr($class, '\\'), '\\');
-            if (!isset(self::BINDCLASS[$class])) {
-                throw new \Exception('类' . $class . '不存在');
+            $class = strtolower($class);
+            if (!array_key_exists($class, $this->bind)) {
+                throw new Exception('类不存在');
+            }
+            $class = $this->bind[$class];
+        }
+        $this->class = $class;
+    }
+
+    /**
+     * 构造方法注入
+     * @param $class
+     * @return mixed
+     * @throws Exception
+     */
+    public function get(string $class, array $arguments = [], bool $singleInstance = false)
+    {
+        $this->_getClass($class);
+        if (!$singleInstance || !array_key_exists($this->class, $this->app)) {
+            if (false !== ($method = $this->_getMethod('__construct'))) {
+                $this->app[$this->class] = new $this->class(...$arguments, ...$this->_inject($method));
             } else {
-                $class = self::BINDCLASS[$class];
+                $this->app[$this->class] = new $this->class();
             }
         }
-        return $class;
+        return self::$instance;
     }
 
-    public function get($class)
-    {
-        $reflectionClass = new \ReflectionClass($this->_getClass($class));
-        return $reflectionClass;
-    }
 
-    public function getParams($class, $method)
+    private function _inject($method): array
     {
         $params = [];
-        foreach ($this->get($class)->getMethod($method)->getParameters() as $param) {
-            $params[] = $param->getType();
+        foreach ($method->getParameters() as $p) {
+            if (null != ($injectClass = $p->getType())) {
+                if (!class_exists($injectClass = ($injectClass->getName()))) {
+                    if (array_key_exists(strtolower($injectClass), $this->bind)) {
+                        $injectClass = $this->bind[$injectClass];
+                    }
+                }
+                if (class_exists($injectClass)) {
+                    $params[] = new $injectClass();
+                }
+            }
         }
         return $params;
     }
 
-
-    private function _inject($class, $inject, $params, $method)
+    public function invoke($method, $arguments = [])
     {
-        foreach ($inject as $j) {
-            $injectClass = $this->_getClass($j);
-            if ((new \ReflectionClass($injectClass))->hasMethod('instance')) {
-                $params[] = $injectClass::instance();
-            } else {
-                $params[] = new $injectClass;
-            }
+        if (false != ($RefMethod = $this->_getMethod($method))) {
+            $arguments = is_array($arguments) ? $arguments : [$arguments];
+            return call_user_func_array([$this->app[$this->class], $method], [...$arguments, ...$this->_inject($RefMethod)]);
         }
-        return call_user_func_array([new $class(), $method], $params);
     }
 
-    public function create($class, $method, $params)
+    private function _getMethod($method)
     {
-        $methodParams = $this->get($class)->getMethod($method)->getParameters();
-        $inject = array_diff_key($methodParams, $params);
-        return $this->_inject($class, $inject, $params, $method);
+        if (!$this->_getReflectionClass($this->class)->hasMethod($method)) {
+            return false;
+        }
+        return $this->_getReflectionClass($this->class)->getMethod($method);
+    }
+
+    private function _getReflectionClass($class)
+    {
+        if (!class_exists($class)) {
+            if (!array_key_exists($class, $this->bind)) {
+                throw new \Exception("类{$class}不存在！");
+            }
+            $class = $this->bind[$class];
+        }
+        return new \ReflectionClass($class);
     }
 }

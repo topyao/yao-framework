@@ -23,9 +23,9 @@ class Db
         'limit' => ''
     ];
 
-    public function __construct()
+    public function __construct(Collection $collection)
     {
-        $this->collection = new Collection();
+        $this->collection = $collection;
     }
 
     /** 多条查询

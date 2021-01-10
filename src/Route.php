@@ -118,7 +118,7 @@ class Route
         if (!method_exists($obj, $this->action)) {
             throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
         }
-        $resData = Container::instance()->create($this->controller, $this->action, $this->param);
+        $resData = Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
             return Json::data($resData);
         } else if (is_scalar($resData)) {
