@@ -5,35 +5,32 @@ namespace Yao;
 use Yao\Facade\{
     Log, Config
 };
+use Yao\Traits\SingleInstance;
 
 class Error
 {
 
+    use SingleInstance;
+
     protected bool $debug;
     protected string $exceptionView;
 
-    private static function _getInstance()
-    {
-        return new self;
-    }
-
     public static function register()
     {
-        set_error_handler([self::_getInstance(), 'error']);
-        set_exception_handler([self::_getInstance(), 'exception']);
-        register_shutdown_function([self::_getInstance(), 'shutdown']);
+        set_error_handler([self::instance(), 'error']);
+        set_exception_handler([self::$instance, 'exception']);
+        register_shutdown_function([self::$instance, 'shutdown']);
     }
 
     private function __construct()
     {
         $this->debug = Config::get('app.debug');
-        if ($this->debug) {
-            ini_set('display_errors', 'On');
-            error_reporting(E_ALL);
-        } else {
-            ini_set('display_errors', 'Off');
-            error_reporting(0);
-        }
+        $iniSet = [
+            [true => 'On', false => 'Off'],
+            [true => E_ALL, false => 0]
+        ];
+        function_exists('ini_set') && ini_set('display_errors', $iniSet[0][$this->debug]);
+        error_reporting($iniSet[1][$this->debug]);
         $this->exceptionView = Config::get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
 
@@ -44,7 +41,7 @@ class Error
         Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <br><b>Trace:</b>' . $exception->getTraceAsString() . ' </pre> ');
+            exit(' <title>' . $message . ' </title><style>.box{width:800px;height:4em;margin:2em auto}</style><div class="box"><div class="title"><b>Message:</b>' . $message . ' </div><div class="box2" style = "word-wrap:break-word;word-break: break-all;color:dimgrey" ><br><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <br><b>Trace:</b>' . $exception->getTraceAsString() . ' </div> </div>');
         }
         exit(include_once $this->exceptionView);
     }
