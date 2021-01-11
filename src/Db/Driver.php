@@ -4,9 +4,8 @@
 namespace Yao\Db;
 
 use Yao\Collection;
-use Yao\Config;
 
-class Driver
+abstract class Driver
 {
     //表名
     protected string $name;
@@ -14,12 +13,17 @@ class Driver
     protected array $bindParam = [];
     protected $collection;
     //存放拼接sql的必要数组
-    protected array $call = [
+    protected array $construction = [
         'where' => '',
         'group' => '',
         'order' => '',
         'limit' => ''
     ];
+
+    protected function _setLimit(string $limit)
+    {
+        $this->construction['limit'] = $limit;
+    }
 
 
     public function __construct()
@@ -135,8 +139,8 @@ class Driver
      */
     public function delete()
     {
-        $sql = 'DELETE FROM ' . $this->name . $this->call['where'];
-        unset($this->call['where']);
+        $sql = 'DELETE FROM ' . $this->name . $this->construction['where'];
+        unset($this->construction['where']);
         return Query::instance()
             ->prepare($sql, $this->bindParam)
             ->rowCount();
@@ -156,10 +160,10 @@ class Driver
 
     protected function _checkWhereEmpty(\Closure $closure)
     {
-        if (!isset($this->call['where']) || empty($this->call['where'])) {
-            $this->call['where'] = ' WHERE ';
+        if (!isset($this->construction['where']) || empty($this->construction['where'])) {
+            $this->construction['where'] = ' WHERE ';
         } else {
-            $this->call['where'] .= ' AND ';
+            $this->construction['where'] .= ' AND ';
         }
         $closure();
         return $this;
@@ -177,13 +181,13 @@ class Driver
         return $this->_checkWhereEmpty(function () use ($where) {
             if (!empty($where)) {
                 if (is_string($where)) {
-                    $this->call['where'] = $this->call['where'] . $where;
+                    $this->construction['where'] = $this->construction['where'] . $where;
                 } else if (is_array($where)) {
                     foreach ($where as $key => $value) {
                         $this->bindParam[] = $value;
-                        $this->call['where'] .= $key . '=? and ';
+                        $this->construction['where'] .= $key . '=? and ';
                     }
-                    $this->call['where'] = substr($this->call['where'], 0, -5);
+                    $this->construction['where'] = substr($this->construction['where'], 0, -5);
                 }
             }
         });
@@ -198,10 +202,10 @@ class Driver
     {
         return $this->_checkWhereEmpty(function () use ($like) {
             foreach ($like as $key => $value) {
-                $this->call['where'] .= $key . ' LIKE ? AND ';
+                $this->construction['where'] .= $key . ' LIKE ? AND ';
                 $this->bindParam[] = $value;
             }
-            $this->call['where'] = substr($this->call['where'], 0, -5);
+            $this->construction['where'] = substr($this->construction['where'], 0, -5);
         });
     }
 
@@ -209,9 +213,9 @@ class Driver
     {
         return $this->_checkWhereEmpty(function () use ($field) {
             foreach ($field as $key) {
-                $this->call['where'] .= $key . ' IS NULL AND ';
+                $this->construction['where'] .= $key . ' IS NULL AND ';
             }
-            $this->call['where'] = substr($this->call['where'], 0, -5);
+            $this->construction['where'] = substr($this->construction['where'], 0, -5);
         });
     }
 
@@ -219,9 +223,9 @@ class Driver
     {
         return $this->_checkWhereEmpty(function () use ($field) {
             foreach ($field as $key) {
-                $this->call['where'] .= $key . ' IS NOT NULL AND ';
+                $this->construction['where'] .= $key . ' IS NOT NULL AND ';
             }
-            $this->call['where'] = substr($this->call['where'], 0, -5);
+            $this->construction['where'] = substr($this->construction['where'], 0, -5);
         });
     }
 
@@ -235,25 +239,11 @@ class Driver
                 $condition .= $column . ' in (' . $bindStr . ') AND ';
                 array_push($this->bindParam, ...$range);
             }
-            $this->call['where'] .= substr($condition, 0, -5);
+            $this->construction['where'] .= substr($condition, 0, -5);
         });
     }
 
-    /**
-     * Mysql条数限制
-     * @param mixed ...$limit
-     * @return Db|null
-     */
-    public function limit(...$limit)
-    {
-        $this->call['limit'] = ' LIMIT ';
-        if (count($limit) == 2) {
-            $this->call['limit'] .= implode(',', $limit);
-        } else {
-            $this->call['limit'] .= $limit[0];
-        }
-        return $this;
-    }
+    abstract public function limit($limit, $offset = null);
 
     /**
      * order排序操作，支持多字段排序
@@ -264,11 +254,11 @@ class Driver
     public function order(array $order = [])
     {
         if (!empty($order)) {
-            $this->call['order'] = ' order by ';
+            $this->construction['order'] = ' order by ';
             foreach ($order as $ord => $by) {
-                $this->call['order'] .= $ord . ' ' . $by . ',';
+                $this->construction['order'] .= $ord . ' ' . $by . ',';
             }
-            $this->call['order'] = rtrim($this->call['order'], ',');
+            $this->construction['order'] = rtrim($this->construction['order'], ',');
         }
         return $this;
     }
@@ -285,20 +275,20 @@ class Driver
             throw new \Exception('group传入参数数量不正确');
         }
         if (count($group) == 2) {
-            $this->call['group'] = ' group by ' . $group[0] . ' having ' . $group[1];
+            $this->construction['group'] = ' group by ' . $group[0] . ' having ' . $group[1];
         } else {
-            $this->call['group'] = ' group by ' . $group[0];
+            $this->construction['group'] = ' group by ' . $group[0];
         }
         return $this;
     }
 
     /**
-     * 根据$this->call数组生成查询语句
+     * 根据$this->construction数组生成查询语句
      * @return string
      */
     protected function _condition(): string
     {
-        return implode(' ', array_filter($this->call));
+        return implode(' ', array_filter($this->construction));
     }
 
 

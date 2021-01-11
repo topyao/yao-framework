@@ -31,6 +31,9 @@ class Query
         Config::load('database');
         $this->type = Config::get('database.type');
         $this->config = Config::get('database.' . $this->type);
+        if (empty($this->config)) {
+            throw new \Exception('没有找到数据库配置文件');
+        }
         $this->_connect();
     }
 
