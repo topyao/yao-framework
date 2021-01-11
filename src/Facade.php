@@ -8,7 +8,7 @@ class Facade
      * 存放单例的数组
      * @var array
      */
-//    protected static array $instance = [];
+    protected static array $instance = [];
 
     /**
      * 是否单例，false表示非单例
@@ -33,19 +33,20 @@ class Facade
      */
     protected static function createFacade()
     {
-        return Container::instance()
-            ->get(static::getFacadeClass(), static::$params, static::$singleInstance);
-//        if (!class_exists($class)) {
-//            throw new \Exception('类' . $class . '不存在', 404);
-//        }
-//        if (!static::$singleInstance) {
-//            return new $class();
-//        } else {
-//            if (!isset(self::$instance[$class]) || !(self::$instance[$class] instanceof $class)) {
-//                self::$instance[$class] = new $class();
-//            }
-//            return self::$instance[$class];
-//        }
+//        return Container::instance()
+//            ->get(static::getFacadeClass(), static::$params, static::$singleInstance);
+        $class = static::getFacadeClass();
+        if (!class_exists($class)) {
+            throw new \Exception('类' . $class . '不存在', 404);
+        }
+        if (!static::$singleInstance) {
+            return new $class();
+        } else {
+            if (!isset(self::$instance[$class]) || !(self::$instance[$class] instanceof $class)) {
+                self::$instance[$class] = new $class();
+            }
+            return self::$instance[$class];
+        }
     }
 
     /**
@@ -56,7 +57,7 @@ class Facade
      */
     public static function __callStatic($method, $params)
     {
-        return static::createFacade()->invoke($method, $params);
-//        return call_user_func_array([static::createFacade(), $method], $params);
+//        return static::createFacade()->invoke($method, $params);
+        return call_user_func_array([static::createFacade(), $method], $params);
     }
 }

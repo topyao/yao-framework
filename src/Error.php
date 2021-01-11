@@ -41,7 +41,7 @@ class Error
         Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><style>.box{width:800px;height:4em;margin:2em auto}</style><div class="box"><div class="title"><b>Message:</b>' . $message . ' </div><div class="box2" style = "word-wrap:break-word;word-break: break-all;color:dimgrey" ><br><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <br><b>Trace:</b>' . $exception->getTraceAsString() . ' </div> </div>');
+            exit(' <title>' . $message . ' </title><style>.box{width:800px;height:4em;margin:2em auto}</style><pre class="box"><div class="title"><b>Message:</b>' . $message . ' </div><div class="box2" style = "word-wrap:break-word;word-break: break-all;color:dimgrey" ><br><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <p>Trace:</p>' . $exception->getTraceAsString() . ' </div> </pre>');
         }
         exit(include_once $this->exceptionView);
     }

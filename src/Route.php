@@ -45,9 +45,10 @@ class Route
         }
     }
 
-    public function match(\Yao\Http\Request $request)
+    public function match()
     {
-        $method = $request->method();
+//        $method = $request->method();
+        $method = Request::method();
         $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
             throw new \Exception('请求类型' . $method . '没有定义任何路由', 404);
