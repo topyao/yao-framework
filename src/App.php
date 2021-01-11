@@ -4,6 +4,10 @@ namespace Yao;
 
 use Yao\Http\Request;
 
+/**
+ * Class App
+ * @package Yao
+ */
 class App
 {
     public static function run()

@@ -3,7 +3,11 @@
 
 namespace Yao\Traits;
 
-
+/**
+ * 单例Trait
+ * Trait SingleInstance
+ * @package Yao\Traits
+ */
 trait SingleInstance
 {
     private static $instance;

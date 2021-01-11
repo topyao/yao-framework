@@ -7,6 +7,11 @@ use Yao\Facade\{
 };
 use Yao\Traits\SingleInstance;
 
+/**
+ * 错误和异常注册类
+ * Class Error
+ * @package Yao
+ */
 class Error
 {
 

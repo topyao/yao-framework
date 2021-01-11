@@ -6,6 +6,11 @@ namespace Yao\Route;
 use Exception;
 use Yao\Traits\SingleInstance;
 
+/**
+ * 路由别名类
+ * Class Alias
+ * @package Yao\Route
+ */
 class Alias
 {
     use SingleInstance;

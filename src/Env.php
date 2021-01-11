@@ -2,6 +2,11 @@
 
 namespace Yao;
 
+/**
+ * Env变量加载和获取类
+ * Class Env
+ * @package Yao
+ */
 class Env
 {
     use \Yao\Traits\Parse;

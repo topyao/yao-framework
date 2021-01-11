@@ -3,7 +3,11 @@
 
 namespace Yao\Traits;
 
-
+/**
+ * 点语法解析Trait
+ * Trait Parse
+ * @package Yao\Traits
+ */
 trait Parse
 {
     public function getMultidimensionalArrayValue($value, $string, $default = null)

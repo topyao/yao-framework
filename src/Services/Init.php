@@ -8,6 +8,11 @@ use Yao\Facade\{
 use Yao\Interfaces\Service;
 use Yao\Error;
 
+/**
+ * 框架初始化服务
+ * Class Init
+ * @package Yao\Services
+ */
 class Init implements Service
 {
     public function register()

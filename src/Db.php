@@ -6,6 +6,7 @@ use Yao\Db\Query;
 use Yao\Facade\Config;
 
 /**
+ * 数据库外部接口
  * Class Db
  * @package yao
  */

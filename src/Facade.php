@@ -2,6 +2,11 @@
 
 namespace Yao;
 
+/**
+ * 门面实现基类
+ * Class Facade
+ * @package Yao
+ */
 class Facade
 {
     /**

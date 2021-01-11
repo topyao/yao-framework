@@ -4,6 +4,11 @@ namespace Yao\Http;
 
 use Yao\Facade\Route;
 
+/**
+ * 响应类
+ * Class Response
+ * @package Yao\Http
+ */
 class Response
 {
 

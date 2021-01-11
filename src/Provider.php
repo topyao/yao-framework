@@ -6,6 +6,11 @@ namespace Yao;
 
 use Yao\Interfaces\Service;
 
+/**
+ * 服务提供类
+ * Class Provider
+ * @package Yao
+ */
 class Provider
 {
 

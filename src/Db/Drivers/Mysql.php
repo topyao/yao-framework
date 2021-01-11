@@ -4,6 +4,10 @@ namespace Yao\Db\Drivers;
 
 use Yao\Db\Driver;
 
+/**
+ * Class Mysql
+ * @package Yao\Db\Drivers
+ */
 class Mysql extends Driver
 {
     /**

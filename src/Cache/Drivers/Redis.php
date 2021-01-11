@@ -4,6 +4,10 @@ namespace Yao\Cache\Drivers;
 
 use Yao\Facade\Config;
 
+/**
+ * Class Redis
+ * @package Yao\Cache\Drivers
+ */
 class Redis
 {
     protected static $instance;

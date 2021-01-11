@@ -3,6 +3,7 @@
 namespace Yao;
 
 /**
+ * 验证器类
  * @method Validate max(array $rule)
  * @method Validate length(array $rule)
  * @method Validate bool(array $rule)

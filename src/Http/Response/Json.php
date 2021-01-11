@@ -2,9 +2,13 @@
 
 namespace Yao\Http\Response;
 
+/**
+ * 数组数据响应类[自动转json]
+ * Class Json
+ * @package Yao\Http\Response
+ */
 class Json extends \Yao\Http\Response
 {
-
 
     public $header = ['Content-Type:application/json'];
 

@@ -9,6 +9,7 @@ use Yao\{
 };
 
 /**
+ * 数据库操作类
  * Class Query
  * @package Yao\Db
  */

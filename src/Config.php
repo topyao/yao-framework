@@ -2,18 +2,23 @@
 
 namespace Yao;
 
+use Yao\Traits\Parse;
+
+/**
+ * 配置文件加载和访问类
+ * Class Config
+ * @package Yao
+ */
 class Config implements \ArrayAccess
 {
-    use \Yao\Traits\Parse;
+    use Parse;
 
     public function offsetUnset($offset)
     {
-        // TODO: Implement offsetUnset() method.
     }
 
     public function offsetExists($offset)
     {
-        // TODO: Implement offsetExists() method.
     }
 
     public function offsetGet($offset)

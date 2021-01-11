@@ -5,6 +5,11 @@ namespace Yao\Db;
 
 use Yao\Collection;
 
+/**
+ * 数据库驱动基类
+ * Class Driver
+ * @package Yao\Db
+ */
 abstract class Driver
 {
     //表名

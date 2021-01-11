@@ -3,6 +3,7 @@
 namespace Yao;
 
 /**
+ * 数据集类
  * @property $data
  * @property $query
  * Class Collection
