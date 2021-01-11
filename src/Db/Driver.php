@@ -254,7 +254,6 @@ abstract class Driver
      * order排序操作，支持多字段排序
      * @param array $order
      * 传入数组形式的排序字段，例如['id' => 'desc','name' => 'asc']
-     * @return Db|null
      */
     public function order(array $order = [])
     {
