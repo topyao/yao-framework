@@ -4,7 +4,7 @@ namespace Yao\Console;
 
 use Yao\Console\Commands\Help;
 
-class Run
+class Console
 {
 
     public $command;
@@ -17,7 +17,7 @@ class Run
         $this->argv = array_slice($argv, 2);
     }
 
-    public function out()
+    public function run()
     {
         if (!class_exists($this->command)) {
             return (new Help())->out();
