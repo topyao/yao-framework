@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Yao;
+namespace Yao\Cache;
 
 
 /**

@@ -24,7 +24,7 @@ class Console
         }
         $command = new $this->command($this->argv);
         if (is_scalar($command->out())) {
-
+            return $command->out();
         }
     }
 
