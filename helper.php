@@ -54,7 +54,7 @@ if (!function_exists('view')) {
      */
     function view(?string $template = '', array $params = [])
     {
-        return \Yao\Facade\View::fetch($template, $params);
+        return \Yao\Facade\View::render($template, $params);
     }
 }
 

@@ -3,7 +3,7 @@
 namespace Yao\Facade;
 
 /**
- * @method static fetch(string $template, $params = [])
+ * @method static render(string $template, $params = [])
  * Class View
  * @package Yao\Facade
  */
@@ -13,7 +13,7 @@ class View extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\View::class;
+        return \Yao\View\Render::class;
     }
 
 }
