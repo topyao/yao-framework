@@ -42,7 +42,7 @@ abstract class Driver
         if (empty($this->config)) {
             throw new \Exception('没有找到数据库配置文件');
         }
-        $this->query = Query::instance($this->dsn());
+        $this->query = Query::instance($this->dsn(),$this->config);
         $this->collection = new Collection();
     }
 
@@ -62,7 +62,7 @@ abstract class Driver
      */
     public function query(string $sql, ?array $data = [], bool $all = true)
     {
-        return $all ? Query::instance()->fetchAll($sql, $data) : Query::instance()->fetch($sql, $data);
+        return $all ? $this->query->fetchAll($sql, $data) : $this->query->fetch($sql, $data);
     }
 
     /**
@@ -73,7 +73,7 @@ abstract class Driver
      */
     public function exec(string $sql, array $data = []): int
     {
-        return Query::instance()
+        return $this->query
             ->prepare($sql, $data)
             ->rowCount();
     }
@@ -84,7 +84,7 @@ abstract class Driver
     public function select()
     {
         $query = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $this->collection(Query::instance()->fetchAll($query, $this->bindParam), $query);
+        $this->collection($this->query->fetchAll($query, $this->bindParam), $query);
         return $this->collection;
     }
 
@@ -97,7 +97,7 @@ abstract class Driver
     public function value($value)
     {
         $query = 'SELECT ' . $this->_backQuote($value) . ' FROM ' . $this->name . $this->_condition();
-        $this->collection(($data = Query::instance()->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
+        $this->collection(($data = $this->query->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
         return $this->collection;
     }
 
@@ -108,7 +108,7 @@ abstract class Driver
     public function find()
     {
         $query = 'SELECT ' . $this->field . ' FROM ' . $this->name . $this->_condition();
-        $this->collection(Query::instance()->fetch($query, $this->bindParam), $query);
+        $this->collection($this->query->fetch($query, $this->bindParam), $query);
         return $this->collection;
     }
 
@@ -130,7 +130,7 @@ abstract class Driver
         //将绑定参数从头部加入到静态属性中
         array_unshift($this->bindParam, ...$params);
         $sql = 'UPDATE ' . $this->name . ' SET ' . $set . $this->_condition();
-        return Query::instance()
+        return $this->query
             ->prepare($sql, $this->bindParam)
             ->rowCount();
     }
@@ -143,7 +143,7 @@ abstract class Driver
             $this->bindParam[] = $value;
         }
         $sql = 'INSERT INTO ' . $this->name . ' ' . $fields . ' ' . 'VALUES ' . $params;
-        return Query::instance()
+        return $this->query
             ->prepare($sql, $this->bindParam)
             ->lastinsertid();
     }
@@ -158,7 +158,7 @@ abstract class Driver
     {
         $sql = 'DELETE FROM ' . $this->name . $this->construction['where'];
         unset($this->construction['where']);
-        return Query::instance()
+        return $this->query
             ->prepare($sql, $this->bindParam)
             ->rowCount();
     }
