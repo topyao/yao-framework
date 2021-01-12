@@ -23,4 +23,5 @@ trait Parse
         }
         return $value;
     }
+
 }

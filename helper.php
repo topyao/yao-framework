@@ -6,7 +6,6 @@
 
 use Yao\Facade\Json;
 use Yao\Facade\Response;
-use Yao\Facade\Route;
 use Yao\Facade\Session;
 
 if (!function_exists('abort')) {
@@ -65,7 +64,7 @@ if (!function_exists('db')) {
      * @param string $tableName
      * @return \Yao\Db
      */
-    function db(string $tableName): \Yao\Db
+    function db(string $tableName)
     {
         return \Yao\Facade\Db::name($tableName);
     }
@@ -109,6 +108,6 @@ function redirect($url)
 if (false === function_exists('url')) {
     function url($alias, $args = [])
     {
-        return \Yao\Route\Alias::instance()->get($alias, $args);
+        return \Yao\Route\Rules\Alias::instance()->get($alias, $args);
     }
 }
