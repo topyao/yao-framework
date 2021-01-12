@@ -19,7 +19,7 @@ class Query
 
     const FETCHTYPE = \PDO::FETCH_ASSOC;
 
-    private ?array $config = [];
+    // private ?array $config = [];
 
     private string $type = '';
 
