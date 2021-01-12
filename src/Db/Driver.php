@@ -27,30 +27,31 @@ abstract class Driver
     ];
     public $type;
 
+    /**
+     * 数据库字段引号类型
+     * @var string
+     */
+    protected $quote = '`';
+
+
     public $query;
 
-    protected function _setLimit(string $limit)
+    public function __construct($database)
     {
-        $this->construction['limit'] = $limit;
-    }
-
-
-    public function __construct()
-    {
-        $this->type = Config::get('database.type');
-        $this->config = Config::get('database.'.$this->type);
+        $this->config = Config::get('database.' . $database);
         if (empty($this->config)) {
             throw new \Exception('没有找到数据库配置文件');
         }
-        $this->query = Query::instance($this->dsn(),$this->config);
+        $this->query = Query::instance($this->dsn(), $this->config);
         $this->collection = new Collection();
     }
 
-    abstract public function dsn():string ;
+
+    abstract public function dsn(): string;
 
     public function name(string $table_name)
     {
-        $this->name = $this->_backQuote($table_name);
+        $this->name = $this->quote($table_name) . ' ';
         return $this;
     }
 
@@ -88,15 +89,15 @@ abstract class Driver
         return $this->collection;
     }
 
-
-    protected function _backQuote($string)
+    protected function quote($string)
     {
-        return "`{$string}`";
+        return $this->quote . $string . $this->quote;
     }
+
 
     public function value($value)
     {
-        $query = 'SELECT ' . $this->_backQuote($value) . ' FROM ' . $this->name . $this->_condition();
+        $query = 'SELECT ' . $this->quote($value) . ' FROM ' . $this->name . $this->_condition();
         $this->collection(($data = $this->query->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
         return $this->collection;
     }
@@ -118,7 +119,6 @@ abstract class Driver
         $this->collection->query = $query;
     }
 
-
     public function update(array $data)
     {
         $set = '';
@@ -134,6 +134,7 @@ abstract class Driver
             ->prepare($sql, $this->bindParam)
             ->rowCount();
     }
+
 
     public function insert(array $data)
     {
@@ -170,8 +171,13 @@ abstract class Driver
      */
     public function field($field)
     {
-        $field = is_array($field) ? implode(',', $field) : $field;
-        $this->field = '' . $field . '';
+        if (is_string($field)) {
+            $field = explode(',', $field);
+        }
+        $field = array_map(function ($value) {
+            return $this->quote($value);
+        }, $field);
+        $this->field = implode(',', $field);
         return $this;
     }
 
@@ -185,7 +191,6 @@ abstract class Driver
         $closure();
         return $this;
     }
-
 
     /**
      * where条件表达式，使用数组参数的时候会自动使用预处理
@@ -209,6 +214,7 @@ abstract class Driver
             }
         });
     }
+
 
     /**
      * 模糊查询
@@ -246,7 +252,6 @@ abstract class Driver
         });
     }
 
-
     public function whereIn(array $whereIn = [])
     {
         return $this->_checkWhereEmpty(function () use ($whereIn) {
@@ -260,6 +265,7 @@ abstract class Driver
         });
     }
 
+
     abstract public function limit($limit, $offset = null);
 
     /**
@@ -270,9 +276,9 @@ abstract class Driver
     public function order(array $order = [])
     {
         if (!empty($order)) {
-            $this->construction['order'] = ' order by ';
+            $this->construction['order'] = ' ORDER BY ';
             foreach ($order as $ord => $by) {
-                $this->construction['order'] .= $ord . ' ' . $by . ',';
+                $this->construction['order'] .= $this->quote($ord) . ' ' . strtoupper($by) . ',';
             }
             $this->construction['order'] = rtrim($this->construction['order'], ',');
         }
@@ -296,6 +302,11 @@ abstract class Driver
             $this->construction['group'] = ' group by ' . $group[0];
         }
         return $this;
+    }
+
+    protected function _setLimit(string $limit)
+    {
+        $this->construction['limit'] = $limit;
     }
 
     /**

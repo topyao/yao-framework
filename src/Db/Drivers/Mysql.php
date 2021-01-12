@@ -11,16 +11,23 @@ use Yao\Db\Driver;
 class Mysql extends Driver
 {
     /**
+     * 数据库字段引号类型
+     * @var string
+     */
+    protected $quote = '`';
+
+    /**
      * Mysql条数限制
      */
     public function limit($limit, $offset = null)
     {
-        $this->_setLimit(' LIMIT ' . $limit . ($offset ? ',' . $offset : ''));
+        $this->_setLimit('LIMIT ' . $limit . ($offset ? ',' . $offset : ''));
         return $this;
     }
 
-    public function dsn() :string
+    public function dsn(): string
     {
-        return $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';charset=' . $this->config['charset'];
+        return 'mysql:host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';charset=' . $this->config['charset'];
     }
+
 }

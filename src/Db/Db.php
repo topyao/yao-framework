@@ -16,10 +16,12 @@ class Db
 
     public function __construct()
     {
-        $this->config = Config::get('database');
-        $database = $this->config['type'];
+        $database = Config::get('database.type');
+        if (!$database) {
+            throw new \Exception('数据库配置文件不存在');
+        }
         $driver = '\\Yao\\Db\\Drivers\\' . ucfirst($database);
-        $this->driver = new $driver();
+        $this->driver = new $driver($database);
         $this->collection = new \Yao\Collection();
     }
 

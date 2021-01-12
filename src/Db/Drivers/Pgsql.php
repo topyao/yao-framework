@@ -12,6 +12,13 @@ use Yao\Db\Driver;
  */
 class Pgsql extends Driver
 {
+
+    /**
+     * 数据库字段引号类型
+     * @var string
+     */
+    protected $quote = '"';
+
     /**
      * @param $limit
      * @param null $offset
@@ -19,13 +26,13 @@ class Pgsql extends Driver
      */
     public function limit($limit, $offset = null)
     {
-        $this->_setLimit(' LIMIT ' . $limit . ($offset ? ' OFFSET ' . $offset : ''));
+        $this->_setLimit('LIMIT ' . $limit . ($offset ? ' OFFSET ' . $offset : ''));
         return $this;
     }
 
-    public function dsn() :string
+    public function dsn(): string
     {
-        return $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';';
+        return 'pgsql:host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';';
     }
 
 }
