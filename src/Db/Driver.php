@@ -4,6 +4,7 @@
 namespace Yao\Db;
 
 use Yao\Collection;
+use Yao\Facade\Config;
 
 /**
  * 数据库驱动基类
@@ -24,6 +25,9 @@ abstract class Driver
         'order' => '',
         'limit' => ''
     ];
+    public $type;
+
+    public $query;
 
     protected function _setLimit(string $limit)
     {
@@ -33,8 +37,16 @@ abstract class Driver
 
     public function __construct()
     {
+        $this->type = Config::get('database.type');
+        $this->config = Config::get('database.'.$this->type);
+        if (empty($this->config)) {
+            throw new \Exception('没有找到数据库配置文件');
+        }
+        $this->query = Query::instance($this->dsn());
         $this->collection = new Collection();
     }
+
+    abstract public function dsn():string ;
 
     public function name(string $table_name)
     {

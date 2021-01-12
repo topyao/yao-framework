@@ -27,24 +27,32 @@ class Query
 
     private \PDO $pdo;
 
-    private function __construct()
+    public static function instance($dsn)
     {
-        Config::load('database');
+        if (!static::$instance instanceof static) {
+            static::$instance = new static($dsn);
+        }
+        return static::$instance;
+    }
+
+    private function __construct($dsn)
+    {
+        // Config::load('database');
         $this->type = Config::get('database.type');
         $this->config = Config::get('database.' . $this->type);
-        if (empty($this->config)) {
-            throw new \Exception('没有找到数据库配置文件');
-        }
-        $this->_connect();
+        // if (empty($this->config)) {
+        //     throw new \Exception('没有找到数据库配置文件');
+        // }
+        $this->_connect($dsn);
     }
 
     /**
      * 数据库连接方法
      * @throws /PDOException
      */
-    private function _connect()
+    private function _connect($dsn)
     {
-        $dsn = $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';charset=' . $this->config['charset'];
+        // $dsn = $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';charset=' . $this->config['charset'];
         $this->pdo = new \PDO($dsn, $this->config['user'], $this->config['pass'], $this->config['options']);
     }
 

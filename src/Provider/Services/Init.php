@@ -37,6 +37,6 @@ class Init implements Service
         }
         //设置默认时区
         date_default_timezone_set(Config::get('app.default_timezone', 'PRC'));
-
+        Config::load('database');
     }
 }

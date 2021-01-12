@@ -23,4 +23,9 @@ class Pgsql extends Driver
         return $this;
     }
 
+    public function dsn() :string
+    {
+        return $this->type . ':host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';';
+    }
+
 }

@@ -16,7 +16,6 @@ class Db
 
     public function __construct()
     {
-        Config::load('database');
         $this->config = Config::get('database');
         $database = $this->config['type'];
         $driver = '\\Yao\\Db\\Drivers\\' . ucfirst($database);
