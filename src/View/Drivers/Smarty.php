@@ -26,17 +26,13 @@ class Smarty extends Driver
 
     public function render($template, $arguments = [])
     {
-        if (strpos($template, '@')) {
-            $dir = explode('@', $template);
-            $this->module = $dir[0] . DIRECTORY_SEPARATOR;
-            $template = $dir[1];
-        }
+        $template = $this->_parseModule($template);
         if ([] !== $arguments) {
             foreach ($arguments as $key => $value) {
                 $this->smarty->assign($key, $value);
             }
         }
         $this->_setOptions();
-        return $this->smarty->display($template . '.' . config('template_suffix'));
+        return $this->smarty->display($template . '.' . $this->config['template_suffix'] ?: $this->template_suffix);
     }
 }
