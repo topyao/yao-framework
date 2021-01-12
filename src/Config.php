@@ -23,7 +23,7 @@ class Config implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return $this->getMultidimensionalArrayValue($this->config, $offset);
+        return $this->parse($this->config, $offset);
     }
 
     public function offsetSet($offset, $value)
@@ -58,7 +58,7 @@ class Config implements \ArrayAccess
         if (!isset($key)) {
             return $this->config;
         }
-        return $this->getMultidimensionalArrayValue($this->config, $key, $default);
+        return $this->parse($this->config, $key, $default);
     }
 
     public function load($config)

@@ -15,7 +15,7 @@ class Session
 
     public function get($name)
     {
-        return $this->getMultidimensionalArrayValue($_SESSION, $name);
+        return $this->parse($_SESSION, $name);
     }
 
 

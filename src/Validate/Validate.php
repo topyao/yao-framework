@@ -249,7 +249,7 @@ class Validate
     protected function _checkLength(string $field, array $limit, $data, ?string $regulation = null): bool
     {
         if (2 !== count($limit)) {
-            throw new Exception('参数不正确');
+            throw new \Exception('参数不正确');
         }
         $strLength = mb_strlen($data, 'UTF-8');
         if ($strLength > $limit[1] || $strLength < $limit[0]) {

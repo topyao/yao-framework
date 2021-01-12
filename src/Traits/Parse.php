@@ -10,7 +10,7 @@ namespace Yao\Traits;
  */
 trait Parse
 {
-    public function getMultidimensionalArrayValue($value, $string, $default = null)
+    public function parse($value, $string, $default = null)
     {
         $field = explode('.', $string);
         foreach ($field as $v) {
