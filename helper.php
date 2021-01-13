@@ -8,14 +8,14 @@ use Yao\Facade\Json;
 use Yao\Facade\Response;
 use Yao\Facade\Session;
 
-if (!function_exists('abort')) {
+if (false === function_exists('abort')) {
     function abort($message, $code = 0, $class = \Exception::class, $options = null)
     {
         throw new $class($message, $code, $options);
     }
 }
 
-if (!function_exists('config')) {
+if (false === function_exists('config')) {
     /**
      *配置文件获取辅助函数
      * @param $key
@@ -29,14 +29,14 @@ if (!function_exists('config')) {
 }
 
 
-if (!function_exists('env')) {
+if (false === function_exists('env')) {
     function env(string $key = null, $default = null)
     {
         return \Yao\Facade\Env::get($key, $default);
     }
 }
 
-if (!function_exists('request')) {
+if (false === function_exists('request')) {
     function request()
     {
         return \Yao\Facade\Request::instance();
@@ -44,7 +44,7 @@ if (!function_exists('request')) {
 }
 
 
-if (!function_exists('view')) {
+if (false === function_exists('view')) {
     /**
      * 视图赋值和渲染方法
      * @param string $template
@@ -58,7 +58,7 @@ if (!function_exists('view')) {
     }
 }
 
-if (!function_exists('db')) {
+if (false === function_exists('db')) {
     /**
      * Db类助手函数
      * @param string $tableName
@@ -79,32 +79,37 @@ if (false === function_exists('dump')) {
     }
 }
 
-
-function json($data)
-{
-    return Json::data($data);
-}
-
-function response($data)
-{
-    return Response::data($data);
-}
-
-function session($field, $value = null)
-{
-    if (!isset($value)) {
-        return Session::get($field);
-    } else {
-        Session::set($field, $value);
+if (false === function_exists('json')) {
+    function json($data)
+    {
+        return Json::data($data);
     }
 }
 
-function redirect($url)
-{
-    header('location:' . $url);
-    exit;
+if (false === function_exists('response')) {
+    function response($data)
+    {
+        return Response::data($data);
+    }
+}
+if (false === function_exists('session')) {
+    function session($field, $value = null)
+    {
+        if (!isset($value)) {
+            return Session::get($field);
+        } else {
+            Session::set($field, $value);
+        }
+    }
 }
 
+if (false === function_exists('redirect')) {
+    function redirect($url)
+    {
+        header('location:' . $url);
+        exit;
+    }
+}
 if (false === function_exists('url')) {
     function url($alias, $args = [])
     {
