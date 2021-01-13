@@ -18,7 +18,7 @@ abstract class Driver
 
     private function __construct()
     {
-        $this->config = Config::getBytype('view');
+        $this->config = Config::getByType('view');
     }
 
 
