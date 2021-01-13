@@ -21,6 +21,7 @@ class Render
 
     public function render($template, $arguments = [])
     {
-        return $this->driver::instance()->render($template, $arguments);
+        return $this->driver::instance()
+            ->render($template, $arguments);
     }
 }

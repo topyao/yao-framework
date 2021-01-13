@@ -25,39 +25,9 @@ class Db
         $this->collection = new \Yao\Collection();
     }
 
-
-    /**
-     * @param string $sql
-     * @param array|null $data
-     * @param bool $all
-     * @return mixed
-     */
-    public function query(string $sql, ?array $data = [], bool $all = true)
+    public function __call($method, $args)
     {
-        return $this->driver->query($sql, $data, $all);
+        return $this->driver->$method(...$args);
     }
 
-    /**
-     * 执行一条操作语句
-     * @param string $sql
-     * @param array $data
-     * @return int
-     */
-    public function exec(string $sql, array $data = []): int
-    {
-        return $this->driver->exec($sql, $data);
-    }
-
-    /**
-     * 通过调用该方法设置数据表并返回实例化对象用于连贯操作
-     * @param string $table_name
-     * 数据表（和数据库中的完全对应）
-     * @return Db|null
-     * 返回实例化对象
-     */
-    public function name(string $table_name)
-    {
-//        dump($this->driver);
-        return $this->driver->name($table_name);
-    }
 }

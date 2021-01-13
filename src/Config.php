@@ -61,6 +61,12 @@ class Config implements \ArrayAccess
         return $this->parse($this->config, $key, $default);
     }
 
+    public function getByType($config)
+    {
+        $config = $this->config[$config];
+        return $config[$config['type']];
+    }
+
     public function load($config)
     {
         if (!isset($this->config[$config])) {

@@ -10,9 +10,7 @@ class Smarty extends Driver
 
     private function _setOptions()
     {
-        if (!($this->smarty instanceof \Smarty)) {
-            $this->smarty = new \Smarty();
-        }
+        $this->smarty = new \Smarty();
         $this->smarty->debugging = $this->config['debug'];
         $this->smarty->caching = $this->config['cache'];
         $this->smarty->left_delimiter = $this->config['left_delimiter'];

@@ -43,7 +43,7 @@ class Error
     {
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
-        Log::write('system', $message, 'notice', ['请求地址:' . $_SERVER['REQUEST_URI'], 'trace' . $exception->getTraceAsString()]);
+        Log::write('system', $message, 'notice');
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
             exit(' <title>' . $message . ' </title><style>.box{width:800px;height:4em;margin:2em auto}</style><pre class="box"><div class="title">' . $message . ' </div><div class="box2" style = "word-wrap:break-word;word-break: break-all;color:dimgrey" ><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <p>Trace:</p>' . $exception->getTraceAsString() . ' </div> </pre>');

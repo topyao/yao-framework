@@ -47,7 +47,6 @@ class Response
 
     protected function create()
     {
-
         \Yao\Facade\Route::allowCors();
         http_response_code($this->code);
         if (is_array($this->header)) {

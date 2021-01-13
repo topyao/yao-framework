@@ -49,9 +49,20 @@ abstract class Driver
 
     abstract public function dsn(): string;
 
+    /**
+     * 表明设置方法，不包含前缀
+     * @param string $table_name
+     * @return $this
+     */
     public function name(string $table_name)
     {
-        $this->name = $this->quote($table_name) . ' ';
+        $this->name = $this->quote($this->config['prefix'] . $table_name) . ' ';
+        return $this;
+    }
+
+    public function table(string $table_name)
+    {
+        $this->name = $this->quote($table_name);
         return $this;
     }
 

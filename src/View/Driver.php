@@ -3,7 +3,7 @@
 
 namespace Yao\View;
 
-
+use Yao\Facade\Config;
 use Yao\Traits\SingleInstance;
 
 abstract class Driver
@@ -18,7 +18,7 @@ abstract class Driver
 
     private function __construct()
     {
-        $this->config = config('view');
+        $this->config = Config::getBytype('view');
     }
 
 
