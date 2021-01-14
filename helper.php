@@ -49,7 +49,7 @@ if (false === function_exists('view')) {
      * 视图赋值和渲染方法
      * @param string $template
      * 模板名，例如index@index对应index模块的index.html文件
-     * @param array $param 需要渲染给模板的变量
+     * @param array $params 需要渲染给模板的变量
      * @return mixed
      */
     function view(?string $template = '', array $params = [])
