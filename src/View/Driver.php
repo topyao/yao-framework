@@ -29,7 +29,7 @@ abstract class Driver
             $this->module = $dir[0] . DIRECTORY_SEPARATOR;
             $template = $dir[1];
         }
-        return $template;
+        return $template . '.' . $this->config['template_suffix'] ?: $this->template_suffix;
     }
 
     abstract public function render($template, $arguments = []);

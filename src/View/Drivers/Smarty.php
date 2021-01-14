@@ -31,6 +31,6 @@ class Smarty extends Driver
             }
         }
         $this->_setOptions();
-        return $this->smarty->display($template . '.' . $this->config['template_suffix'] ?: $this->template_suffix);
+        return $this->smarty->display($template);
     }
 }

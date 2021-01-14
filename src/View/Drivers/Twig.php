@@ -21,14 +21,13 @@ class Twig extends Driver
 
     public function render($template, $arguments = [])
     {
-//        if (strpos($template, '@')) {
-//            $dir = explode('@', $template);
-//            $this->module = $dir[0] . DIRECTORY_SEPARATOR;
-//            $template = $dir[1];
-//        }
+        //        if (strpos($template, '@')) {
+        //            $dir = explode('@', $template);
+        //            $this->module = $dir[0] . DIRECTORY_SEPARATOR;
+        //            $template = $dir[1];
+        //        }
         $template = $this->_parseModule($template);
         $this->_setOptions();
-        return $this->twig->render($template . '.' . $this->config['template_suffix'] ?: $this->template_suffix, $arguments);
+        return $this->twig->render($template, $arguments);
     }
-
 }
