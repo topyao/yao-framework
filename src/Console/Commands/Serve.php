@@ -7,12 +7,16 @@ use Yao\Console\Command;
 class Serve extends Command
 {
 
-    public $command = 'php -S 127.0.0.1';
+    // public $command = '';
 
-    public $port = 8080;
+    // public $port = 8080;
 
     public function out()
     {
+        echo '输入运行的端口[为空默认8080]:';
+        fscanf(STDIN, '%d', $options);
+        $port = $options ?? 8080;
+
         echo <<<EOT
 ********************************************************
 *                         Yao                          *
@@ -21,13 +25,12 @@ class Serve extends Command
 
 EOT;
 
-        passthru($this->command . ':' . $this->port . ' -t public ./public/router.php');
+        passthru('php -S 127.0.0.1:' . $port . ' -t public ./public/router.php');
     }
 
 
-    public function p(...$args)
-    {
-        $this->port = $args[0];
-    }
-
+    // public function p(...$args)
+    // {
+    //     $this->port = $args[0];
+    // }
 }

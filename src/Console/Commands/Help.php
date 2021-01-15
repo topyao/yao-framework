@@ -6,7 +6,7 @@ class Help
 {
     public function out()
     {
-        return <<<EOT
+        echo <<<EOT
         serve [-p 8080]          -以8080端口(默认)运行程序
         migrate <className>      -执行迁移文件
         route                    -查看定义的路由
