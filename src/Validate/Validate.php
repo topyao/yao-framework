@@ -25,13 +25,13 @@ class Validate
      * 批量验证设置
      * @var bool
      */
-    protected bool $checkAll = false;
+    protected $checkAll = false;
 
     /**
      * 为true失败抛出异常
      * @var bool
      */
-    protected bool $throwAble = false;
+    protected $throwAble = false;
 
     /**
      * 存放用户定义的规则
