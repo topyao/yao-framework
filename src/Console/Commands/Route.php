@@ -10,6 +10,14 @@ class Route extends Command
 {
     const ROUTEFILE = ROOT . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
 
+    const SEPARATOR = "——————————————————————————————————————————————————————————————————————————————————————————————————————\n";
+
+
+    private function _format($string, $length)
+    {
+        return str_pad($string, $length, ' ', STR_PAD_BOTH);
+    }
+
     public function out()
     {
         echo <<<EOT
@@ -17,7 +25,7 @@ class Route extends Command
         (2). 生成路由缓存
         (3). 删除路由缓存
         (4). 退出
-请输入选项[1,2,3,4]:
+请输入选项<1,2,3,4>：
 EOT;
         while (1) {
             fscanf(STDIN, '%d', $options);
@@ -25,21 +33,21 @@ EOT;
                 switch ($options) {
                     case 1:
                         \Yao\Facade\Route::register();
-                        echo "——————————————————————————————————————————————————————————————————————————————————\n";
+                        echo self::SEPARATOR . " " . $this->_format('请求', 6) . "  |" . $this->_format('请求地址', 29) . "|" . $this->_format('路由地址', 54) . "|  " . $this->_format('别名', 15) . "\n" . self::SEPARATOR;
                         foreach (\Yao\Facade\Route::getRoute() as $method => $routes) {
                             foreach ($routes as $route => $locate) {
                                 if (is_array($locate['route'])) {
                                     $locate['route'] = implode('->', $locate['route']);
                                 }
-                                echo str_pad(strtoupper($method), 5, ' ', STR_PAD_BOTH) . '|' . str_pad($route, 20, ' ', STR_PAD_BOTH) . '|' . str_pad($locate['route'], 54, ' ', STR_PAD_BOTH) . "\n";
-                                echo "——————————————————————————————————————————————————————————————————————————————————\n";
+                                echo $this->_format(strtoupper($method), 7) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\Route\Rules\Alias::instance()->getAliasByUri($route), 15) . "\n";
+                                echo self::SEPARATOR;
                             }
                         }
                         exit;
                     case 2:
                         \Yao\Facade\Route::register();
-                        if(!file_exists(dirname(self::ROUTEFILE))){
-                            mkdir(dirname(self::ROUTEFILE),0777,true);
+                        if (!file_exists(dirname(self::ROUTEFILE))) {
+                            mkdir(dirname(self::ROUTEFILE), 0777, true);
                         }
                         file_put_contents(self::ROUTEFILE, serialize(array_filter(\Yao\Facade\Route::getRoute())));
                         exit("缓存生成成功\n");

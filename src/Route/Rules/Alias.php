@@ -17,6 +17,17 @@ class Alias
 
     protected array $alias = [];
 
+
+
+    public function getAliasByUri($url)
+    {
+        if (false !== ($key = array_search($url, $this->alias))) {
+            return $key;
+        }
+        return $url;
+    }
+
+
     public function set($alias, string $path)
     {
         if ($alias) {
