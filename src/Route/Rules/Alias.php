@@ -24,7 +24,7 @@ class Alias
         if (false !== ($key = array_search($url, $this->alias))) {
             return $key;
         }
-        return $url;
+        return '';
     }
 
 
