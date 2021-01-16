@@ -72,9 +72,8 @@ if (false === function_exists('db')) {
 if (false === function_exists('dump')) {
     function dump(...$dump)
     {
-        echo '<pre>';
         foreach ($dump as $d) {
-            var_dump($d);
+            print_r(var_dump($d));
         }
     }
 }
