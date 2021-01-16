@@ -93,6 +93,14 @@ class Route
         });
     }
 
+    public function view(string $path, string $view, array $data = [], array $requestMethods = ['get'])
+    {
+        $this->_setParams($requestMethods, $path, $view);
+        $this->_setParam('route', function () use ($data) {
+            return view($this->location, $data);
+        });
+    }
+
     private function _locate($location)
     {
         if ($location instanceof \Closure) {
