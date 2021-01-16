@@ -24,7 +24,7 @@ class Error
     {
         set_error_handler([self::instance(), 'error']);
         set_exception_handler([self::$instance, 'exception']);
-        register_shutdown_function([self::$instance, 'shutdown']);
+        // register_shutdown_function([self::$instance, 'shutdown']);
     }
 
     private function __construct()
@@ -60,7 +60,7 @@ class Error
         exit(include_once $this->exceptionView);
     }
 
-    public function shutdown()
-    {
-    }
+    // public function shutdown()
+    // {
+    // }
 }

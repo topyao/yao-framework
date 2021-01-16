@@ -1,6 +1,6 @@
 <?php
 
-namespace Yao\Validate;
+namespace Yao\Http;
 
 /**
  * 验证器类
