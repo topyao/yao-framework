@@ -10,7 +10,7 @@ namespace Yao\Http\Response;
 class Json extends \Yao\Http\Response
 {
 
-    public $header = ['Content-Type:application/json;charset=utf-8'];
+    public $header = ['Content-Type:application/json; charset=UTF-8','X-Powered-By:YaoPHP'];
 
     protected $options = [
         'json_encode_param' => JSON_UNESCAPED_UNICODE,

@@ -3,7 +3,9 @@
 namespace Yao;
 
 use Yao\Facade\{
-    Log, Config
+    Log,
+    Config,
+    Response
 };
 use Yao\Traits\SingleInstance;
 
@@ -46,18 +48,77 @@ class Error
         Log::write('system', $message, 'notice');
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><style>.box{width:800px;height:4em;margin:2em auto}</style><pre class="box"><div class="title">' . $message . ' </div><div class="box2" style = "word-wrap:break-word;word-break: break-all;color:dimgrey" ><b>Code:</b>' . $code . ' <br><b>Locate:</b>' . $exception->getFile() . '&nbsp; line:' . $exception->getLine() . ' <p>Trace:</p>' . $exception->getTraceAsString() . ' </div> </pre>');
+            return Response::data('<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+            </head>
+            
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            
+                .container {
+                    border-radius: 3px 3px 0 0;
+                    width: 50vw;
+                    height: 50vh;
+                    background-color: rgb(255, 255, 255);
+                    margin: 25vh auto;
+                }
+            
+                .title {
+                    color:#3c3c3c;
+                    border-radius: 3px 3px 0 0;
+                    height: 1em;
+                    display:flex;
+                    justify-content:space-between;
+                    font-size: 1em;
+                    padding: 0 .5em;
+                    box-sizing: border-box;
+                    line-height: 1em;
+                }
+            
+                .content {
+                    padding: 0 .5em;
+                    height:80%;
+                    
+                }
+                .trace{
+                    font-size:1.2em;
+                    color:#3c3c3c;
+                    display:block;
+                    word-wrap:break-word;
+                    word-break:break-all;
+                }
+            </style>
+            
+            <body>
+                <div class="container">
+                    <div class="title">
+                    <span>Message: ' . $message . '</span><span>' . $code  . '</span>
+                    </div>
+                    <div class="content">
+                    File:' . $exception->getFile() . ' +' . $exception->getLine() . '<pre class="trace">' . $exception->getTraceAsString() . '</pre>
+                    </div>
+                </div>
+            </body>
+            
+            </html>');
         }
-        exit(include_once $this->exceptionView);
+        return Response::data(include_once $this->exceptionView);
     }
 
     public function error($code, $message, $file, $line, $errContext)
     {
         Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            exit(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '</pre>');
+            return Response::data(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '</pre>');
         }
-        exit(include_once $this->exceptionView);
+        return Response::data(include_once $this->exceptionView);
     }
 
     // public function shutdown()

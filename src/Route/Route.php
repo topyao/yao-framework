@@ -139,7 +139,7 @@ class Route
         $resData = \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
             return Json::data($resData);
-        } else if (is_scalar($resData)) {
+        } else {
             return Response::data($resData);
         }
     }

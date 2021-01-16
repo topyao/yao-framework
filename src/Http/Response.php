@@ -14,7 +14,7 @@ class Response
 
     protected $response;
     protected $code = 200;
-    protected $header = ['Content-Type:text/html'];
+    protected $header = ['Content-Type:text/html; charset=UTF-8', 'X-Powered-By:YaoPHP'];
     protected $data;
 
 

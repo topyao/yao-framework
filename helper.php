@@ -72,7 +72,7 @@ if (false === function_exists('db')) {
 if (false === function_exists('dump')) {
     function dump(...$dump)
     {
-        echo '<pre>';
+        echo '<pre style="font-size:1.3em">';
         foreach ($dump as $d) {
             var_dump($d);
         }
