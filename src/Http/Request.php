@@ -33,6 +33,20 @@ class Request
         return $name ? ($this->server[strtoupper($name)] ?? null) : $this->server;
     }
 
+    public function header(?string $header = null)
+    {
+        if (is_null($header)) {
+            $headers = [];
+            array_walk($this->server, function ($value, $key) use (&$headers) {
+                if ('HTTP_' == substr($key, 0, 5)) {
+                    $headers[$key] = $value;
+                }
+            });
+            return $headers;
+        }
+        return $this->server('HTTP_' . strtoupper($header)) ?? null;
+    }
+
     /** 请求类型判断
      * @param string $method
      * @return bool
@@ -155,10 +169,10 @@ class Request
     }
 
 
-//    public static function instance()
-//    {
-//        return new self;
-//    }
+    //    public static function instance()
+    //    {
+    //        return new self;
+    //    }
 
     /**
      * 请求参数过滤方法
