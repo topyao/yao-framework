@@ -12,13 +12,18 @@ namespace Yao\Cache;
 class Cache
 {
 
+
+    public $driver;
+
+
     public function __construct()
     {
-
+        $driver = '\\Yao\\Cache\\Drivers\\' . ucfirst(config('cache.type'));
+        $this->driver = new $driver();
     }
 
-    public function get()
+    public function __call($cacheCommand, $data)
     {
-
+        return $this->driver->$cacheCommand(...$data);
     }
 }

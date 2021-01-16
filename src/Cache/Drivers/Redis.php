@@ -2,15 +2,15 @@
 
 namespace Yao\Cache\Drivers;
 
+use Yao\Cache\Driver;
 use Yao\Facade\Config;
 
 /**
  * Class Redis
  * @package Yao\Cache\Drivers
  */
-class Redis
+class Redis extends Driver
 {
-    protected static $instance;
 
     protected $redis;
 
@@ -20,14 +20,6 @@ class Redis
         $config = Config::get('cache.' . Config::get('cache.type'));
         $this->redis = new \Redis();
         $this->redis->connect($config['host'], $config['port']);
-    }
-
-    public static function instance()
-    {
-        if (!self::$instance instanceof self) {
-            self::$instance = new self;
-        }
-        return self::$instance;
     }
 
     public function set(string $key, $value, ?int $timeout = null)

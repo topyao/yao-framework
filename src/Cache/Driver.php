@@ -3,11 +3,13 @@
 
 namespace Yao\Cache;
 
+use Yao\Traits\SingleInstance;
 
-class Driver
+abstract class Driver
 {
-    public function get()
-    {
+    use SingleInstance;
 
+    public function get(string $key)
+    {
     }
 }
