@@ -13,7 +13,10 @@ abstract class Driver
 
     protected array $config = [];
     protected string $module = '';
-    protected $template_suffix = 'html';
+    protected $suffix = 'html';
+
+
+    public $templateDir;
 
 
     private function __construct()
@@ -22,14 +25,15 @@ abstract class Driver
     }
 
 
-    protected function _parseModule($template)
+    public function getTemplate($template)
     {
         if (strpos($template, '@')) {
             $dir = explode('@', $template);
             $this->module = $dir[0] . DIRECTORY_SEPARATOR;
             $template = $dir[1];
         }
-        return $template . '.' . $this->config['template_suffix'] ?: $this->template_suffix;
+        $this->templateDir = ROOT . 'views' . DIRECTORY_SEPARATOR . $this->module;
+        return $template . '.' . $this->config['template_suffix'] ?: $this->suffix;
     }
 
     abstract public function render($template, $arguments = []);

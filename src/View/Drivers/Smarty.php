@@ -16,7 +16,7 @@ class Smarty extends Driver
         $this->smarty->left_delimiter = $this->config['left_delimiter'];
         $this->smarty->right_delimiter = $this->config['right_delimiter'];
         $this->smarty
-            ->setTemplateDir(ROOT . 'views' . DIRECTORY_SEPARATOR . $this->module)
+            ->setTemplateDir($this->templateDir)
             ->setCompileDir(ROOT . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'compile')
             ->setCacheDir($this->config['cache_dir']);
     }
@@ -24,7 +24,7 @@ class Smarty extends Driver
 
     public function render($template, $arguments = [])
     {
-        $template = $this->_parseModule($template);
+        $template = $this->getTemplate($template);
         if ([] !== $arguments) {
             foreach ($arguments as $key => $value) {
                 $this->smarty->assign($key, $value);
