@@ -3,7 +3,9 @@
 namespace Yao\Route;
 
 use Yao\Facade\{
-    Json, Request, Response
+    Json,
+    Request,
+    Response
 };
 use Yao\Route\Rules\Alias;
 
@@ -48,7 +50,7 @@ class Route
 
     public function match()
     {
-//        $method = $request->method();
+        //        $method = $request->method();
         $method = Request::method();
         $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
@@ -83,6 +85,13 @@ class Route
         ////        $closure();
     }
 
+    public function redirect(string $path, string $location, array $requestMethods = ['get'], int $code = 302)
+    {
+        $this->_setParams($requestMethods, $path, $location);
+        $this->_setParam('route', function () use ($code) {
+            return redirect($this->location, $code);
+        });
+    }
 
     private function _locate($location)
     {
@@ -224,7 +233,7 @@ class Route
             $this->routes = unserialize(file_get_contents($routes));
         } else {
             array_map(
-                fn($routes) => require_once($routes),
+                fn ($routes) => require_once($routes),
                 glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
             );
         }

@@ -35,6 +35,8 @@ EOT;
                             foreach ($routes as $route => $locate) {
                                 if (is_array($locate['route'])) {
                                     $locate['route'] = implode('->', $locate['route']);
+                                } else if ($locate['route'] instanceof \Closure) {
+                                    $locate['route'] = '\Closure';
                                 }
                                 echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\Route\Rules\Alias::instance()->getAliasByUri($route), 15) . "|\n";
                             }
@@ -44,7 +46,7 @@ EOT;
                         if (!file_exists(dirname(self::ROUTEFILE))) {
                             mkdir(dirname(self::ROUTEFILE), 0777, true);
                         }
-                        if(file_exists(self::ROUTEFILE)){
+                        if (file_exists(self::ROUTEFILE)) {
                             unlink(self::ROUTEFILE);
                         }
                         \Yao\Facade\Route::register();
@@ -64,5 +66,4 @@ EOT;
             }
         }
     }
-
 }
