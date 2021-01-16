@@ -2,8 +2,11 @@
 
 namespace Yao\Console\Commands;
 
-class Help
+use Yao\Console\Command;
+
+class Help extends Command
 {
+
     public function out()
     {
         echo <<<EOT

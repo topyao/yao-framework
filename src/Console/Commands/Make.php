@@ -12,6 +12,6 @@ class Make
 (3). 退出
 输入要生成的文件<1,2,3>：
 EOT;
-        fscanf(STDIN, '%s', $options);
+        fscanf(STDIN, '%d', $options);
     }
 }

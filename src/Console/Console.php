@@ -13,6 +13,9 @@ class Console
 
     public function __construct($argv)
     {
+        if (!isset($argv[1])) {
+            exit((new Help())->out());
+        }
         $this->command = '\\Yao\\Console\\Commands\\' . ucfirst($argv[1]);
         $this->argv = array_slice($argv, 2);
     }
@@ -27,5 +30,4 @@ class Console
             return $command->out();
         }
     }
-
 }

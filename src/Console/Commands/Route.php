@@ -1,17 +1,14 @@
 <?php
 
-
 namespace Yao\Console\Commands;
-
 
 use Yao\Console\Command;
 
 class Route extends Command
 {
+
     const ROUTEFILE = ROOT . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
-
     const SEPARATOR = "+------+-------------------------+--------------------------------------------------+----------------+\n";
-
 
     private function _format($string, $length)
     {
@@ -39,15 +36,18 @@ EOT;
                                 if (is_array($locate['route'])) {
                                     $locate['route'] = implode('->', $locate['route']);
                                 }
-                                echo '|'.$this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\Route\Rules\Alias::instance()->getAliasByUri($route), 15) . "|\n";
+                                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\Route\Rules\Alias::instance()->getAliasByUri($route), 15) . "|\n";
                             }
                         }
                         exit(self::SEPARATOR);
                     case 2:
-                        \Yao\Facade\Route::register();
                         if (!file_exists(dirname(self::ROUTEFILE))) {
                             mkdir(dirname(self::ROUTEFILE), 0777, true);
                         }
+                        if(file_exists(self::ROUTEFILE)){
+                            unlink(self::ROUTEFILE);
+                        }
+                        \Yao\Facade\Route::register();
                         file_put_contents(self::ROUTEFILE, serialize(array_filter(\Yao\Facade\Route::getRoute())));
                         exit("缓存生成成功\n");
                     case 3:
@@ -64,4 +64,5 @@ EOT;
             }
         }
     }
+
 }
