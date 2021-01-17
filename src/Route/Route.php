@@ -237,12 +237,12 @@ class Route
 
     public function register()
     {
-        if (file_exists($routes = ROOT . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
+        if (file_exists($routes = ROOT . 'storage' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
             $this->routes = unserialize(file_get_contents($routes));
         } else {
             array_map(
                 fn ($routes) => require_once($routes),
-                glob(ROOT . 'route' . DIRECTORY_SEPARATOR . '*' . 'php')
+                glob(ROOT . 'routes' . DIRECTORY_SEPARATOR . '*' . 'php')
             );
         }
     }

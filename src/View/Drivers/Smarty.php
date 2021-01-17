@@ -17,7 +17,7 @@ class Smarty extends Driver
         $this->smarty->right_delimiter = $this->config['right_delimiter'];
         $this->smarty
             ->setTemplateDir($this->templateDir)
-            ->setCompileDir(ROOT . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'compile')
+            ->setCompileDir(ROOT . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'compile')
             ->setCacheDir($this->config['cache_dir']);
     }
 

@@ -7,7 +7,7 @@ use Yao\Console\Command;
 class Route extends Command
 {
 
-    const ROUTEFILE = ROOT . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
+    const ROUTEFILE = ROOT . 'storage' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
     const SEPARATOR = "+------+-------------------------+--------------------------------------------------+----------------+\n";
 
     private function _format($string, $length)
