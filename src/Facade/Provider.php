@@ -8,7 +8,7 @@ class Provider extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Base\Provider::class;
+        return \App\Http\Provider::class;
     }
 
 }

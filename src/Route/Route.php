@@ -115,7 +115,7 @@ class Route
                 $location = $dir[1];
             }
             [$controller, $this->action] = explode('/', $location);
-            $this->controller = 'App' . '\\' . ucfirst($module) . 'Controller' . '\\' . ucfirst($controller);
+            $this->controller = 'App\\Http\\Controllers' . '\\' . ucfirst($module) . ucfirst($controller);
         } else {
             throw new \Exception('页面找不到了', 404);
         }
@@ -241,7 +241,7 @@ class Route
             $this->routes = unserialize(file_get_contents($routes));
         } else {
             array_map(
-                fn ($routes) => require_once($routes),
+                fn($routes) => require_once($routes),
                 glob(ROOT . 'routes' . DIRECTORY_SEPARATOR . '*' . 'php')
             );
         }
