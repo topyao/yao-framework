@@ -40,7 +40,7 @@ abstract class Driver
             $this->module = $dir[0] . DIRECTORY_SEPARATOR;
             $template = $dir[1];
         }
-        $this->templateDir = ROOT . 'views' . DIRECTORY_SEPARATOR . $this->module;
+        $this->templateDir = env('views_path') . $this->module;
         return $template . '.' . $this->config['template_suffix'] ?: $this->suffix;
     }
 

@@ -9,23 +9,42 @@ namespace Yao;
  */
 class Env
 {
+
     use \Yao\Traits\Parse;
 
     protected array $env = [];
+    protected string $root = '';
 
-    public function load(string $envFile = ROOT . '.env')
+    public function __construct()
     {
-        if (file_exists($envFile)) {
-            $env = parse_ini_file($envFile, true, INI_SCANNER_TYPED);
-            $this->env = array_change_key_case($env, CASE_UPPER);
+        $this->root = dirname(getcwd()) . DIRECTORY_SEPARATOR;
+    }
+
+    public function load(?string $envFile = null)
+    {
+        $this->env = [
+            'ROOT_PATH' => $this->root,
+            'APP_PATH' => $this->root . 'app' . DIRECTORY_SEPARATOR,
+            'YAO_PATH' => __DIR__ . DIRECTORY_SEPARATOR,
+            'CONFIG_PATH' => $this->root . 'config' . DIRECTORY_SEPARATOR,
+            'STORAGE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR,
+            'ROUTES_PATH' => $this->root . 'routes' . DIRECTORY_SEPARATOR,
+            'VIEWS_PATH' => $this->root . 'views' . DIRECTORY_SEPARATOR,
+            'PUBLIC_PATH' => $this->root . 'public' . DIRECTORY_SEPARATOR
+        ];
+        $env = $envFile ?? (env('root_path') . '.env');
+        if (file_exists($env)) {
+            $env = parse_ini_file($env, true, INI_SCANNER_TYPED);
+            $this->env += array_change_key_case($env, CASE_UPPER);
         }
     }
 
-    public function get(?string $key = null, $default = false)
+    public function get(?string $key = null, $default = null)
     {
         if (is_null($key)) {
             return $this->env;
         }
         return $this->parse($this->env, strtoupper($key), $default);
     }
+
 }

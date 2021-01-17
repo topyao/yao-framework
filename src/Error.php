@@ -49,11 +49,11 @@ class Error
         http_response_code((int)$exception->getCode());
         if ($this->debug) {
             return Response::data('<!DOCTYPE html>
-            <html lang="en">
+            <html lang="zh">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Document</title>
+                <title>' . $message . '</title>
             </head>
             
             <style>
@@ -99,7 +99,7 @@ class Error
             <body>
                 <div class="container">
                     <div class="title">
-                    <span>Message: ' . $message . '</span><span>' . $code  . '</span>
+                    <span>Message: ' . $message . '</span><span>' . $code . '</span>
                     </div>
                     <div class="content">
                     File:' . $exception->getFile() . ' +' . $exception->getLine() . '<pre class="trace">' . $exception->getTraceAsString() . '</pre>

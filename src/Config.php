@@ -86,6 +86,6 @@ class Config implements \ArrayAccess
      */
     private function _getConfig(string $config): string
     {
-        return ROOT . 'config' . DIRECTORY_SEPARATOR . $config . '.php';
+        return env('config_path') . $config . '.php';
     }
 }

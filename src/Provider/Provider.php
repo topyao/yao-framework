@@ -5,6 +5,10 @@ namespace Yao\Provider;
 
 
 use Yao\Provider\Service;
+use Yao\Provider\Services\{
+    Development,
+    Init
+};
 
 /**
  * 服务提供类
@@ -22,7 +26,8 @@ class Provider
     public function builtInServices()
     {
         return [
-            \Yao\Provider\Services\Init::class
+            Development::class,
+            Init::class
         ];
     }
 

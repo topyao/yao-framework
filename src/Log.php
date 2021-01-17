@@ -24,7 +24,7 @@ class Log
             return;
         }
         $logLevel = constant(Logger::class . '::' . strtoupper($level));
-        $this->logFile = ROOT . 'storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $logName . DIRECTORY_SEPARATOR . date('Ym') . DIRECTORY_SEPARATOR . date('d') . '.log';
+        $this->logFile = env('storage_path') . 'logs' . DIRECTORY_SEPARATOR . $logName . DIRECTORY_SEPARATOR . date('Ym') . DIRECTORY_SEPARATOR . date('d') . '.log';
         // create a log channel
         $this->monolog = new Logger($logName);
         $this->monolog->pushHandler(new StreamHandler($this->logFile, $logLevel));

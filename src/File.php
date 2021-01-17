@@ -50,7 +50,7 @@ class File
 
     private function _mkdir($path)
     {
-        $paths = ROOT . 'public' . DIRECTORY_SEPARATOR . trim($path, '/\\') . DIRECTORY_SEPARATOR;
+        $paths = env('public_path') . trim($path, '/\\') . DIRECTORY_SEPARATOR;
         if (!file_exists($paths) || !is_dir($paths)) {
             if (!mkdir($path, 0777, 1)) {
                 throw new \Exception('目录创建失败！');

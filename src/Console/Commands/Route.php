@@ -7,8 +7,14 @@ use Yao\Console\Command;
 class Route extends Command
 {
 
-    const ROUTEFILE = ROOT . 'storage' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
+    public $cacheFile;
     const SEPARATOR = "+------+-------------------------+--------------------------------------------------+----------------+\n";
+
+    public function __construct()
+    {
+        $this->cacheFile = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php';
+    }
+
 
     private function _format($string, $length)
     {
@@ -43,20 +49,20 @@ EOT;
                         }
                         exit(self::SEPARATOR);
                     case 2:
-                        if (!file_exists(dirname(self::ROUTEFILE))) {
-                            mkdir(dirname(self::ROUTEFILE), 0777, true);
+                        if (!file_exists(dirname($this->cacheFile))) {
+                            mkdir(dirname($this->cacheFile), 0777, true);
                         }
-                        if (file_exists(self::ROUTEFILE)) {
-                            unlink(self::ROUTEFILE);
+                        if (file_exists($this->cacheFile)) {
+                            unlink($this->cacheFile);
                         }
                         \Yao\Facade\Route::register();
-                        file_put_contents(self::ROUTEFILE, serialize(array_filter(\Yao\Facade\Route::getRoute())));
+                        file_put_contents($this->cacheFile, serialize(array_filter(\Yao\Facade\Route::getRoute())));
                         exit("缓存生成成功\n");
                     case 3:
-                        if (!file_exists(self::ROUTEFILE)) {
+                        if (!file_exists($this->cacheFile)) {
                             exit("没有缓存文件！\n");
                         }
-                        unlink(self::ROUTEFILE);
+                        unlink($this->cacheFile);
                         exit("缓存生成已经清除\n");
                     case 4:
                         exit;
