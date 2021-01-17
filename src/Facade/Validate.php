@@ -15,7 +15,7 @@ class Validate extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \App\Validate::class;
+        return \Yao\Base\Validate::class;
     }
 
 }
