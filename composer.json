@@ -2,7 +2,7 @@
   "name": "chengyao/framework",
   "description": "Yao框架核心，需要配合框架使用。https://github.com/topyao/yao",
   "type": "library",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "Apache-2.0",
   "authors": [
     {
