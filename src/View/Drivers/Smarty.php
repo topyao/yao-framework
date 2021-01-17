@@ -22,15 +22,14 @@ class Smarty extends Driver
     }
 
 
-    public function render($template, $arguments = [])
+    public function render($arguments = [])
     {
-        $template = $this->getTemplate($template);
         if ([] !== $arguments) {
             foreach ($arguments as $key => $value) {
                 $this->smarty->assign($key, $value);
             }
         }
         $this->_setOptions();
-        return $this->smarty->display($template);
+        return $this->smarty->display($this->template);
     }
 }

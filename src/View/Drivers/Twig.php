@@ -19,10 +19,9 @@ class Twig extends Driver
         ]);
     }
 
-    public function render($template, $arguments = [])
+    public function render($arguments = [])
     {
-        $template = $this->getTemplate($template);
         $this->_setOptions();
-        return $this->twig->render($template, $arguments);
+        return $this->twig->render($this->template, $arguments);
     }
 }

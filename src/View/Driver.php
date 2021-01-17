@@ -16,12 +16,20 @@ abstract class Driver
     protected $suffix = 'html';
 
 
-    public $templateDir;
+    protected string $templateDir;
 
+    public static function instance($template)
+    {
+        if (!static::$instance instanceof static) {
+            static::$instance = new static($template);
+        }
+        return static::$instance;
+    }
 
-    private function __construct()
+    private function __construct($template)
     {
         $this->config = Config::getByType('view');
+        $this->template = $this->getTemplate($template);
     }
 
 
@@ -36,5 +44,5 @@ abstract class Driver
         return $template . '.' . $this->config['template_suffix'] ?: $this->suffix;
     }
 
-    abstract public function render($template, $arguments = []);
+    abstract public function render($arguments = []);
 }
