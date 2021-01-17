@@ -240,9 +240,10 @@ class Route
         if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
             $this->routes = unserialize(file_get_contents($routes));
         } else {
+            $files = env('routes_path') . '*' . 'php';
             array_map(
                 fn($routes) => require_once($routes),
-                glob(env('routes_path') . '*' . 'php')
+                glob($files)
             );
         }
     }

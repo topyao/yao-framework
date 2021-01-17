@@ -7,11 +7,13 @@ class Event
 
     protected $events;
 
-    public function listen()
+    public function listen($trigger, $event)
     {
+
     }
 
-    public function register()
+    public function trigger($trigger, $event)
     {
+
     }
 }

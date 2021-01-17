@@ -47,10 +47,10 @@ class Facade
         if (!static::$singleInstance) {
             return new $class();
         } else {
-            if (!isset(self::$instance[$class]) || !(self::$instance[$class] instanceof $class)) {
-                self::$instance[$class] = new $class();
+            if (!isset(static::$instance[$class]) || !(static::$instance[$class] instanceof $class)) {
+                static::$instance[$class] = new $class();
             }
-            return self::$instance[$class];
+            return static::$instance[$class];
         }
     }
 

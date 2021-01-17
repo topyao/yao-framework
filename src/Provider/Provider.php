@@ -26,7 +26,6 @@ class Provider
     public function builtInServices()
     {
         return [
-            Development::class,
             Init::class
         ];
     }

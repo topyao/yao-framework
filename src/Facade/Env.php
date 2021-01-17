@@ -3,9 +3,8 @@
 
 namespace Yao\Facade;
 
-
 /**
- * @method static load(string $envFile = null)
+ * @method static set(string $env, mixed $value)
  * @method static string get(string $key = null, $default = null)
  * Class Env
  * @package Yao\Facade

@@ -19,6 +19,6 @@ class Serve extends Command
 +------------------------------------------------------+
 
 EOT;
-        passthru('php -S 127.0.0.1:' . $port . ' -t public ./public/router.php');
+        passthru('php -S localhost:' . $port . ' -t public ./public/router.php');
     }
 }

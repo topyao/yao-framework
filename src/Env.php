@@ -17,10 +17,11 @@ class Env
 
     public function __construct()
     {
-        $this->root = dirname(getcwd()) . DIRECTORY_SEPARATOR;
+        $this->root = ROOT_PATH;
+        $this->_load();
     }
 
-    public function load(?string $envFile = null)
+    private function _load(?string $envFile = null)
     {
         $this->env = [
             'ROOT_PATH' => $this->root,
@@ -32,7 +33,7 @@ class Env
             'VIEWS_PATH' => $this->root . 'views' . DIRECTORY_SEPARATOR,
             'PUBLIC_PATH' => $this->root . 'public' . DIRECTORY_SEPARATOR
         ];
-        $env = $envFile ?? (env('root_path') . '.env');
+        $env = $envFile ?? ($this->env['ROOT_PATH'] . '.env');
         if (file_exists($env)) {
             $env = parse_ini_file($env, true, INI_SCANNER_TYPED);
             $this->env += array_change_key_case($env, CASE_UPPER);
@@ -45,6 +46,11 @@ class Env
             return $this->env;
         }
         return $this->parse($this->env, strtoupper($key), $default);
+    }
+
+    public function set(string $env, $value)
+    {
+        $this->env[strtoupper($env)] = $value;
     }
 
 }
