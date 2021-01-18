@@ -71,9 +71,6 @@ class Config implements \ArrayAccess
     {
         if (!isset($this->config[$config])) {
             $file = $this->_getConfig($config);
-//            if (!file_exists($file)) {
-//                throw new \Exception('配置文件' . $config . '.php不存在');
-//            }
             $this->config[$config] = include_once($file);
         }
     }
