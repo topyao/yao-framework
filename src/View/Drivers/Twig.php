@@ -12,7 +12,7 @@ class Twig extends Driver
 
     private function _setOptions()
     {
-        $loader = new FilesystemLoader($this->templateDir);
+        $loader = new FilesystemLoader(env('views_path'));
         $this->twig = new Environment($loader, [
             'debug' => $this->config['debug'],
             'cache' => $this->config['cache'] ? $this->config['cache_dir'] : false,

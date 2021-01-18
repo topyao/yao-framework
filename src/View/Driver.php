@@ -11,12 +11,9 @@ abstract class Driver
 
     use SingleInstance;
 
+    protected const SUFFIX = 'html';
+
     protected array $config = [];
-    protected string $module = '';
-    protected $suffix = 'html';
-
-
-    protected string $templateDir;
 
     public static function instance($template)
     {
@@ -29,19 +26,7 @@ abstract class Driver
     private function __construct($template)
     {
         $this->config = Config::getByType('view');
-        $this->template = $this->getTemplate($template);
-    }
-
-
-    public function getTemplate($template)
-    {
-        if (strpos($template, '@')) {
-            $dir = explode('@', $template);
-            $this->module = $dir[0] . DIRECTORY_SEPARATOR;
-            $template = $dir[1];
-        }
-        $this->templateDir = env('views_path') . $this->module;
-        return $template . '.' . $this->config['template_suffix'] ?: $this->suffix;
+        $this->template = str_replace('/', DIRECTORY_SEPARATOR, $template) . '.' . $this->config['suffix'] ?: self::SUFFIX;
     }
 
     abstract public function render($arguments = []);
