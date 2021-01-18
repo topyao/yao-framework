@@ -34,10 +34,10 @@ class Route
     {
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
     }
-
-    public function setRoute()
-    {
-    }
+//
+//    public function setRoute()
+//    {
+//    }
 
     public function allowCors()
     {
@@ -50,7 +50,6 @@ class Route
 
     public function match()
     {
-        //        $method = $request->method();
         $method = Request::method();
         $this->allowCors();
         if (!array_key_exists($method, $this->routes)) {
@@ -103,40 +102,43 @@ class Route
 
     private function _locate($location)
     {
-        if ($location instanceof \Closure) {
-            return call_user_func_array($location, $this->param);
-        } else if (is_array($location) && 2 == count($location)) {
+        if (is_array($location) && 2 == count($location)) {
             [$this->controller, $this->action] = $location;
         } else if (is_string($location)) {
-            $module = '';
-            if (strpos($location, '@')) {
-                $dir = explode('@', $location);
-                $module = $dir[0] . '\\';
-                $location = $dir[1];
+            $controller = explode('/', $location);
+            if (count($controller) < 2) {
+                throw new \Exception("{$location}中的控制器不存在");
             }
-            [$controller, $this->action] = explode('/', $location);
-            $this->controller = 'App\\Http\\Controllers' . '\\' . ucfirst($module) . ucfirst($controller);
+            $this->action = array_pop($controller);
+            $this->controller = 'App\\Http\\Controllers';
+            foreach ($controller as $directory) {
+                $this->controller .= '\\' . ucfirst($directory);
+            }
         } else {
-            throw new \Exception('页面找不到了', 404);
+            $this->controller = $location;
+//            throw new \Exception('页面找不到了', 404);
         }
     }
 
-    public function getMiddleware(): array
-    {
-        return $this->routes[Request::method()][Request::path()]['middleware'] ?? [];
-    }
+//    public function getMiddleware(): array
+//    {
+//        return $this->routes[Request::method()][Request::path()]['middleware'] ?? [];
+//    }
 
     public function dispatch()
     {
         if (empty($this->controller)) {
             throw new \Exception('页面不存在', 404);
         }
-        //创建控制器类实例
-        $obj = new $this->controller();
-        if (!method_exists($obj, $this->action)) {
-            throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
+        if ($this->controller instanceof \Closure) {
+            $resData = call_user_func_array($this->controller, $this->param);
+        } else if (is_string($this->controller)) {
+            $obj = new $this->controller();
+            if (!method_exists($obj, $this->action)) {
+                throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
+            }
+            $resData = \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         }
-        $resData = \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
             return Json::data($resData);
         } else {
@@ -158,12 +160,12 @@ class Route
         return $this;
     }
 
-    public function get($uri, $location)
-    {
-        $this->_setParams('get', $uri, $location);
-        $this->_setParam('route', $location);
-        return $this;
-    }
+//    public function get($uri, $location)
+//    {
+//        $this->_setParams('get', $uri, $location);
+//        $this->_setParam('route', $location);
+//        return $this;
+//    }
 
     private function _setParams($method, $path, $location)
     {
@@ -247,4 +249,11 @@ class Route
             );
         }
     }
+
+//    public function cache()
+//    {
+//        empty($this->routes) && $this->register();
+//
+//    }
+
 }
