@@ -23,7 +23,7 @@ abstract class Driver
         return static::$instance;
     }
 
-    private function __construct($template)
+    final private function __construct($template)
     {
         $this->config = Config::getByType('view');
         $this->template = str_replace('/', DIRECTORY_SEPARATOR, $template) . '.' . $this->config['suffix'] ?: self::SUFFIX;

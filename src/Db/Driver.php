@@ -36,7 +36,7 @@ abstract class Driver
 
     public $query;
 
-    public function __construct($database)
+    final public function __construct($database)
     {
         $this->config = Config::get('database.' . $database);
         if (empty($this->config)) {
@@ -54,13 +54,13 @@ abstract class Driver
      * @param string $table_name
      * @return $this
      */
-    public function name(string $table_name)
+    final public function name(string $table_name)
     {
         $this->name = $this->quote($this->config['prefix'] . $table_name) . ' ';
         return $this;
     }
 
-    public function table(string $table_name)
+    final public function table(string $table_name)
     {
         $this->name = $this->quote($table_name);
         return $this;
@@ -72,7 +72,7 @@ abstract class Driver
      * @param bool $all
      * @return mixed
      */
-    public function query(string $sql, ?array $data = [], bool $all = true)
+    final public function query(string $sql, ?array $data = [], bool $all = true)
     {
         return $all ? $this->query->fetchAll($sql, $data) : $this->query->fetch($sql, $data);
     }
@@ -83,7 +83,7 @@ abstract class Driver
      * @param array $data
      * @return int
      */
-    public function exec(string $sql, array $data = []): int
+    final public function exec(string $sql, array $data = []): int
     {
         return $this->query
             ->prepare($sql, $data)
@@ -155,16 +155,15 @@ abstract class Driver
             $this->bindParam[] = $value;
         }
         $sql = 'INSERT INTO ' . $this->name . ' ' . $fields . ' ' . 'VALUES ' . $params;
-        return $this->query
-            ->prepare($sql, $this->bindParam)
-            ->lastinsertid();
+        $this->query->prepare($sql, $this->bindParam);
+        return $this->query->getPdo()->lastinsertid();
+//        return $this->
+//            ->lastinsertid();
     }
 
     /**
-     * 删除
-     * @param array $data
-     * @return bool
-     * @throws \Exception
+     * 删除数据
+     * @return mixed
      */
     public function delete()
     {
@@ -207,7 +206,7 @@ abstract class Driver
      * where条件表达式，使用数组参数的时候会自动使用预处理
      * @param string|array $where
      * where条件表达式
-     * @return Db|null
+     * @return $this
      */
     public function where($where)
     {
@@ -230,7 +229,7 @@ abstract class Driver
     /**
      * 模糊查询
      * @param array $like
-     * @return Db
+     * @return $this
      */
     public function whereLike(array $like)
     {
