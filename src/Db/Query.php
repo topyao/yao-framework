@@ -27,24 +27,29 @@ class Query
 
     private \PDO $pdo;
 
-    public static function instance($dsn,$config)
+    public static function instance($dsn, $config)
     {
         if (!static::$instance instanceof static) {
-            static::$instance = new static($dsn,$config);
+            static::$instance = new static($dsn, $config);
         }
         return static::$instance;
     }
 
-    private function __construct($dsn,$config)
+    public function getPdo()
     {
-        $this->_connect($dsn,$config);
+        return $this->pdo;
+    }
+
+    private function __construct($dsn, $config)
+    {
+        $this->_connect($dsn, $config);
     }
 
     /**
      * 数据库连接方法
      * @throws /PDOException
      */
-    private function _connect($dsn,$config)
+    private function _connect($dsn, $config)
     {
         $this->pdo = new \PDO($dsn, $config['user'], $config['pass'], $config['options']);
     }
