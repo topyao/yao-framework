@@ -2,78 +2,32 @@
 
 namespace Yao\Db;
 
-use \PDOException;
-use Yao\{
-    Facade\Config,
-    Traits\SingleInstance
-};
+use Yao\Facade\Config;
 
 /**
- * 数据库操作类
- * Class Query
- * @package Yao\Db
+ * 数据库外部接口
+ * Class Db
+ * @package yao
  */
 class Query
 {
-    use SingleInstance;
+    public $driver;
+    public array $config = [];
 
-    const FETCHTYPE = \PDO::FETCH_ASSOC;
-
-    // private ?array $config = [];
-
-    private string $type = '';
-
-    private $PDOstatement;
-
-    private \PDO $pdo;
-
-    public static function instance($dsn, $config)
+    public function __construct()
     {
-        if (!static::$instance instanceof static) {
-            static::$instance = new static($dsn, $config);
+        $database = Config::get('database.type');
+        if (!$database) {
+            throw new \Exception('数据库配置文件不存在');
         }
-        return static::$instance;
+        $driver = '\\Yao\\Db\\Drivers\\' . ucfirst($database);
+        $this->driver = new $driver($database);
+        $this->collection = new \Yao\Collection();
     }
 
-    public function getPdo()
+    public function __call($method, $args)
     {
-        return $this->pdo;
+        return $this->driver->$method(...$args);
     }
 
-    private function __construct($dsn, $config)
-    {
-        $this->_connect($dsn, $config);
-    }
-
-    /**
-     * 数据库连接方法
-     * @throws /PDOException
-     */
-    private function _connect($dsn, $config)
-    {
-        $this->pdo = new \PDO($dsn, $config['user'], $config['pass'], $config['options']);
-    }
-
-    /**
-     * 预处理
-     * @param $sql
-     * @param array $data
-     * @return object
-     */
-    public function prepare(string $sql, array $data = []): \PDOStatement
-    {
-        $this->PDOstatement = $this->pdo->prepare($sql);
-        $this->PDOstatement->execute($data);
-        return $this->PDOstatement;
-    }
-
-    public function fetchAll($sql, $params, $fetchType = self::FETCHTYPE)
-    {
-        return $this->prepare($sql, $params)->fetchAll($fetchType);
-    }
-
-    public function fetch($sql, $params, $fetchType = self::FETCHTYPE)
-    {
-        return $this->prepare($sql, $params)->fetch($fetchType);
-    }
 }

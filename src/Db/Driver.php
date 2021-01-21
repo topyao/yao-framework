@@ -42,7 +42,7 @@ abstract class Driver
         if (empty($this->config)) {
             throw new \Exception('没有找到数据库配置文件');
         }
-        $this->query = Query::instance($this->dsn(), $this->config);
+        $this->query = Connector::instance($this->dsn(), $this->config);
         $this->collection = new Collection();
     }
 
