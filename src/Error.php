@@ -99,8 +99,8 @@ class Error
             <body>
                 <div class="container">
                     <div class="title">
-                    <span>Message: ' . $message . '</span><span>' . $code . '</span>
-                    </div>
+                    Message: ' . $message . $code . '
+                    
                     <div class="content">
                     File:' . $exception->getFile() . ' +' . $exception->getLine() . '<pre class="trace">' . $exception->getTraceAsString() . '</pre>
                     </div>
