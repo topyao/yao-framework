@@ -14,7 +14,7 @@ class Mysql extends Driver
      * 数据库字段引号类型
      * @var string
      */
-    protected $quote = '`';
+    protected $quote = '';
 
     /**
      * Mysql条数限制
