@@ -1,12 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Yao\Route;
 
-use Yao\Facade\{
-    Json,
-    Request,
-    Response
-};
+use Yao\Facade\{Config, Json, Request, Response};
 use Yao\Route\Rules\Alias;
 
 /**
@@ -16,10 +13,7 @@ use Yao\Route\Rules\Alias;
  */
 class Route
 {
-    /**
-     * 存放路由注册树
-     * @var array
-     */
+
     protected array $routes = [];
 
     public string $controller = '';
@@ -34,32 +28,33 @@ class Route
     {
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
     }
-//
-//    public function setRoute()
-//    {
-//    }
+
 
     public function allowCors()
     {
-        if (isset($this->routes['options'][Request::path()])) {
-            header('Access-Control-Allow-Origin:' . $this->routes['options'][Request::path()]['originUrl']);
-            header('Access-Control-Allow-Credentials:true');
-            header('Access-Control-Allow-Headers:Origin,Content-Type,Accept,token,X-Requested-With');
+        if (isset($this->routes[$this->method][Request::path()]['cors'])) {
+            $allows = $this->routes[$this->method][Request::path()]['cors'];
+            $origin = $allows['origin'] ?? Config::get('cors.origin');
+            $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? Config::get('cors.headers');
+            header('Access-Control-Allow-Origin:' . $origin);
+            header('Access-Control-Allow-Credentials:' . $credentials);
+            header('Access-Control-Allow-Headers:' . $headers);
         }
     }
 
     public function match()
     {
-        $method = Request::method();
+        $this->method = Request::method();
         $this->allowCors();
-        if (!array_key_exists($method, $this->routes)) {
-            throw new \Exception('请求类型' . $method . '没有定义任何路由', 404);
+        if (!array_key_exists($this->method, $this->routes)) {
+            throw new \Exception('请求类型' . $this->method . '没有定义任何路由', 404);
         }
 
-        if (isset($this->routes[$method][Request::path()]['route'])) {
-            return $this->_locate($this->routes[$method][Request::path()]['route']);
+        if (isset($this->routes[$this->method][Request::path()]['route'])) {
+            return $this->_locate($this->routes[$this->method][Request::path()]['route']);
         } else {
-            foreach ($this->routes[$method] as $uri => $location) {
+            foreach ($this->routes[$this->method] as $uri => $location) {
                 //设置路由匹配正则
                 $uriRegexp = '#^' . $uri . '$#i';
                 //路由和请求一致或者匹配到正则
@@ -76,28 +71,34 @@ class Route
         throw new \Exception('页面不存在', 404);
     }
 
-
-    public function group(array $appendix, \Closure $closure)
-    {
-        //        $obj = (new \ReflectionFunction($closure));
-        //        dump($obj);
-        ////        $closure();
-    }
-
+    /**
+     * 重定向路由
+     * @param string $path
+     * @param string $location
+     * @param array|string[] $requestMethods
+     * @param int $code
+     */
     public function redirect(string $path, string $location, array $requestMethods = ['get'], int $code = 302)
     {
-        $this->_setParams($requestMethods, $path, $location);
-        $this->_setParam('route', function () use ($code) {
+        $this->_rule($requestMethods, $path, $location, 'route', function () use ($code) {
             return redirect($this->location, $code);
         });
     }
 
+    /**
+     * 视图路由
+     * @param string $path
+     * @param string $view
+     * @param array $data
+     * @param array|string[] $requestMethods
+     * @return $this
+     */
     public function view(string $path, string $view, array $data = [], array $requestMethods = ['get'])
     {
-        $this->_setParams($requestMethods, $path, $view);
-        $this->_setParam('route', function () use ($data) {
+        $this->_rule($requestMethods, $path, $view, 'route', function () use ($data) {
             return view($this->location, $data);
         });
+        return $this;
     }
 
     private function _locate($location)
@@ -116,14 +117,9 @@ class Route
             }
         } else {
             $this->controller = $location;
-//            throw new \Exception('页面找不到了', 404);
         }
+        return true;
     }
-
-//    public function getMiddleware(): array
-//    {
-//        return $this->routes[Request::method()][Request::path()]['middleware'] ?? [];
-//    }
 
     public function dispatch()
     {
@@ -155,43 +151,14 @@ class Route
      */
     public function __call(string $method, array $route): Route
     {
-        $this->_setParams($method, $route[0], $route);
-        $this->_setParam('route', $route[1]);
+        $this->_rule($method, $route[0], $route, 'route', $route[1]);
         return $this;
     }
 
-//    public function get($uri, $location)
-//    {
-//        $this->_setParams('get', $uri, $location);
-//        $this->_setParam('route', $location);
-//        return $this;
-//    }
 
-    private function _setParams($method, $path, $location)
+    private function _rule($method, $path, $location, $property, $value)
     {
         [$this->method, $this->path, $this->location] = [$method, '/' . trim($path, '/'), $location];
-    }
-
-    public function alias($name): Route
-    {
-        Alias::instance()->set($name, $this->path);
-        return $this;
-    }
-
-    public function cross($origin_url = '*'): Route
-    {
-        if (is_array($this->method)) {
-            foreach ($this->method as $method) {
-                $this->routes['options'][$this->path] = ['originUrl' => $origin_url];
-            }
-        } else {
-            $this->routes['options'][$this->path] = ['originUrl' => $origin_url];
-        }
-        return $this;
-    }
-
-    private function _setParam($property, $value)
-    {
         if (is_array($this->method)) {
             foreach ($this->method as $method) {
                 $this->routes[strtolower($method)][$this->path][$property] = $value;
@@ -201,17 +168,57 @@ class Route
         }
     }
 
-
-    public function middleware($middleware): Route
+    /**
+     * 路由别名设置
+     * @param $name
+     * 路由别名
+     * @return $this
+     */
+    public function alias(string $name): Route
     {
-        $this->_setParam('middleware', $middleware);
+        Alias::instance()->set($name, $this->path);
         return $this;
     }
 
     /**
+     * 路由允许跨域设置
+     * @param null $AllowOrigin
+     * 允许跨域域名
+     * @param null $AllowCredentials
+     * @param null $AllowHeaders
+     * 允许的头信息
+     * @return $this
+     */
+    public function cross($AllowOrigin = null, ?bool $AllowCredentials = null, $AllowHeaders = null): Route
+    {
+        $cors = Config::get('cors');
+        $AllowOrigin || $AllowOrigin = $cors['origin'];
+        $AllowHeaders || $AllowHeaders = $cors['headers'];
+        isset($AllowCredentials) || $AllowCredentials = $cors['credentials'];
+        $AllowCredentials = $AllowCredentials ? 'true' : 'false';
+        if (is_array($this->method)) {
+            foreach ($this->method as $method) {
+                $this->routes[$method][$this->path]['cors'] = [
+                    'origin' => $AllowOrigin,
+                    'credentials' => $AllowCredentials,
+                    'headers' => $AllowHeaders
+                ];
+            }
+        } else {
+            $this->routes[$this->method][$this->path]['cors'] = [
+                'origin' => $AllowOrigin,
+                'credentials' => $AllowCredentials,
+                'headers' => $AllowHeaders
+            ];
+        }
+        return $this;
+    }
+
+
+    /**
      * 多类型route注册
      * @param string $uri
-     * 访问地址
+     * 访问路径
      * @param string $location
      * 路由表达式
      * @param array $type
@@ -219,23 +226,9 @@ class Route
      */
     public function rule(string $uri, $location, array $requestMethods = ['get', 'post']): Route
     {
-        $this->_setParams($requestMethods, $uri, $location);
-        $this->_setParam('route', $location);
+        $this->_rule($requestMethods, $uri, $location, 'route', $location);
         return $this;
     }
-
-
-    //    public function restful(string $uri, $location)
-    //    {
-    //        $uri = '/'.trim($uri, '/').'/';
-    //        $this->routes['get'][$uri] = $location . '/index';
-    //        $this->routes['get'][$uri . 'create'] = $location . '/create';
-    //        $this->routes['post'][$uri] = $location . '/save';
-    //        $this->routes['get'][$uri . 'edit'] = $location . '/edit';
-    //        $this->routes['delete'][$uri . 'delete'] = $location . '/delete';
-    //        $this->routes['put'][$uri . 'edit'] = $location . '/update';
-    //    }
-
 
     public function register()
     {
@@ -249,11 +242,5 @@ class Route
             );
         }
     }
-
-//    public function cache()
-//    {
-//        empty($this->routes) && $this->register();
-//
-//    }
 
 }

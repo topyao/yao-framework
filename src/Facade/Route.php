@@ -5,7 +5,7 @@ namespace Yao\Facade;
 
 
 /**
- * @method static \Yao\Route\Route get(string $uri, mixed $location)
+ * @method static \Yao\Route\Route get(string $uri, mixed $location) GET方式请求的路由
  * @method static \Yao\Route\Route post(string $uri, mixed $location)
  * @method static \Yao\Route\Route put(string $uri, mixed $location)
  * @method static \Yao\Route\Route delete(string $uri, mixed $location)

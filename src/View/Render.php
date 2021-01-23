@@ -11,7 +11,6 @@ class Render
 
     public function __construct()
     {
-        Config::load('view');
         if (!class_exists($driver = Config::get('view.type'))) {
             $driver = 'Yao\\View\\Drivers\\' . ucfirst(Config::get('view.type'));
         }

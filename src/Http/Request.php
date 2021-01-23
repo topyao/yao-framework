@@ -2,8 +2,6 @@
 
 namespace Yao\Http;
 
-use Yao\Facade\Config;
-
 /**
  * 请求类
  * Class Request
@@ -28,7 +26,7 @@ class Request
         $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
     }
 
-    public function server($name = null)
+    public function server(?string $name = null)
     {
         return $name ? ($this->server[strtoupper($name)] ?? null) : $this->server;
     }

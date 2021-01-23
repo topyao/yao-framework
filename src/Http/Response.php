@@ -3,6 +3,7 @@
 namespace Yao\Http;
 
 use Yao\Facade\Route;
+use Yao\Traits\SingleInstance;
 
 /**
  * 响应类
@@ -30,9 +31,9 @@ class Response
         return $this;
     }
 
-    public function middleware()
+    protected function _corsCheck()
     {
-        return Route::getMiddleware();
+
     }
 
     public function header($header)

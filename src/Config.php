@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Yao;
 
@@ -38,13 +39,13 @@ class Config implements \ArrayAccess
      */
     private array $config = [];
 
-//    public function __construct()
-//    {
-//        array_map(function ($config) {
-//            $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
-//            $this->config[$config_suffix] = require_once($config);
-//        }, glob($this->_getConfig('*')));
-//    }
+    public function __construct()
+    {
+        array_map(function ($config) {
+            $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+            $this->config[$config_suffix] = require_once($config);
+        }, glob($this->_getConfig('*')));
+    }
 
 
     /**
@@ -55,26 +56,33 @@ class Config implements \ArrayAccess
      */
     public function get(?string $key = null, $default = null)
     {
+//        $this->load($key);
         if (!isset($key)) {
             return $this->config;
         }
         return $this->parse($this->config, $key, $default);
     }
 
+//    public function load($key)
+//    {
+//        if (is_null($key)) {
+//            array_map(function ($config) {
+//                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+//                $this->config[$config_suffix] = include_once($config);
+//            }, glob($this->_getConfig('*')));
+//        } else if (false !== ($point = strpos($key, '.'))) {
+//            $config = substr($key, 0, $point);
+//            if (!isset($this->config[$config])) {
+//                $this->config[$config] = include_once($this->_getConfig($config));
+//            }
+//        }
+//    }
+
     public function getByType($config)
     {
         $config = $this->config[$config];
         return $config[$config['type']];
     }
-
-    public function load($config)
-    {
-        if (!isset($this->config[$config])) {
-            $file = $this->_getConfig($config);
-            $this->config[$config] = include_once($file);
-        }
-    }
-
 
     /**
      * 获取配置文件路径

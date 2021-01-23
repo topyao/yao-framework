@@ -22,7 +22,6 @@ class Query
         }
         $driver = '\\Yao\\Db\\Drivers\\' . ucfirst($database);
         $this->driver = new $driver($database);
-        $this->collection = new \Yao\Collection();
     }
 
     public function __call($method, $args)
