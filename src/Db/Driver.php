@@ -141,11 +141,9 @@ abstract class Driver
         foreach ($data as $value) {
             $this->bindParam[] = $value;
         }
-        $sql = 'INSERT INTO ' . $this->name . ' ' . $fields . ' ' . 'VALUES ' . $params;
+        $sql = 'INSERT INTO ' . $this->name . $fields . ' ' . 'VALUES ' . $params;
         $this->query->prepare($sql, $this->bindParam);
         return $this->query->getPdo()->lastinsertid();
-//        return $this->
-//            ->lastinsertid();
     }
 
     /**
@@ -259,7 +257,11 @@ abstract class Driver
         });
     }
 
-
+    /**
+     * @param $limit
+     * @param null $offset
+     * @return $this mixed
+     */
     abstract public function limit($limit, $offset = null);
 
     /**
