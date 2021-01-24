@@ -27,7 +27,7 @@ class Response
 
     public function code($code = null)
     {
-        isset($code) || $this->code = $code;
+        isset($code) && $this->code = $code;
         return $this;
     }
 
