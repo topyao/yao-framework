@@ -10,7 +10,7 @@ namespace Yao\Facade;
  * @method static \Yao\Route\Route put(string $uri, mixed $location)
  * @method static \Yao\Route\Route delete(string $uri, mixed $location)
  * @method static \Yao\Route\Route patch(string $uri, mixed $location)
- * @method static \Yao\Route\Route redirect(string $path, string $url,array $requestMethod = ['get'],int $code = 200) 路由重定向
+ * @method static \Yao\Route\Route redirect(string $path, string $url,int $code = 200,array $requestMethod = ['get']) 路由重定向
  * @method static \Yao\Route\Route rule(string $uri, mixed $location, array $type = ['get', 'post'])
  * @method static \Yao\Route\Route source(string $uri, mixed $location)
  * @method static \Yao\Route\Route alias(string $alias)

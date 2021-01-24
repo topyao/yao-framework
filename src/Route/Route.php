@@ -16,7 +16,7 @@ class Route
 
     protected array $routes = [];
 
-    public string $controller = '';
+    public $controller = '';
     public string $action = '';
     public array $param = [];
 
@@ -29,6 +29,20 @@ class Route
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
     }
 
+
+    /**
+     * 重定向路由
+     * @param string $path
+     * @param string $location
+     * @param int $code
+     * @param array|string[] $requestMethods
+     */
+    public function redirect(string $path, string $location, int $code = 200, array $requestMethods = ['get'])
+    {
+        $this->_rule($requestMethods, $path, $location, 'route', function () use ($code,$location) {
+            return redirect($location, $code);
+        });
+    }
 
     public function allowCors()
     {
@@ -69,20 +83,6 @@ class Route
             }
         }
         throw new \Exception('页面不存在', 404);
-    }
-
-    /**
-     * 重定向路由
-     * @param string $path
-     * @param string $location
-     * @param array|string[] $requestMethods
-     * @param int $code
-     */
-    public function redirect(string $path, string $location, array $requestMethods = ['get'], int $code = 302)
-    {
-        $this->_rule($requestMethods, $path, $location, 'route', function () use ($code) {
-            return redirect($this->location, $code);
-        });
     }
 
     /**
@@ -154,7 +154,6 @@ class Route
         $this->_rule($method, $route[0], $route, 'route', $route[1]);
         return $this;
     }
-
 
     private function _rule($method, $path, $location, $property, $value)
     {
