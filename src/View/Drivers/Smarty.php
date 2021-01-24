@@ -17,8 +17,8 @@ class Smarty extends Driver
         $this->smarty->right_delimiter = $this->config['right_delimiter'];
         $this->smarty
             ->setTemplateDir(env('views_path'))
-            ->setCompileDir(env('storage_path') . 'template' . DIRECTORY_SEPARATOR . 'compile')
-            ->setCacheDir($this->config['cache_dir']);
+            ->setCompileDir(env('cache_path') . 'view' . DIRECTORY_SEPARATOR . 'compile')
+            ->setCacheDir(env('cache_path') . 'view');
     }
 
 

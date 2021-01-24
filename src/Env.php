@@ -31,7 +31,8 @@ class Env
             'STORAGE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR,
             'ROUTES_PATH' => $this->root . 'routes' . DIRECTORY_SEPARATOR,
             'VIEWS_PATH' => $this->root . 'views' . DIRECTORY_SEPARATOR,
-            'PUBLIC_PATH' => $this->root . 'public' . DIRECTORY_SEPARATOR
+            'PUBLIC_PATH' => $this->root . 'public' . DIRECTORY_SEPARATOR,
+            'CACHE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR,
         ];
         $env = $envFile ?? ($this->env['ROOT_PATH'] . '.env');
         if (file_exists($env)) {

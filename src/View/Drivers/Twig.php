@@ -15,7 +15,7 @@ class Twig extends Driver
         $loader = new FilesystemLoader(env('views_path'));
         $this->twig = new Environment($loader, [
             'debug' => $this->config['debug'],
-            'cache' => $this->config['cache'] ? $this->config['cache_dir'] : false,
+            'cache' => $this->config['cache'] ? env('cache_path') . 'view' : false,
         ]);
     }
 
