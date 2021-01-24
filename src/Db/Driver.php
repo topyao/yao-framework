@@ -27,13 +27,6 @@ abstract class Driver
     ];
     public $type;
 
-    /**
-     * 数据库字段引号类型
-     * @var string
-     */
-    protected $quote = '`';
-
-
     public $query;
 
     final public function __construct($database)
@@ -56,13 +49,13 @@ abstract class Driver
      */
     final public function name(string $table_name)
     {
-        $this->name = $this->quote($this->config['prefix'] . $table_name) . ' ';
+        $this->name = $this->config['prefix'] . $table_name . ' ';
         return $this;
     }
 
     final public function table(string $table_name)
     {
-        $this->name = $this->quote($table_name);
+        $this->name = $table_name;
         return $this;
     }
 
@@ -100,15 +93,9 @@ abstract class Driver
         return $this->collection;
     }
 
-    protected function quote($string)
-    {
-        return $this->quote . $string . $this->quote;
-    }
-
-
     public function value($value)
     {
-        $query = 'SELECT ' . $this->quote($value) . ' FROM ' . $this->name . $this->_condition();
+        $query = 'SELECT ' . $value . ' FROM ' . $this->name . $this->_condition();
         $this->collection(($data = $this->query->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
         return $this->collection;
     }
@@ -184,9 +171,6 @@ abstract class Driver
         if (is_string($field)) {
             $field = explode(',', $field);
         }
-        $field = array_map(function ($value) {
-            return $this->quote($value);
-        }, $field);
         $this->field = implode(',', $field);
         return $this;
     }
@@ -288,7 +272,7 @@ abstract class Driver
         if (!empty($order)) {
             $this->construction['order'] = ' ORDER BY ';
             foreach ($order as $ord => $by) {
-                $this->construction['order'] .= $this->quote($ord) . ' ' . strtoupper($by) . ',';
+                $this->construction['order'] .= $ord . ' ' . strtoupper($by) . ',';
             }
             $this->construction['order'] = rtrim($this->construction['order'], ',');
         }

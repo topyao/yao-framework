@@ -14,12 +14,6 @@ class Pgsql extends Driver
 {
 
     /**
-     * 数据库字段引号类型
-     * @var string
-     */
-    protected $quote = '';
-
-    /**
      * @param $limit
      * @param null $offset
      * @return $this
