@@ -47,6 +47,12 @@ class Container
      */
     public function get(string $class, array $arguments = [], bool $singleInstance = false)
     {
+        $this->getInject($class, $arguments, $singleInstance);
+        return self::$instance;
+    }
+
+    public function getInject(string $class, array $arguments = [], bool $singleInstance = false)
+    {
         $this->_getClassName($class);
         if (!$singleInstance || !array_key_exists($this->class, $this->app)) {
             $this->app[$this->class] =
@@ -54,7 +60,7 @@ class Container
                     ? new $this->class(...$arguments, ...$this->_inject($method))
                     : new $this->class();
         }
-        return self::$instance;
+        return $this->app[$this->class];
     }
 
 
@@ -70,7 +76,8 @@ class Container
                 }
                 if (class_exists($injectClass)) {
                     if (!array_key_exists($injectClass, $this->app)) {
-                        $this->app[$injectClass] = new $injectClass();
+//                        $this->app[$injectClass] = new $injectClass();
+                        $this->app[$injectClass] = $this->getInject($injectClass);
                     }
                     $params[] = $this->app[$injectClass];
                 }
