@@ -17,6 +17,7 @@ class Serve extends Command
 |                         Yao                          |
 |             https://github.com/topyao/yao            |
 +------------------------------------------------------+
+Welcome                        Press 'CTRL + C' to quit.
 
 EOT;
         passthru('php -S localhost:' . $port . ' -t public ./public/router.php');
