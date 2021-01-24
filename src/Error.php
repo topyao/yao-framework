@@ -54,58 +54,10 @@ class Error
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>' . $message . '</title>
             </head>
-            
-            <style>
-                body {
-                    margin: 0;
-                    padding: 0;
-                }
-            
-                .container {
-                    border-radius: 3px 3px 0 0;
-                    width: 50vw;
-                    height: 50vh;
-                    background-color: rgb(255, 255, 255);
-                    margin: 25vh auto;
-                }
-            
-                .title {
-                    color:#3c3c3c;
-                    border-radius: 3px 3px 0 0;
-                    height: 1em;
-                    display:flex;
-                    justify-content:space-between;
-                    font-size: 1em;
-                    padding: 0 .5em;
-                    box-sizing: border-box;
-                    line-height: 1em;
-                }
-            
-                .content {
-                    padding: 0 .5em;
-                    height:80%;
-                    
-                }
-                .trace{
-                    font-size:1.2em;
-                    color:#3c3c3c;
-                    display:block;
-                    word-wrap:break-word;
-                    word-break:break-all;
-                }
-            </style>
-            
             <body>
-                <div class="container">
-                    <div class="title">
-                    Message: ' . $message . $code . '
-                    
-                    <div class="content">
-                    File:' . $exception->getFile() . ' +' . $exception->getLine() . '<pre class="trace">' . $exception->getTraceAsString() . '</pre>
-                    </div>
-                </div>
+            <b>Message:</b> ' . $message . $code . '
+                    <br><b>File:</b>' . $exception->getFile() . '<br><b>Line:</b>' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em">' . $exception->getTraceAsString() . '</pre>
             </body>
-            
             </html>';
         } else {
             $data = include_once $this->exceptionView;
@@ -117,7 +69,7 @@ class Error
     {
         Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            $data = ' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line .'<br><b>Trace:</b>'. print_r($errContext,true) . '</pre>';
+            $data = ' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '<br><b>Trace:</b>' . print_r($errContext, true) . '</pre>';
         } else {
             $data = include_once $this->exceptionView;
         }
