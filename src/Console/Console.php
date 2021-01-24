@@ -16,7 +16,15 @@ class Console
         if (!isset($argv[1])) {
             exit((new Help())->out());
         }
-        $this->command = '\\Yao\\Console\\Commands\\' . ucfirst($argv[1]);
+        if (file_exists($commands = env('root_path') . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'commands.php')) {
+            $userCommands = include_once($commands);
+            is_array($userCommands) || $userCommands = [];
+        }
+        $builtInCommands = include_once(__DIR__ . DIRECTORY_SEPARATOR . 'register.php');
+        $commands = array_merge($userCommands, $builtInCommands);
+        if (array_key_exists($argv[1], $commands)) {
+            $this->command = $commands[$argv[1]];
+        }
         $this->argv = array_slice($argv, 2);
     }
 
