@@ -119,7 +119,7 @@ if (false === function_exists('session')) {
 }
 
 if (false === function_exists('redirect')) {
-    function redirect($url, int $code = 302)
+    function redirect($url, int $code = 200)
     {
         http_response_code($code);
         header('location:' . $url);
