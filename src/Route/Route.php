@@ -56,7 +56,7 @@ class Route
         } else {
             foreach ($this->routes[$this->method] as $uri => $location) {
                 //设置路由匹配正则
-                $uriRegexp = '#^' . $uri . '$#i';
+                $uriRegexp = '#^' . $uri . '$#iU';
                 //路由和请求一致或者匹配到正则
                 if (preg_match($uriRegexp, Request::path(), $match)) {
                     //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
