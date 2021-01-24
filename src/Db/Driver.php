@@ -95,9 +95,16 @@ abstract class Driver
 
     public function value($value)
     {
-        $query = 'SELECT ' . $value . ' FROM ' . $this->name . $this->_condition();
-        $this->collection(($data = $this->query->fetch($query, $this->bindParam)) ? $data[$value] : null, $query);
-        return $this->collection;
+        $query = 'SELECT ' . $value . 'AS `value` FROM ' . $this->name . $this->_condition();
+        $data = $this->query->fetch($query, $this->bindParam);
+        return !empty($data) ? $data['value'] : null;
+    }
+
+    public function count($field)
+    {
+        $query = 'SELECT COUNT(' . $field . ')AS `count` FROM ' . $this->name . $this->_condition();
+        $data = $this->query->fetch($query, $this->bindParam);
+        return !empty($data) ? $data['count'] : null;
     }
 
     /**
