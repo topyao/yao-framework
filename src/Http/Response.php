@@ -25,9 +25,9 @@ class Response
         return $this;
     }
 
-    public function code($code)
+    public function code($code = null)
     {
-        $this->code = $code;
+        isset($code) || $this->code = $code;
         return $this;
     }
 
@@ -36,11 +36,11 @@ class Response
 
     }
 
-    public function header($header)
+    public function header($header = null)
     {
         if (is_string($header)) {
             $this->header[] = $header;
-        } else {
+        } else if (is_array($header)) {
             $this->header += $header;
         }
         return $this;
@@ -59,10 +59,11 @@ class Response
         }
     }
 
-    public function __destruct()
+    public function return()
     {
         $this->create();
         ob_end_flush();
         exit($this->data);
     }
+
 }

@@ -81,16 +81,30 @@ if (false === function_exists('dump')) {
 }
 
 if (false === function_exists('json')) {
-    function json($data)
+    function json($data, ?int $code = null, $header = null)
     {
-        return Json::data($data);
+        return Json::data($data)->code($code)
+            ->header($header)
+            ->return();
     }
 }
 
 if (false === function_exists('response')) {
-    function response($data)
+    /**
+     * 响应
+     * @param $data
+     * 数据
+     * @param int|null $code
+     * 状态码
+     * @param array|string|null $header
+     * 头信息
+     */
+    function response($data, ?int $code = null, $header = null)
     {
-        return Response::data($data);
+        return Response::data($data)
+            ->code($code)
+            ->header($header)
+            ->return();
     }
 }
 if (false === function_exists('session')) {

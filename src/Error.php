@@ -46,9 +46,8 @@ class Error
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
         Log::write('system', $message, 'notice');
-        http_response_code((int)$exception->getCode());
         if ($this->debug) {
-            return Response::data('<!DOCTYPE html>
+            $data = '<!DOCTYPE html>
             <html lang="zh">
             <head>
                 <meta charset="UTF-8">
@@ -107,18 +106,22 @@ class Error
                 </div>
             </body>
             
-            </html>');
+            </html>';
+        } else {
+            $data = include_once $this->exceptionView;
         }
-        return Response::data(include_once $this->exceptionView);
+        return Response::data($data)->code((int)$exception->getCode())->return();
     }
 
     public function error($code, $message, $file, $line, $errContext)
     {
         Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            return Response::data(' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '</pre>');
+            $data = ' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line .'<br><b>Trace:</b>'. print_r($errContext,true) . '</pre>';
+        } else {
+            $data = include_once $this->exceptionView;
         }
-        return Response::data(include_once $this->exceptionView);
+        return Response::data($data)->code(403)->return();
     }
 
     // public function shutdown()

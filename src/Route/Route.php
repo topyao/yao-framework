@@ -136,9 +136,9 @@ class Route
             $resData = \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         }
         if (is_array($resData) || $resData instanceof \Yao\Collection) {
-            return Json::data($resData);
+            return Json::data($resData)->return();
         } else {
-            return Response::data($resData);
+            return Response::data($resData)->return();
         }
     }
 
