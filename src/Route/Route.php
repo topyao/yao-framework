@@ -189,7 +189,7 @@ class Route
      * 允许的头信息
      * @return $this
      */
-    public function cross($AllowOrigin = null, ?bool $AllowCredentials = null, $AllowHeaders = null): Route
+    public function cors($AllowOrigin = null, ?bool $AllowCredentials = null, $AllowHeaders = null): Route
     {
         $cors = Config::get('cors');
         $AllowOrigin || $AllowOrigin = $cors['origin'];
