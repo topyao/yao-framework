@@ -4,11 +4,7 @@
 namespace Yao\Provider;
 
 
-use Yao\Provider\Service;
-use Yao\Provider\Services\{
-    Development,
-    Init
-};
+use Yao\Provider\Services\Init;
 
 /**
  * 服务提供类
