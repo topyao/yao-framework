@@ -9,6 +9,6 @@ class Cache extends Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Cache::class;
+        return \Yao\Setter::class;
     }
 }

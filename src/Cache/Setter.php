@@ -3,18 +3,13 @@
 
 namespace Yao\Cache;
 
-
 /**
- * 缓存操作类
- * Class Cache
- * @package Yao
+ * Class Setter
+ * @package Yao\Cache
  */
-class Cache
+class Setter
 {
-
-
     public $driver;
-
 
     public function __construct()
     {
