@@ -63,7 +63,7 @@ class Response
     {
         $this->create();
         ob_end_flush();
-        exit($this->data);
+        echo $this->data;
     }
 
 }

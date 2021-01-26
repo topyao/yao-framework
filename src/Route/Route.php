@@ -141,16 +141,27 @@ class Route
         if ($this->controller instanceof \Closure) {
             $resData = call_user_func_array($this->controller, $this->param);
         } else if (is_string($this->controller)) {
-            $obj = new $this->controller();
-            if (!method_exists($obj, $this->action)) {
-                throw new \Exception('控制器' . $this->controller . '中的方法' . $this->action . '不存在', 404);
+            if (isset(get_class_vars($this->controller)['middleware'][$this->action])) {
+                $middleware = get_class_vars($this->controller)['middleware'][$this->action];
+                $resData = function () {
+                    \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
+                };
+                return (new $middleware)->handle($resData, function ($request) {
+                    return $this->output($request);
+                });
             }
-            $resData = \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
         }
-        if (is_array($resData) || $resData instanceof \Yao\Collection) {
-            return Json::data($resData)->return();
-        } else {
-            return Response::data($resData)->return();
+        return $this->output($resData);
+    }
+
+    public function output($data)
+    {
+        if (is_array($data) || $data instanceof \Yao\Collection) {
+            return Json::data($data)->return();
+        } else if (is_string($data)) {
+            return Response::data($data)->return();
+        } else if ($data instanceof \Closure) {
+            return $data();
         }
     }
 
