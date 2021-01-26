@@ -39,9 +39,16 @@ class Route
      */
     public function redirect(string $path, string $location, int $code = 200, array $requestMethods = ['get'])
     {
-        $this->_rule($requestMethods, $path, $location, 'route', function () use ($code,$location) {
+        $this->_rule($requestMethods, $path, $location, 'route', function () use ($code, $location) {
             return redirect($location, $code);
         });
+        return $this;
+    }
+
+    public function none(\Closure $closure, $data = [])
+    {
+        $this->routes['miss'] = ['route' => $closure, 'data' => $data];
+        return $this;
     }
 
     public function allowCors()
@@ -82,7 +89,12 @@ class Route
                 }
             }
         }
-        throw new \Exception('页面不存在', 404);
+        if (isset($this->routes['miss'])) {
+            $this->param = $this->routes['miss']['data'];
+            return $this->_locate($this->routes['miss']['route']);
+        } else {
+            throw new \Exception('页面不存在！', 404);
+        }
     }
 
     /**
@@ -124,7 +136,7 @@ class Route
     public function dispatch()
     {
         if (empty($this->controller)) {
-            throw new \Exception('页面不存在', 404);
+            throw new \Exception('页面不存在！', 404);
         }
         if ($this->controller instanceof \Closure) {
             $resData = call_user_func_array($this->controller, $this->param);
