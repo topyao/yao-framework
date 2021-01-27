@@ -142,7 +142,7 @@ class Route
             $resData = call_user_func_array($this->controller, $this->param);
         } else if (is_string($this->controller)) {
             $resData = function () {
-                    \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
+                return \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
             };
             if (isset(get_class_vars($this->controller)['middleware'][$this->action])) {
                 $middleware = get_class_vars($this->controller)['middleware'][$this->action];
@@ -161,7 +161,7 @@ class Route
         } else if (is_string($data)) {
             return Response::data($data)->return();
         } else if ($data instanceof \Closure) {
-            return $data();
+            return $this->output($data());
         }
     }
 
