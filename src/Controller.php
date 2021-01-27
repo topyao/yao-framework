@@ -36,7 +36,7 @@ abstract class Controller
      */
     protected function validate(string $class = \App\Http\Validate::class, array $data = [], array $notice = [])
     {
-        return (new $class($data))->notice($notice);
+        return (new $class($data))->notice($notice)->check();
     }
 
 
