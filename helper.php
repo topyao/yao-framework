@@ -122,6 +122,7 @@ if (false === function_exists('redirect')) {
     function redirect($url, int $code = 302)
     {
         header('location:' . $url, true, $code);
+        ob_end_flush();
         exit;
     }
 }
