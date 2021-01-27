@@ -61,6 +61,16 @@ class Route
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
+        }else if('options' == $this->method){
+            //需要优化下，解决了其他请求方式下的跨域问题
+            $allows = $this->routes[$this->method][Request::path()]['cors'];
+            $origin = $allows['origin'] ?? Config::get('cors.origin');
+            $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? Config::get('cors.headers');
+            header('Access-Control-Allow-Origin:' . $origin);
+            header('Access-Control-Allow-Credentials:' . $credentials);
+            header('Access-Control-Allow-Headers:' . $headers,true,204);
+            exit;
         }
     }
 
