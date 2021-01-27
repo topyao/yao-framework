@@ -24,6 +24,8 @@ class Route
     private string $path = '';
     private $location;
 
+    private $middleware;
+
     public function getRoute($requestMethod = null, $requestPath = null)
     {
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
@@ -61,7 +63,7 @@ class Route
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
-        }else if('options' == $this->method){
+        } else if ('options' == $this->method) {
             //需要优化下，解决了其他请求方式下的跨域问题
             $allows = $this->routes[$this->method][Request::path()]['cors'];
             $origin = $allows['origin'] ?? Config::get('cors.origin');
@@ -69,7 +71,7 @@ class Route
             $headers = $allows['headers'] ?? Config::get('cors.headers');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
-            header('Access-Control-Allow-Headers:' . $headers,true,204);
+            header('Access-Control-Allow-Headers:' . $headers, true, 204);
             exit;
         }
     }
@@ -77,6 +79,7 @@ class Route
     public function match()
     {
         $this->method = Request::method();
+        $this->path = Request::path();
         $this->allowCors();
         if (!array_key_exists($this->method, $this->routes)) {
             throw new \Exception('请求类型' . $this->method . '没有定义任何路由', 404);
@@ -143,13 +146,27 @@ class Route
         return true;
     }
 
+    public function middleware($middleware)
+    {
+        $this->_rule($this->method, $this->path, $this->location, 'middleware', $middleware);
+        return $this;
+    }
+
     public function dispatch()
     {
         if (empty($this->controller)) {
             throw new \Exception('页面不存在！', 404);
         }
         if ($this->controller instanceof \Closure) {
-            $resData = call_user_func_array($this->controller, $this->param);
+            $resData = function () {
+                return call_user_func_array($this->controller, $this->param);
+            };
+            if (isset($this->routes[$this->method][$this->path]['middleware'])) {
+                $middleware = $this->routes[$this->method][$this->path]['middleware'];
+                return (new $middleware)->handle($resData, function ($request) {
+                    return $this->output($request);
+                });
+            }
         } else if (is_string($this->controller)) {
             $resData = function () {
                 return \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
