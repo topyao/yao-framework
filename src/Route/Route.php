@@ -240,6 +240,7 @@ class Route
      */
     public function cors($AllowOrigin = null, ?bool $AllowCredentials = null, $AllowHeaders = null): Route
     {
+        //需要判断是否存在配置，不存在则默认
         $cors = Config::get('cors');
         $AllowOrigin || $AllowOrigin = $cors['origin'];
         $AllowHeaders || $AllowHeaders = $cors['headers'];
@@ -247,20 +248,21 @@ class Route
         $AllowCredentials = $AllowCredentials ? 'true' : 'false';
         if (is_array($this->method)) {
             foreach ($this->method as $method) {
-                $this->routes[$method][$this->path]['cors'] = [
-                    'origin' => $AllowOrigin,
-                    'credentials' => $AllowCredentials,
-                    'headers' => $AllowHeaders
-                ];
+                $this->_setCorsHeaders($AllowOrigin, $AllowCredentials, $AllowHeaders);
             }
         } else {
-            $this->routes[$this->method][$this->path]['cors'] = [
-                'origin' => $AllowOrigin,
-                'credentials' => $AllowCredentials,
-                'headers' => $AllowHeaders
-            ];
+            $this->_setCorsHeaders($AllowOrigin, $AllowCredentials, $AllowHeaders);
         }
         return $this;
+    }
+
+    private function _setCorsHeaders($origin, $credentials, $headers)
+    {
+        $this->routes[$this->method][$this->path]['cors'] = [
+            'origin' => $origin,
+            'credentials' => $credentials,
+            'headers' => $headers
+        ];
     }
 
 
