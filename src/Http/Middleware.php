@@ -9,7 +9,7 @@ class Middleware
 
     public $middleware = [];
 
-    public function handle()
+    public function handle($request, \Closure $next)
     {
 
     }
