@@ -2,6 +2,8 @@
 
 namespace Yao;
 
+use Yao\Http\Middleware;
+
 /**
  * Class Controller
  * @package Yao
@@ -9,16 +11,23 @@ namespace Yao;
 abstract class Controller
 {
 
-    protected $middleware = [];
+    public $middleware = [];
 
     public function __construct()
     {
-//        $this->init();
+        $this->init();
+        $this->_registerMiddleware();
     }
 
-//    protected function init(\Yao\Http\Request $request)
-//    {
-//    }
+    protected function init()
+    {
+    }
+
+    final private function _registerMiddleware()
+    {
+        $middleware = new Middleware();
+        $middleware->set($this->middleware);
+    }
 
     /**
      * @param string $class 验证器完整类名

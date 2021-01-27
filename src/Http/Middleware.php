@@ -36,4 +36,9 @@ class Middleware
     {
 
     }
+
+    public function set($middleware)
+    {
+        $this->middleware = $middleware;
+    }
 }
