@@ -38,11 +38,7 @@ class Response
 
     public function header($header = null)
     {
-        if (is_string($header)) {
-            $this->header[] = $header;
-        } else if (is_array($header)) {
-            $this->header += $header;
-        }
+        $this->header = [...$this->header,...(array)$header];
         return $this;
     }
 
