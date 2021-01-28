@@ -169,15 +169,22 @@ abstract class Driver
     /**
      * 设置查询字段
      * @param string|array $field
-     * @return Db
+     * @return \Yao\Db\Driver
      */
     public function field($field)
     {
-        if (is_string($field)) {
-            $field = explode(',', $field);
+        if (is_array($field)) {
+            $field = implode(',', $field);
         }
-        $this->field = implode(',', $field);
+        $this->field = $field;
         return $this;
+
+
+//        if (is_string($field)) {
+//            $field = explode(',', $field);
+//        }
+//        $this->field = implode(',', $field);
+//        return $this;
     }
 
     protected function _checkWhereEmpty(\Closure $closure)
