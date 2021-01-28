@@ -25,10 +25,8 @@ class Smarty extends Driver
     public function render($arguments = [])
     {
         $this->_setOptions();
-        if ([] !== $arguments) {
-            foreach ($arguments as $key => $value) {
-                $this->smarty->assign($key, $value);
-            }
+        foreach ($arguments as $key => $value) {
+            $this->smarty->assign($key, $value);
         }
         return $this->smarty->display($this->template);
     }
