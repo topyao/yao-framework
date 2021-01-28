@@ -171,11 +171,17 @@ class Route
             $resData = function () {
                 return \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
             };
-            if (isset(get_class_vars($this->controller)['middleware'][$this->action])) {
+            if(isset($this->routes[$this->method][$this->path]['middleware'])){
+                $middleware = $this->routes[$this->method][$this->path]['middleware'];
+            }else if(isset(get_class_vars($this->controller)['middleware'][$this->action])){
                 $middleware = get_class_vars($this->controller)['middleware'][$this->action];
+            }
+            if(isset($middleware)){
                 return (new $middleware)->handle($resData, function ($request) {
                     return $this->output($request);
                 });
+            }else{
+                return $this->output($resData);
             }
         }
         return $this->output($resData);
