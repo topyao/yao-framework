@@ -2,16 +2,35 @@
 
 namespace Yao;
 
+use Yao\Facade\Db;
+
+/**
+ * @method where(array $where);
+ * @method whereIn(array $whereIn);
+ * @method whereLike(array $whereLike);
+ * @method whereNull(array $whereNull);
+ * @method whereNotNull(array $whereNotNull);
+ * @method insert(array $data);
+ * @method field(string|array $fields)
+ * Class Model
+ * @package Yao
+ */
 class Model
 {
-   
+
     public function __construct()
     {
-        $this->name = rtrim(strchr(get_called_class(),'\\'),'\\');
+        $this->name = strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
     }
 
 
-    public function __call($function_name,$arguments){
+    /**
+     * @param $function_name
+     * @param $arguments
+     * @return \Yao\Db\Driver
+     */
+    public function __call($function_name, $arguments)
+    {
         return Db::name($this->name)->$function_name(...$arguments);
     }
 }
