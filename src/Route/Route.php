@@ -171,16 +171,16 @@ class Route
             $resData = function () {
                 return \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
             };
-            if(isset($this->routes[$this->method][$this->path]['middleware'])){
+            if (isset($this->routes[$this->method][$this->path]['middleware'])) {
                 $middleware = $this->routes[$this->method][$this->path]['middleware'];
-            }else if(isset(get_class_vars($this->controller)['middleware'][$this->action])){
+            } else if (isset(get_class_vars($this->controller)['middleware'][$this->action])) {
                 $middleware = get_class_vars($this->controller)['middleware'][$this->action];
             }
-            if(isset($middleware)){
+            if (isset($middleware)) {
                 return (new $middleware)->handle($resData, function ($request) {
                     return $this->output($request);
                 });
-            }else{
+            } else {
                 return $this->output($resData);
             }
         }
@@ -214,12 +214,8 @@ class Route
     private function _rule($method, $path, $location, $property, $value)
     {
         [$this->method, $this->path, $this->location] = [$method, '/' . trim($path, '/'), $location];
-        if (is_array($this->method)) {
-            foreach ($this->method as $method) {
-                $this->routes[strtolower($method)][$this->path][$property] = $value;
-            }
-        } else {
-            $this->routes[strtolower($this->method)][$this->path][$property] = $value;
+        foreach ((array)$this->method as $method) {
+            $this->routes[strtolower($method)][$this->path][$property] = $value;
         }
     }
 
@@ -252,19 +248,15 @@ class Route
         $AllowHeaders || $AllowHeaders = $cors['headers'];
         isset($AllowCredentials) || $AllowCredentials = $cors['credentials'];
         $AllowCredentials = $AllowCredentials ? 'true' : 'false';
-        if (is_array($this->method)) {
-            foreach ($this->method as $method) {
-                $this->_setCorsHeaders($AllowOrigin, $AllowCredentials, $AllowHeaders);
-            }
-        } else {
-            $this->_setCorsHeaders($AllowOrigin, $AllowCredentials, $AllowHeaders);
+        foreach ((array)$this->method as $method) {
+            $this->_setCorsHeaders($method, $AllowOrigin, $AllowCredentials, $AllowHeaders);
         }
         return $this;
     }
 
-    private function _setCorsHeaders($origin, $credentials, $headers)
+    private function _setCorsHeaders($method, $origin, $credentials, $headers)
     {
-        $this->routes[$this->method][$this->path]['cors'] = [
+        $this->routes[$method][$this->path]['cors'] = [
             'origin' => $origin,
             'credentials' => $credentials,
             'headers' => $headers
