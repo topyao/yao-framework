@@ -166,13 +166,13 @@ class Validate
             unset($this->rule[$field]);
         } else if (is_array($field)) {
             foreach ($field as $key => $value) {
-                if (is_string($value)) {
-                    unset($this->rule[$key][$value]);
-                } else {
-                    foreach ($value as $v) {
-                        unset($this->rule[$key][$v]);
-                    }
+//                if (is_string($value)) {
+//                    unset($this->rule[$key][$value]);
+//                } else {
+                foreach ((array)$value as $v) {
+                    unset($this->rule[$key][$v]);
                 }
+//                }
             }
         } else {
             throw new \Exception(__METHOD__ . '方法传入的参数不符合规范');
