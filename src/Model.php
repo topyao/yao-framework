@@ -18,9 +18,11 @@ use Yao\Facade\Db;
 class Model
 {
 
+    public $name = null;
+
     public function __construct()
     {
-        $this->name = strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
+        $this->name = $this->name ?? strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
     }
 
 
