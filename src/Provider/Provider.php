@@ -28,7 +28,7 @@ class Provider
 
     public function serve()
     {
-        $services = [...($this->services() ?: []), ...$this->builtInServices()];
+        $services = [...(array)$this->services(), ...$this->builtInServices()];
         foreach ($services as $service) {
             if (in_array(Service::class, class_implements($service))) {
                 call_user_func([new $service, 'boot']);
