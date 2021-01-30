@@ -2,6 +2,7 @@
 
 namespace Yao;
 
+use Yao\Facade\Request;
 use Yao\Http\Middleware;
 
 /**
@@ -25,8 +26,7 @@ abstract class Controller
 
     final private function _registerMiddleware()
     {
-        $middleware = new Middleware();
-        $middleware->set($this->middleware);
+        Middleware::instance()->set($this->middleware, Request::method(), Request::path());
     }
 
     /**
