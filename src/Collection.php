@@ -21,6 +21,11 @@ class Collection implements \ArrayAccess, \JsonSerializable
 
     private $data = [];
 
+
+    public function isEmpty(){
+        return empty($this->data);
+    }
+
     public function __set($arg, $value)
     {
         $this->$arg = $value;
