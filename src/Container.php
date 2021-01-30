@@ -48,7 +48,7 @@ class Container
     public function get(string $class, array $arguments = [], bool $singleInstance = false)
     {
         $this->getInject($class, $arguments, $singleInstance);
-        return self::$instance;
+        return $this->app[$class];
     }
 
     public function getInject(string $class, array $arguments = [], bool $singleInstance = false)
@@ -112,14 +112,16 @@ class Container
         }
         return new \ReflectionClass($class);
     }
-    
+
 //    public function invokeClass($class_name,$arguments,$singleInstance = false){
 //        return $this->getInject($class_name, $arguments, $singleInstance);
 //    }
+
+    public function invokeMethod($callable, $arguments)
+    {
+        $this->get($callable[0]);
+        return $this->invoke($callable[1], $arguments);
+    }
 //
-//    public function invokeMethod($callable,$arguments){
-//        return $this->app[$callable[0]]->invoke($callable[1],$arguments);
-//    }
-//
-    
+
 }
