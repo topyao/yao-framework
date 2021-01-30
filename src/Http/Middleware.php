@@ -4,8 +4,12 @@
 namespace Yao\Http;
 
 
+use Yao\Traits\SingleInstance;
+
 class Middleware
 {
+
+    use SingleInstance;
 
     public $middleware = [];
 
@@ -37,8 +41,14 @@ class Middleware
 
     }
 
-    public function set($middleware)
+    public function set($middleware, $method, $path)
     {
-        $this->middleware = $middleware;
+        $this->middleware[$method][$path] = [...($this->middleware[$method][$path] ?? []), ...(array)$middleware];
     }
+
+    public function get()
+    {
+        return $this->middleware[\Yao\Facade\Request::method()][\Yao\Facade\Request::path()];
+    }
+
 }
