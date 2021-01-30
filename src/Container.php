@@ -89,8 +89,7 @@ class Container
     public function invoke($method, $arguments = [])
     {
         if (false != ($RefMethod = $this->_getMethod($method))) {
-            $arguments = is_array($arguments) ? $arguments : [$arguments];
-            return call_user_func_array([$this->app[$this->class], $method], [...$arguments, ...$this->_inject($RefMethod)]);
+            return call_user_func_array([$this->app[$this->class], $method], [...(array)$arguments, ...$this->_inject($RefMethod)]);
         }
     }
 
