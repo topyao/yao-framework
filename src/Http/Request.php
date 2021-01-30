@@ -166,60 +166,41 @@ class Request
         }
     }
 
-
-    //    public static function instance()
-    //    {
-    //        return new self;
-    //    }
-
-    /**
-     * 请求参数过滤方法
-     * @param $params
-     * @param null $key
-     * @return array|string
-     */
-    private function _request($params, $key = null, $default = null)
+    private function _makeStringArgument($predefinedConstant, $argument, $default = '')
     {
-        //初始化参数列表
-        $param = [];
-        //当请求参数为空时直接返回空，空字符串和空数组均返回空
-        if (!empty($params)) {
-            //当没有设置$key参数时候返回所有参数
-            if (!isset($key)) {
-                //使用filter对参数的值进行过滤
-                foreach ($params as $k => $v) {
-                    $param[$k] = $this->_filter($v);
-                }
-            }
-            //过滤参数为字符串
-            if (is_string($key)) {
-                //当传入的键存在于数组中时返回该值否则返回空
-                $param = array_key_exists($key, $params) ? $this->_filter($params[$key]) : $default;
-            }
-            //过滤参数为数组
-            if (is_array($key)) {
-                foreach ($key as $field) {
-                    if (array_key_exists($field, $params)) {
-                        $param[$field] = $this->_filter($params[$field]);
-                    } else {
-                        $param[$field] = null;
-                    }
-                }
-            }
-        }
-        //返回过滤后的数组
-        return $param;
+        return isset($predefinedConstant[$argument])
+            ? $this->_filter($predefinedConstant[$argument])
+            : $default;
     }
 
-    /**
-     * 参数过滤方法
-     * debug
-     * @param $params
-     * @return mixed
-     */
+    private function _makeArrayArguments($predefinedConstant, array $argument, $default = [])
+    {
+        $return = [];
+        foreach ($argument as $value) {
+            $return[$value] = $predefinedConstant[$value] ?? ($default[$value] ?? null);
+        }
+        return $return;
+    }
+
+    private function _request($params, $key = null, $default = null)
+    {
+        if (!isset($key)) {
+            return array_map(function ($value) {
+                return $this->_filter($value);
+            }, $params);
+        }
+        if (is_string($key)) {
+            return $this->_makeStringArgument($params, $key, $default);
+        }
+        if (is_array($key)) {
+            return $this->_makeArrayArguments($params, $key, $default);
+        }
+        return null;
+    }
+
     private function _filter($params)
     {
-        !empty($this->filters) && array_filter($this->filters, function ($filter) use (&$params) {
+        array_filter((array)$this->filters, function ($filter) use (&$params) {
             if (function_exists($filter)) {
                 if (is_array($params)) {
                     foreach ($params as $key => $value) {
@@ -229,7 +210,7 @@ class Request
                     $params = $filter($params);
                 }
             } else {
-                throw new \Exception('过滤函数不存在！', 404);
+                throw new \Exception('过滤函数不存在！', 403);
             }
         });
         return $params;
