@@ -38,7 +38,7 @@ class Response
 
     public function header($header = null)
     {
-        $this->header = [...$this->header,...(array)$header];
+        $this->header = [...$this->header, ...(array)$header];
         return $this;
     }
 
@@ -46,12 +46,8 @@ class Response
     {
         \Yao\Facade\Route::allowCors();
         http_response_code($this->code);
-        if (is_array($this->header)) {
-            foreach ($this->header as $header) {
-                header($header);
-            }
-        } else if (is_string($this->header)) {
-            header($this->header);
+        foreach ($this->header as $header) {
+            header($header);
         }
     }
 
