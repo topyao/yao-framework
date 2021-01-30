@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Yao\Route;
 
 use Yao\Facade\{Config, Json, Request, Response};
+use Yao\Http\Middleware;
 use Yao\Route\Rules\Alias;
 
 /**
@@ -16,7 +17,7 @@ class Route
 
     protected array $routes = [];
 
-    public $controller = '';
+    public $controller = 'App\\Http\\Controllers';
     public string $action = '';
     public array $param = [];
 
@@ -136,7 +137,6 @@ class Route
                 throw new \Exception("{$location}中的控制器不存在");
             }
             $this->action = array_pop($controller);
-            $this->controller = 'App\\Http\\Controllers';
             foreach ($controller as $directory) {
                 $this->controller .= '\\' . ucfirst($directory);
             }
@@ -148,6 +148,7 @@ class Route
 
     public function middleware($middleware)
     {
+        Middleware::instance()->set($middleware, $this->method, $this->path);
         $this->_rule($this->method, $this->path, $this->location, 'middleware', $middleware);
         return $this;
     }
@@ -169,7 +170,7 @@ class Route
             }
         } else if (is_string($this->controller)) {
             $resData = function () {
-                return \Yao\Container::instance()->get($this->controller)->invoke($this->action, $this->param);
+                return \Yao\Container::instance()->invokeMethod([$this->controller, $this->action], $this->param);
             };
             if (isset($this->routes[$this->method][$this->path]['middleware'])) {
                 $middleware = $this->routes[$this->method][$this->path]['middleware'];
