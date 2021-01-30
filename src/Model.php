@@ -25,14 +25,13 @@ class Model
         $this->name = $this->name ?? strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
     }
 
-
     /**
      * @param $function_name
      * @param $arguments
      * @return \Yao\Db\Driver
      */
-    public function __call($function_name, $arguments)
+    public function __call($functionName, $arguments)
     {
-        return Db::name($this->name)->$function_name(...$arguments);
+        return Db::name($this->name)->$functionName(...$arguments);
     }
 }
