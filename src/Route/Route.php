@@ -31,7 +31,7 @@ class Route
 
     private $middleware;
 
-    public function __construct(\Yao\Http\Request $request,Config $config)
+    public function __construct(\Yao\Http\Request $request)
     {
         $this->request = $request;
     }

@@ -2,19 +2,13 @@
 
 namespace Yao;
 
-class Container implements \ArrayAccess, \Countable
+class Container
 {
     /**
      * 依赖注入的类实例
      * @var array
      */
     protected static array $instances = [];
-
-    /**
-     * 反射类实例
-     * @var
-     */
-    protected $reflectionClass;
 
     /**
      * 绑定的类名
@@ -95,37 +89,10 @@ class Container implements \ArrayAccess, \Countable
     {
         [$class, $method] = [static::_getBindClass($callable[0]), $callable[1]];
         static::make($class, $constructorParameters, $singleInstance);
-
         $parameters = (new \ReflectionClass($class))->getMethod($method)->getParameters();
-
-//        $parameters = $this->reflectionClass->getMethod($method)->getParameters();
         $injectClass = static::_getInjectObject($parameters);
         return call_user_func_array([static::$instances[$class], $method], [...$arguments, ...$injectClass]);
     }
 
-    public function offsetExists($offset)
-    {
-        // TODO: Implement offsetExists() method.
-    }
-
-    public function offsetGet($offset)
-    {
-        // TODO: Implement offsetGet() method.
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        // TODO: Implement offsetSet() method.
-    }
-
-    public function offsetUnset($offset)
-    {
-        // TODO: Implement offsetUnset() method.
-    }
-
-    public function count()
-    {
-        return count(static::$instances);
-    }
 
 }
