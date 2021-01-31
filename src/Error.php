@@ -55,10 +55,10 @@ class Error
                 <title>' . $message . '</title>
             </head>
             <body>
-            <b>Message:</b> ' . $message . $code . '
-                    <br><b>File:</b>' . $exception->getFile() . '<br><b>Line:</b>' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em">' . $exception->getTraceAsString() . '</pre>
-            </body>
-            </html>';
+            <b>Message:</b> ' . $message . '
+             <br><b>Code:</b>' . $code . '<br><b> File:</b> ' . $exception->getFile() . '<br ><b > Line:</b > ' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em" > ' . $exception->getTraceAsString() . '</pre >
+            </body >
+            </html > ';
         } else {
             $data = include_once $this->exceptionView;
         }
@@ -69,7 +69,7 @@ class Error
     {
         Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            $data = ' <title>' . $message . ' </title><pre style = "font-size:1.6em" ><b>Message:</b>' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b>' . $file . '+' . $line . '<br><b>Trace:</b>' . print_r($errContext, true) . '</pre>';
+            $data = ' < title>' . $message . ' </title ><pre style = "font-size:1.6em" ><b > Message:</b > ' . $message . ' <br ><b > Code:</b > ' . $code . ' <br ><b > Location:</b > ' . $file . ' + ' . $line . '<br ><b > Trace:</b > ' . print_r($errContext, true) . '</pre > ';
         } else {
             $data = include_once $this->exceptionView;
         }
