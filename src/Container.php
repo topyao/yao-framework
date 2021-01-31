@@ -12,8 +12,16 @@ class Container
      */
     private array $instances = [];
 
+    /**
+     *
+     * @var
+     */
     private $reflectionClass;
 
+    /**
+     * 绑定的类名
+     * @var array|string[]
+     */
     private array $bind = [
         'request' => \Yao\Http\Request::class,
         'validate' => \App\Http\Validate::class,
@@ -36,6 +44,14 @@ class Container
         return $this->bind[strtolower($name)] ?? $name;
     }
 
+    /**
+     * 获取类对象，支持依赖注入
+     * @param $abstract
+     * @param array $arguments
+     * @param false $singleInstance
+     * @return mixed
+     * @throws \ReflectionException
+     */
     public function make($abstract, $arguments = [], $singleInstance = false)
     {
         $abstract = $this->_getBindClass($abstract);
