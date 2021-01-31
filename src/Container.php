@@ -9,7 +9,7 @@ class Container
      * @var array
      */
     protected static array $instances = [];
-
+    protected static $instance;
     /**
      * 绑定的类名
      * @var array|string[]
@@ -94,5 +94,17 @@ class Container
         return call_user_func_array([static::$instances[$class], $method], [...$arguments, ...$injectClass]);
     }
 
+
+    public static function get($abstract, $arguments = [], $singleInstance = false)
+    {
+        self::$instance = $abstract;
+        self::make($abstract, $arguments, $singleInstance);
+        return new static();
+    }
+
+    public function __call($method, $arguments)
+    {
+        return self::invokeMethod([self::$instance, $method], $arguments);
+    }
 
 }
