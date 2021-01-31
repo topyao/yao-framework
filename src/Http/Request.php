@@ -176,8 +176,8 @@ class Request
     private function _makeArrayArguments($predefinedConstant, array $argument, $default = [])
     {
         $return = [];
-        foreach ($argument as $value) {
-            $return[$value] = $predefinedConstant[$value] ?? ($default[$value] ?? null);
+        foreach ($argument as $key => $value) {
+            $return[$value] = $predefinedConstant[$value] ?? ($default[$key] ?? null);
         }
         return $return;
     }
