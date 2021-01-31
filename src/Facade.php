@@ -38,8 +38,8 @@ class Facade
      */
     protected static function createFacade()
     {
-//        return Container::instance()
-//            ->get(static::getFacadeClass(), static::$params, static::$singleInstance);
+//        $facadeClass = static::getFacadeClass();
+//        Container::instance()->make($facadeClass);
         $class = static::getFacadeClass();
         if (!class_exists($class)) {
             throw new \Exception('类' . $class . '不存在', 404);
@@ -62,7 +62,8 @@ class Facade
      */
     public static function __callStatic($method, $params)
     {
-//        return static::createFacade()->invoke($method, $params);
-        return call_user_func_array([static::createFacade(), $method], $params);
+        $facadeClass = static::getFacadeClass();
+        return Container::instance()->invokeMethod([$facadeClass, $method], $params, static::$singleInstance);
+//        return call_user_func_array([static::createFacade(), $method], $params);
     }
 }
