@@ -14,30 +14,12 @@ class Config implements \ArrayAccess
 {
     use Parse;
 
-    public function offsetUnset($offset)
-    {
-    }
-
-    public function offsetExists($offset)
-    {
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->parse($this->config, $offset);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        $this->config[$offset] = $value;
-    }
-
-
     /**
      * 存放配置的数组
      * @var array
      */
     private array $config = [];
+
 
     public function __construct()
     {
@@ -46,7 +28,6 @@ class Config implements \ArrayAccess
             $this->config[$config_suffix] = require_once($config);
         }, glob($this->_getConfig('*')));
     }
-
 
     /**
      * 配置文件获取方法
@@ -63,7 +44,9 @@ class Config implements \ArrayAccess
         return $this->parse($this->config, $key, $default);
     }
 
+
 //    public function load($key)
+
 //    {
 //        if (is_null($key)) {
 //            array_map(function ($config) {
@@ -78,6 +61,12 @@ class Config implements \ArrayAccess
 //        }
 //    }
 
+    /**
+     * 获取config配置中type对应的配置
+     * @param $config
+     * 只需要传入配置文件名，例如database
+     * @return mixed
+     */
     public function getByType($config)
     {
         $config = $this->config[$config];
@@ -92,5 +81,23 @@ class Config implements \ArrayAccess
     private function _getConfig(string $config): string
     {
         return env('config_path') . $config . '.php';
+    }
+
+    public function offsetUnset($offset)
+    {
+    }
+
+    public function offsetExists($offset)
+    {
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->parse($this->config, $offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->config[$offset] = $value;
     }
 }
