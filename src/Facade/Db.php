@@ -20,4 +20,10 @@ class Db extends Facade
         return \Yao\Db\Query::class;
     }
 
+    public static function __callStatic($method, $params)
+    {
+        return call_user_func_array([static::createFacade(), $method], $params);
+    }
+
+
 }
