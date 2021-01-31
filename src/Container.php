@@ -6,7 +6,13 @@ class Container
 {
     use \Yao\Traits\SingleInstance;
 
-    public array $app = [];
+    /**
+     * 依赖注入的类实例
+     * @var array
+     */
+    private array $instances = [];
+
+    private $reflectionClass;
 
     private array $bind = [
         'request' => \Yao\Http\Request::class,
@@ -20,107 +26,68 @@ class Container
         'db' => \Yao\Db::class,
     ];
 
-    private string $class;
+    /**
+     * 获取绑定类名
+     * @param $name
+     * @return mixed|string
+     */
+    private function _getBindClass(string $name)
+    {
+        return $this->bind[strtolower($name)] ?? $name;
+    }
+
+    public function make($abstract, $arguments = [], $singleInstance = false)
+    {
+        $abstract = $this->_getBindClass($abstract);
+        $this->reflectionClass = new \ReflectionClass($abstract);
+        if (!isset($this->instances[$abstract]) || !$singleInstance) {
+            if (null === ($constructor = $this->reflectionClass->getConstructor())) {
+                $this->instances[$abstract] = new $abstract(...$arguments);
+            } else if ($constructor->isPublic()) {
+                $parameters = $constructor->getParameters();
+                $injectClass = $this->_getInjectObject($parameters);
+                $this->instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
+            }
+        }
+        return $this->instances[$abstract];
+    }
+
 
     /**
-     * 获取完整类名
-     * @param $class
+     * 通过参数列表获取注入对象数组
+     * @param $parameters
+     * @return array
      */
-    private function _getClassName($class): void
+    private function _getInjectObject($parameters)
     {
-        if (!class_exists($class)) {
-            $class = strtolower($class);
-            if (!array_key_exists($class, $this->bind)) {
-                throw new \Exception('类不存在');
+        $injectClass = [];
+        foreach ($parameters as $parameter) {
+            if (!is_null($class = $parameter->getClass())) {
+                $className = $class->getName();
+                $injectClass[] = new $className();
             }
-            $class = $this->bind[$class];
         }
-        $this->class = $class;
+        return $injectClass;
     }
 
     /**
-     * @param string $class
+     * 调用类的方法
+     * @param array $callable
      * @param array $arguments
-     * @param bool $singleInstance
+     * @param false $singleInstance
+     * @param array $constructorParameters
      * @return mixed
-     * @throws \Exception
      */
-    public function get(string $class, array $arguments = [], bool $singleInstance = false)
+    public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = false, array $constructorParameters = [])
     {
-        $this->getInject($class, $arguments, $singleInstance);
-        return $this->app[$class];
+        [$class, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
+        $this->make($class, $constructorParameters, $singleInstance);
+
+        $parameters = (new \ReflectionClass($class))->getMethod($method)->getParameters();
+
+//        $parameters = $this->reflectionClass->getMethod($method)->getParameters();
+        $injectClass = $this->_getInjectObject($parameters);
+        return call_user_func_array([$this->instances[$class], $method], [...$arguments, ...$injectClass]);
     }
-
-    public function getInject(string $class, array $arguments = [], bool $singleInstance = false)
-    {
-        $this->_getClassName($class);
-        if (!$singleInstance || !array_key_exists($this->class, $this->app)) {
-            $this->app[$this->class] =
-                (false != ($method = $this->_getMethod('__construct')))
-                    ? new $this->class(...$arguments, ...$this->_inject($method))
-                    : new $this->class();
-        }
-        return $this->app[$this->class];
-    }
-
-
-    private function _inject($method): array
-    {
-        $params = [];
-        foreach ($method->getParameters() as $p) {
-            if (null != ($injectClass = $p->getType())) {
-                if (!class_exists($injectClass = ($injectClass->getName()))) {
-                    if (array_key_exists(strtolower($injectClass), $this->bind)) {
-                        $injectClass = $this->bind[$injectClass];
-                    }
-                }
-                if (class_exists($injectClass)) {
-                    if (!array_key_exists($injectClass, $this->app)) {
-//                        $this->app[$injectClass] = new $injectClass();
-                        $this->app[$injectClass] = $this->getInject($injectClass);
-                    }
-                    $params[] = $this->app[$injectClass];
-                }
-            }
-        }
-        return $params;
-    }
-
-    public function invoke($method, $arguments = [])
-    {
-        if (false != ($RefMethod = $this->_getMethod($method))) {
-            return call_user_func_array([$this->app[$this->class], $method], [...(array)$arguments, ...$this->_inject($RefMethod)]);
-        }
-    }
-
-    private function _getMethod($method)
-    {
-        if (!$this->_getReflectionClass($this->class)->hasMethod($method)) {
-            return false;
-        }
-        return $this->_getReflectionClass($this->class)->getMethod($method);
-    }
-
-    private function _getReflectionClass($class)
-    {
-        if (!class_exists($class)) {
-            if (!array_key_exists($class, $this->bind)) {
-                throw new \Exception("类{$class}不存在！");
-            }
-            $class = $this->bind[$class];
-        }
-        return new \ReflectionClass($class);
-    }
-
-//    public function invokeClass($class_name,$arguments,$singleInstance = false){
-//        return $this->getInject($class_name, $arguments, $singleInstance);
-//    }
-
-    public function invokeMethod($callable, $arguments)
-    {
-        $this->get($callable[0]);
-        return $this->invoke($callable[1], $arguments);
-    }
-//
 
 }
