@@ -27,4 +27,11 @@ class Route extends \Yao\Facade
     {
         return \Yao\Route\Route::class;
     }
+
+    public static function __callStatic($method, $params)
+    {
+        return call_user_func_array([static::createFacade(), $method], $params);
+    }
+
+
 }
