@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yao\Route;
@@ -50,23 +51,23 @@ class Route
 
     public function none(\Closure $closure, $data = [])
     {
-        $this->routes['miss'] = ['route' => $closure, 'data' => $data];
+        $this->routes['none'] = ['route' => $closure, 'data' => $data];
         return $this;
     }
 
     public function allowCors()
     {
-        if (isset($this->routes[$this->method][Request::path()]['cors'])) {
-            $allows = $this->routes[$this->method][Request::path()]['cors'];
+        if (isset($this->routes[Request::method()][Request::path()]['cors'])) {
+            $allows = $this->routes[Request::method()][Request::path()]['cors'];
             $origin = $allows['origin'] ?? Config::get('cors.origin');
             $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? Config::get('cors.headers');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
-        } else if ('options' == $this->method) {
+        } else if ('options' == Request::method()) {
             //需要优化下，解决了其他请求方式下的跨域问题
-            $allows = $this->routes[$this->method][Request::path()]['cors'];
+            $allows = $this->routes[Request::method()][Request::path()]['cors'];
             $origin = $allows['origin'] ?? Config::get('cors.origin');
             $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? Config::get('cors.headers');
@@ -103,9 +104,9 @@ class Route
                 }
             }
         }
-        if (isset($this->routes['miss'])) {
-            $this->param = $this->routes['miss']['data'];
-            return $this->_locate($this->routes['miss']['route']);
+        if (isset($this->routes['none'])) {
+            $this->param = $this->routes['none']['data'];
+            return $this->_locate($this->routes['none']['route']);
         } else {
             throw new \Exception('页面不存在！', 404);
         }
@@ -190,12 +191,10 @@ class Route
 
     public function output($data)
     {
-        if (is_array($data) || $data instanceof \Yao\Collection) {
-            return Json::data($data)->return();
-        } else if (is_string($data)) {
-            return Response::data($data)->return();
-        } else if ($data instanceof \Closure) {
+        if ($data instanceof \Closure) {
             return $this->output($data());
+        } else {
+            return Response::data($data)->return();
         }
     }
 
@@ -292,5 +291,4 @@ class Route
             );
         }
     }
-
 }
