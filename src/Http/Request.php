@@ -142,17 +142,9 @@ class Request
      */
     public function put($field = null, $default = null)
     {
-        $put = $this->_raw();
-        //        parse_str(file_get_contents('php://input'), $put);
+        parse_str(file_get_contents('php://input'), $put);
         return $this->_request($put, $field, $default);
     }
-
-    private function _raw()
-    {
-        parse_str(file_get_contents('php://input'), $output);
-        return $output;
-    }
-
 
     public function file($field = null)
     {
