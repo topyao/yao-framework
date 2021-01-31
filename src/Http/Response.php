@@ -2,8 +2,7 @@
 
 namespace Yao\Http;
 
-use Yao\Facade\Route;
-use Yao\Traits\SingleInstance;
+use Yao\Facade\Config;
 
 /**
  * 响应类
@@ -21,6 +20,10 @@ class Response
 
     public function data($data)
     {
+        if (is_array($data)) {
+            $this->header('Content-Type:application/json; charset=UTF-8');
+            $data = json_encode($data, 256);
+        }
         $this->data = $data;
         return $this;
     }
@@ -31,9 +34,17 @@ class Response
         return $this;
     }
 
-    protected function _corsCheck()
+    public function cors($allows)
     {
-
+        $origin = $allows['origin'] ?? Config::get('cors.origin');
+        $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
+        $headers = $allows['headers'] ?? Config::get('cors.headers');
+        $this->header([
+            'Access-Control-Allow-Origin:' . $origin,
+            'Access-Control-Allow-Credentials:' . $credentials,
+            'Access-Control-Allow-Headers:' . $headers
+        ]);
+        return $this;
     }
 
     public function header($header = null)
@@ -45,10 +56,10 @@ class Response
     protected function create()
     {
         \Yao\Facade\Route::allowCors();
-        http_response_code($this->code);
         foreach ($this->header as $header) {
             header($header);
         }
+        http_response_code($this->code);
     }
 
     public function return()
