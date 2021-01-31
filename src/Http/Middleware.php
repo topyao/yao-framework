@@ -15,30 +15,25 @@ class Middleware
 
     public function handle($request, \Closure $next)
     {
-
     }
 
 
     public function make()
     {
-
     }
 
 
     public function before()
     {
-
     }
 
 
     public function after()
     {
-
     }
 
     public function middleware($request, \Closure $closure)
     {
-
     }
 
     public function set($middleware, $method, $path)
@@ -50,5 +45,4 @@ class Middleware
     {
         return $this->middleware[\Yao\Facade\Request::method()][\Yao\Facade\Request::path()];
     }
-
 }
