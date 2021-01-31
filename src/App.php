@@ -8,8 +8,17 @@ defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARA
  * Class App
  * @package Yao
  */
-class App
+class App extends Container
 {
+
+    private $request;
+
+    public function __construct(\Yao\Http\Request $request)
+    {
+        $this->request = $request;
+    }
+
+
     public function run()
     {
         \Yao\Facade\Provider::serve();

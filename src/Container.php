@@ -2,27 +2,25 @@
 
 namespace Yao;
 
-class Container
+class Container implements \ArrayAccess, \Countable
 {
-    use \Yao\Traits\SingleInstance;
-
     /**
      * 依赖注入的类实例
      * @var array
      */
-    private array $instances = [];
+    protected static array $instances = [];
 
     /**
-     *
+     * 反射类实例
      * @var
      */
-    private $reflectionClass;
+    protected $reflectionClass;
 
     /**
      * 绑定的类名
      * @var array|string[]
      */
-    private array $bind = [
+    protected static array $bind = [
         'request' => \Yao\Http\Request::class,
         'validate' => \App\Http\Validate::class,
         'file' => File::class,
@@ -30,8 +28,7 @@ class Container
         'config' => Config::class,
         'app' => App::class,
         'view' => View::class,
-        'route' => \Yao\Route::class,
-        'db' => \Yao\Db::class,
+        'route' => \Yao\Route::class
     ];
 
     /**
@@ -39,9 +36,9 @@ class Container
      * @param $name
      * @return mixed|string
      */
-    private function _getBindClass(string $name)
+    protected static function _getBindClass(string $name)
     {
-        return $this->bind[strtolower($name)] ?? $name;
+        return static::$bind[strtolower($name)] ?? $name;
     }
 
     /**
@@ -52,20 +49,20 @@ class Container
      * @return mixed
      * @throws \ReflectionException
      */
-    public function make($abstract, $arguments = [], $singleInstance = false)
+    public static function make($abstract, $arguments = [], $singleInstance = false)
     {
-        $abstract = $this->_getBindClass($abstract);
-        $this->reflectionClass = new \ReflectionClass($abstract);
-        if (!isset($this->instances[$abstract]) || !$singleInstance) {
-            if (null === ($constructor = $this->reflectionClass->getConstructor())) {
-                $this->instances[$abstract] = new $abstract(...$arguments);
+        $abstract = static::_getBindClass($abstract);
+        if (!isset(static::$instances[$abstract]) || !$singleInstance) {
+            $reflectionClass = new \ReflectionClass($abstract);
+            if (null === ($constructor = $reflectionClass->getConstructor())) {
+                static::$instances[$abstract] = new $abstract(...$arguments);
             } else if ($constructor->isPublic()) {
                 $parameters = $constructor->getParameters();
-                $injectClass = $this->_getInjectObject($parameters);
-                $this->instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
+                $injectClass = static::_getInjectObject($parameters);
+                static::$instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
             }
         }
-        return $this->instances[$abstract];
+        return static::$instances[$abstract];
     }
 
 
@@ -74,7 +71,7 @@ class Container
      * @param $parameters
      * @return array
      */
-    private function _getInjectObject($parameters)
+    protected static function _getInjectObject($parameters)
     {
         $injectClass = [];
         foreach ($parameters as $parameter) {
@@ -94,16 +91,41 @@ class Container
      * @param array $constructorParameters
      * @return mixed
      */
-    public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = false, array $constructorParameters = [])
+    public static function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = false, array $constructorParameters = [])
     {
-        [$class, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
-        $this->make($class, $constructorParameters, $singleInstance);
+        [$class, $method] = [static::_getBindClass($callable[0]), $callable[1]];
+        static::make($class, $constructorParameters, $singleInstance);
 
         $parameters = (new \ReflectionClass($class))->getMethod($method)->getParameters();
 
 //        $parameters = $this->reflectionClass->getMethod($method)->getParameters();
-        $injectClass = $this->_getInjectObject($parameters);
-        return call_user_func_array([$this->instances[$class], $method], [...$arguments, ...$injectClass]);
+        $injectClass = static::_getInjectObject($parameters);
+        return call_user_func_array([static::$instances[$class], $method], [...$arguments, ...$injectClass]);
+    }
+
+    public function offsetExists($offset)
+    {
+        // TODO: Implement offsetExists() method.
+    }
+
+    public function offsetGet($offset)
+    {
+        // TODO: Implement offsetGet() method.
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        // TODO: Implement offsetSet() method.
+    }
+
+    public function offsetUnset($offset)
+    {
+        // TODO: Implement offsetUnset() method.
+    }
+
+    public function count()
+    {
+        return count(static::$instances);
     }
 
 }

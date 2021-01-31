@@ -16,6 +16,9 @@ use Yao\Route\Rules\Alias;
 class Route
 {
 
+    private $request;
+
+
     protected array $routes = [];
 
     public $controller = 'App\\Http\\Controllers';
@@ -27,6 +30,11 @@ class Route
     private $location;
 
     private $middleware;
+
+    public function __construct(\Yao\Http\Request $request,Config $config)
+    {
+        $this->request = $request;
+    }
 
     public function getRoute($requestMethod = null, $requestPath = null)
     {
@@ -171,7 +179,7 @@ class Route
             }
         } else if (is_string($this->controller)) {
             $resData = function () {
-                return \Yao\Container::instance()->invokeMethod([$this->controller, $this->action], $this->param);
+                return \Yao\Container::invokeMethod([$this->controller, $this->action], $this->param);
             };
             if (isset($this->routes[$this->method][$this->path]['middleware'])) {
                 $middleware = $this->routes[$this->method][$this->path]['middleware'];
@@ -199,17 +207,65 @@ class Route
     }
 
     /**
-     * 路由注册方法
-     * @param string $name
-     * 请求类型
-     * @param array $route
-     * route参数
+     * get方式注册的路由
+     * @param $uri
+     * @param $location
+     * @return $this
      */
-    public function __call(string $method, array $route): Route
+    public function get($uri, $location)
     {
-        $this->_rule($method, $route[0], $route, 'route', $route[1]);
+        $this->_rule('get', $uri, $location, 'route', $location);
         return $this;
     }
+
+    /**
+     * post方式注册的路由
+     * @param $uri
+     * @param $location
+     * @return $this
+     */
+    public function post($uri, $location)
+    {
+        $this->_rule('post', $uri, $location, 'route', $location);
+        return $this;
+    }
+
+    /**
+     * put方式注册的路由
+     * @param $uri
+     * @param $location
+     * @return $this
+     */
+    public function put($uri, $location)
+    {
+        $this->_rule('put', $uri, $location, 'route', $location);
+        return $this;
+    }
+
+    /**
+     * delete方式注册的路由
+     * @param $uri
+     * @param $location
+     * @return $this
+     */
+    public function delete($uri, $location)
+    {
+        $this->_rule('delete', $uri, $location, 'route', $location);
+        return $this;
+    }
+
+    /**
+     * patch方式注册的路由
+     * @param $uri
+     * @param $location
+     * @return $this
+     */
+    public function patch($uri, $location)
+    {
+        $this->_rule('patch', $uri, $location, 'route', $location);
+        return $this;
+    }
+
 
     private function _rule($method, $path, $location, $property, $value)
     {
