@@ -179,7 +179,7 @@ class Route
             }
         } else if (is_string($this->controller)) {
             $resData = function () {
-                return \Yao\Container::invokeMethod([$this->controller, $this->action], $this->param);
+                return \Yao\Container::instance()->invokeMethod([$this->controller, $this->action], $this->param);
             };
             if (isset($this->routes[$this->method][$this->path]['middleware'])) {
                 $middleware = $this->routes[$this->method][$this->path]['middleware'];

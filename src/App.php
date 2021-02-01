@@ -8,7 +8,7 @@ defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARA
  * Class App
  * @package Yao
  */
-class App extends Container
+class App
 {
 
     private $request;

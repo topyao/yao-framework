@@ -63,7 +63,7 @@ class Facade
     public static function __callStatic($method, $params)
     {
         $facadeClass = static::getFacadeClass();
-        return Container::invokeMethod([$facadeClass, $method], $params, static::$singleInstance);
+        return Container::instance()->invokeMethod([$facadeClass, $method], $params, static::$singleInstance);
 //        return call_user_func_array([static::createFacade(), $method], $params);
     }
 }

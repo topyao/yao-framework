@@ -69,7 +69,7 @@ class Error
     {
         Log::write('system', $message, 'notice', [$code, $file, $line]);
         if ($this->debug) {
-            $data = ' < title>' . $message . ' </title ><pre style = "font-size:1.6em" ><b > Message:</b > ' . $message . ' <br ><b > Code:</b > ' . $code . ' <br ><b > Location:</b > ' . $file . ' + ' . $line . '<br ><b > Trace:</b > ' . print_r($errContext, true) . '</pre > ';
+            $data = ' <title>' . $message . '</title><pre style = "font-size:1.6em"><b> Message:</b> ' . $message . ' <br><b> Code:</b> ' . $code . ' <br><b> Location:</b> ' . $file . ' + ' . $line . '<br><b> Trace:</b>' . print_r($errContext, true) . '</pre> ';
         } else {
             $data = include_once $this->exceptionView;
         }
