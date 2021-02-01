@@ -132,3 +132,10 @@ if (false === function_exists('url')) {
         return \Yao\Route\Rules\Alias::instance()->get($alias, $args);
     }
 }
+
+if (false === function_exists('app')) {
+    function app()
+    {
+        return \Yao\Container::instance();
+    }
+}

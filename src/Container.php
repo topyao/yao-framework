@@ -70,17 +70,20 @@ class Container implements ContainerInterface
      * @return mixed
      * @throws \ReflectionException
      */
-    public function make(string $abstract, array $arguments = [], bool $singleInstance = false)
+    public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
     {
         $abstract = $this->_getBindClass($abstract);
         if (!isset($this->instances[$abstract]) || !$singleInstance) {
             $reflectionClass = new \ReflectionClass($abstract);
             if (null === ($constructor = $reflectionClass->getConstructor())) {
-                $this->instances[$abstract] = new $abstract(...$arguments);
+                return new $abstract(...$arguments);
             } else if ($constructor->isPublic()) {
                 $parameters = $constructor->getParameters();
                 $injectClass = $this->_getInjectObject($parameters);
                 $this->instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
+                return $this->instances[$abstract];
+            } else {
+                throw new \Exception('不支持实例化');
             }
         }
         return $this->instances[$abstract];
@@ -99,13 +102,13 @@ class Container implements ContainerInterface
      * 给构造方法传递的参数
      * @return mixed
      */
-    public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = false, array $constructorParameters = [])
+    public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = true, array $constructorParameters = [])
     {
         [$class, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
-        $this->make($class, $constructorParameters, $singleInstance);
+        $instance = $this->make($class, $constructorParameters, $singleInstance);
         $parameters = (new \ReflectionClass($class))->getMethod($method)->getParameters();
         $injectClass = $this->_getInjectObject($parameters);
-        return call_user_func_array([$this->instances[$class], $method], [...$arguments, ...$injectClass]);
+        return call_user_func_array([$instance, $method], [...$arguments, ...$injectClass]);
     }
 
 
