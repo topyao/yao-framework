@@ -52,7 +52,12 @@ class Container implements ContainerInterface
         return isset($this->instances[$abstract]);
     }
 
-
+    
+    public function bind($id,$className){
+        $this->bind[$id] = $className;
+    }
+   
+    
     /**
      * 获取绑定类名
      * @param $name
