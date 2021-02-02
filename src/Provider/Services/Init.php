@@ -2,11 +2,9 @@
 
 namespace Yao\Provider\Services;
 
-use Yao\Facade\{
-    Config, Route, Session
-};
-use Yao\Provider\Service;
 use Yao\Error;
+use Yao\Facade\{Config, Route, Session};
+use Yao\Provider\Service;
 
 /**
  * 框架初始化服务

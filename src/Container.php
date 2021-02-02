@@ -26,14 +26,14 @@ class Container implements ContainerInterface
      * @var array|string[]
      */
     protected array $bind = [
-        'request' => \Yao\Http\Request::class,
+        'request' => Http\Request::class,
         'validate' => \App\Http\Validate::class,
         'file' => File::class,
         'env' => Env::class,
-        'config' => \Yao\Config::class,
+        'config' => Config::class,
         'app' => App::class,
-        'view' => \Yao\View\Render::class,
-        'route' => \Yao\Route\Route::class
+        'view' => View\Render::class,
+        'route' => Route\Route::class
     ];
 
     public function set($abstract, $instance)
@@ -118,10 +118,10 @@ class Container implements ContainerInterface
     public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = true, array $constructorParameters = [])
     {
         [$abstract, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
-        $this->make($abstract, $constructorParameters, $singleInstance);
+        $instance = $this->make($abstract, $constructorParameters, $singleInstance);
         $parameters = (new \ReflectionClass($abstract))->getMethod($method)->getParameters();
         $injectClass = $this->_getInjectObject($parameters);
-        return call_user_func_array([$this->get($abstract), $method], [...$arguments, ...$injectClass]);
+        return call_user_func_array([$instance, $method], [...$arguments, ...$injectClass]);
     }
 
 
@@ -132,11 +132,11 @@ class Container implements ContainerInterface
      */
     protected function _getInjectObject(array $parameters)
     {
+        //此处有bug，所有注入的类都成了单例的了
         $injectClass = [];
         foreach ($parameters as $parameter) {
             if (!is_null($class = $parameter->getClass())) {
-                $className = $class->getName();
-                $injectClass[] = new $className();
+                $injectClass[] = $this->make($class->getName(), [], true);
             }
         }
         return $injectClass;

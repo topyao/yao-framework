@@ -18,14 +18,14 @@ class Config implements \ArrayAccess
      * 存放配置的数组
      * @var array
      */
-    private array $config = [];
+    protected array $config = [];
 
 
     public function __construct()
     {
         array_map(function ($config) {
             $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
-            $this->config[$config_suffix] = include_once($config);
+            $this->config[$config_suffix] = include_once $config;
         }, glob($this->_getConfig('*')));
     }
 
