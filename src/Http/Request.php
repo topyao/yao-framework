@@ -19,14 +19,20 @@ class Request
     protected string $controller = '';
     protected string $action = '';
 
-    public function controller()
+    public function controller($controller = null)
     {
-        return $this->controller;
+        if (!isset($controller)) {
+            return $this->controller;
+        }
+        $this->controller = $controller;
     }
 
-    public function action()
+    public function action($action)
     {
-        return $this->action;
+        if (!isset($controller)) {
+            return $this->action;
+        }
+        $this->action = $action;
     }
 
     public function set($attribute, $value)

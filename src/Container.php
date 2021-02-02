@@ -4,12 +4,11 @@ namespace Yao;
 
 use Psr\Container\ContainerInterface;
 use Yao\Exception\ContainerException;
-use Yao\Traits\SingleInstance;
 
-class Container implements ContainerInterface
+class Container implements ContainerInterface, \ArrayAccess
 {
+    private static $instance;
 
-    use SingleInstance;
 
     /**
      * 依赖注入的类实例
@@ -35,6 +34,16 @@ class Container implements ContainerInterface
         'view' => View\Render::class,
         'route' => Route\Route::class
     ];
+
+
+    public static function instance()
+    {
+        if (!static::$instance instanceof static) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
 
     public function set($abstract, $instance)
     {
@@ -140,6 +149,26 @@ class Container implements ContainerInterface
             }
         }
         return $injectClass;
+    }
+
+    public function offsetExists($offset)
+    {
+        // TODO: Implement offsetExists() method.
+    }
+
+    public function offsetGet($abstract)
+    {
+        return $this->make($abstract);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        // TODO: Implement offsetSet() method.
+    }
+
+    public function offsetUnset($offset)
+    {
+        // TODO: Implement offsetUnset() method.
     }
 
 

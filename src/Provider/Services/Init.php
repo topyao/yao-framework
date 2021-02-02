@@ -19,11 +19,6 @@ class Init implements Service
 
     public function boot()
     {
-        ob_start();
-        if (PHP_VERSION < 7.4) {
-            throw new \Exception('PHP版本太低，建议升级到PHP7.4', 110);
-        }
-        Error::register();
         Route::register();
         Route::match();
         //是否默认开启session
