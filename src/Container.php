@@ -35,6 +35,10 @@ class Container implements ContainerInterface
         'route' => \Yao\Route\Route::class
     ];
 
+    public function set($abstract,$instance){
+        $this->instances[$abstract] = $instance;
+    }
+
     public function get($abstract)
     {
         if ($this->has($abstract)) {
@@ -73,17 +77,17 @@ class Container implements ContainerInterface
     public function make(string $abstract, array $arguments = [], bool $singleInstance = false)
     {
         $abstract = $this->_getBindClass($abstract);
-        if (!isset($this->instances[$abstract]) || !$singleInstance) {
+        if (!$this->has($abstract) || !$singleInstance) {
             $reflectionClass = new \ReflectionClass($abstract);
             if (null === ($constructor = $reflectionClass->getConstructor())) {
-                $this->instances[$abstract] = new $abstract(...$arguments);
+                $this->set($abstract,new $abstract(...$arguments));
             } else if ($constructor->isPublic()) {
                 $parameters = $constructor->getParameters();
                 $injectClass = $this->_getInjectObject($parameters);
-                $this->instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
+                $this->set($abstract,new $abstract(...[...$arguments, ...$injectClass]));
             }
         }
-        return $this->instances[$abstract];
+        return $this->get($abstract);
     }
 
 
