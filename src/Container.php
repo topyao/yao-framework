@@ -3,6 +3,7 @@
 namespace Yao;
 
 use Psr\Container\ContainerInterface;
+use Yao\Exception\ContainerException;
 use Yao\Traits\SingleInstance;
 
 class Container implements ContainerInterface
@@ -29,23 +30,36 @@ class Container implements ContainerInterface
         'validate' => \App\Http\Validate::class,
         'file' => File::class,
         'env' => Env::class,
-        'config' => Config::class,
+        'config' => \Yao\Config::class,
         'app' => App::class,
         'view' => \Yao\View\Render::class,
         'route' => \Yao\Route\Route::class
     ];
 
+    public function set($abstract, $instance)
+    {
+        $this->instances[$abstract] = $instance;
+    }
+
     public function get($abstract)
     {
+        $abstract = $this->_getBindClass($abstract);
         if ($this->has($abstract)) {
             return $this->instances[$abstract];
         }
-        throw new \Exception('没有找到');
+        throw new ContainerException("实例'{$abstract}'没有找到");
     }
 
     public function has($abstract)
     {
+        $abstract = $this->_getBindClass($abstract);
         return isset($this->instances[$abstract]);
+    }
+
+
+    public function bind($id, $className)
+    {
+        $this->bind[$id] = $className;
     }
 
 
@@ -65,7 +79,7 @@ class Container implements ContainerInterface
      * 需要实例化的类
      * @param array $arguments
      * 给构造方法传递的参数
-     * @param false $singleInstance
+     * @param bool $singleInstance
      * 为true表示单例
      * @return mixed
      * @throws \ReflectionException
@@ -73,20 +87,19 @@ class Container implements ContainerInterface
     public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
     {
         $abstract = $this->_getBindClass($abstract);
-        if (!isset($this->instances[$abstract]) || !$singleInstance) {
+        if (!$this->has($abstract) || !$singleInstance) {
             $reflectionClass = new \ReflectionClass($abstract);
             if (null === ($constructor = $reflectionClass->getConstructor())) {
-                return new $abstract(...$arguments);
+                $this->set($abstract, new $abstract(...$arguments));
             } else if ($constructor->isPublic()) {
                 $parameters = $constructor->getParameters();
                 $injectClass = $this->_getInjectObject($parameters);
-                $this->instances[$abstract] = new $abstract(...[...$arguments, ...$injectClass]);
-                return $this->instances[$abstract];
+                $this->set($abstract, new $abstract(...[...$arguments, ...$injectClass]));
             } else {
-                throw new \Exception('不支持实例化');
+                throw new ContainerException('类不能实例化！');
             }
         }
-        return $this->instances[$abstract];
+        return $this->get($abstract);
     }
 
 
@@ -104,11 +117,11 @@ class Container implements ContainerInterface
      */
     public function invokeMethod(array $callable, array $arguments = [], bool $singleInstance = true, array $constructorParameters = [])
     {
-        [$class, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
-        $instance = $this->make($class, $constructorParameters, $singleInstance);
-        $parameters = (new \ReflectionClass($class))->getMethod($method)->getParameters();
+        [$abstract, $method] = [$this->_getBindClass($callable[0]), $callable[1]];
+        $this->make($abstract, $constructorParameters, $singleInstance);
+        $parameters = (new \ReflectionClass($abstract))->getMethod($method)->getParameters();
         $injectClass = $this->_getInjectObject($parameters);
-        return call_user_func_array([$instance, $method], [...$arguments, ...$injectClass]);
+        return call_user_func_array([$this->get($abstract), $method], [...$arguments, ...$injectClass]);
     }
 
 

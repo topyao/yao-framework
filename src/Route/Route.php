@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yao\Route;
 
-use Yao\Facade\{Config, Json, Request, Response};
+use Yao\Exception\RouteNotFoundException;
+use Yao\Facade\{Config, Request, Response};
 use Yao\Http\Middleware;
 use Yao\Route\Rules\Alias;
 
@@ -17,6 +18,7 @@ class Route
 {
 
     private $request;
+    private $config;
 
 
     protected array $routes = [];
@@ -92,7 +94,7 @@ class Route
         $this->path = Request::path();
         $this->allowCors();
         if (!array_key_exists($this->method, $this->routes)) {
-            throw new \Exception('请求类型' . $this->method . '没有定义任何路由', 404);
+            throw new RouteNotFoundException('请求类型' . $this->method . '没有定义任何路由', 404);
         }
 
         if (isset($this->routes[$this->method][Request::path()]['route'])) {
@@ -116,7 +118,7 @@ class Route
             $this->param = $this->routes['none']['data'];
             return $this->_locate($this->routes['none']['route']);
         } else {
-            throw new \Exception('页面不存在！', 404);
+            throw new RouteNotFoundException('页面不存在！', 404);
         }
     }
 

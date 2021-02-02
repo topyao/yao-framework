@@ -16,6 +16,24 @@ class Request
     protected ?array $filters = [];
     protected array $server = [];
 
+    protected string $controller = '';
+    protected string $action = '';
+
+    public function controller()
+    {
+        return $this->controller;
+    }
+
+    public function action()
+    {
+        return $this->action;
+    }
+
+    public function set($attribute, $value)
+    {
+        $this->$attribute = $value;
+    }
+
     /**
      * 初始化请求类型
      * Request constructor.

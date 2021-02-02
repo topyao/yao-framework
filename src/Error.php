@@ -26,7 +26,7 @@ class Error
     {
         set_error_handler([self::instance(), 'error']);
         set_exception_handler([self::$instance, 'exception']);
-        // register_shutdown_function([self::$instance, 'shutdown']);
+        register_shutdown_function([self::$instance, 'shutdown']);
     }
 
     private function __construct()
@@ -56,7 +56,7 @@ class Error
             </head>
             <body>
             <b>Message:</b> ' . $message . '
-             <br><b>Code:</b>' . $code . '<br><b> File:</b> ' . $exception->getFile() . '<br ><b > Line:</b > ' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em" > ' . $exception->getTraceAsString() . '</pre >
+             <br><b>Code:</b>' . $code . '<br><b> File:</b> ' . $exception->getFile() . '<br ><b > Line:</b > ' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em" >' . $exception->getTraceAsString() . '</pre>
             </body >
             </html > ';
         } else {
@@ -76,7 +76,10 @@ class Error
         return Response::data($data)->code(403)->return();
     }
 
-    // public function shutdown()
-    // {
-    // }
+    public function shutdown()
+    {
+        if ($error = error_get_last()) {
+            var_dump($error);
+        }
+    }
 }

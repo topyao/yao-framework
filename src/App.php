@@ -2,6 +2,8 @@
 
 namespace Yao;
 
+use Yao\Http\Request;
+
 defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARATOR);
 
 /**
@@ -13,7 +15,7 @@ class App
 
     private $request;
 
-    public function __construct(\Yao\Http\Request $request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }
