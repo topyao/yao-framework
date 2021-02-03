@@ -3,6 +3,8 @@
 namespace Yao;
 
 use Yao\Http\Request;
+use Yao\Provider\Provider;
+use Yao\Route\Route;
 
 defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARATOR);
 
@@ -15,9 +17,12 @@ class App extends Container
 
     private $request;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, Error $error, Route $route, Provider $provider)
     {
+        $this->provider = $provider;
         $this->request = $request;
+        $this->error = $error;
+        $this->route = $route;
     }
 
 
@@ -27,9 +32,9 @@ class App extends Container
         if (PHP_VERSION < 7.4) {
             throw new \Exception('PHP版本太低，建议升级到PHP7.4', 110);
         }
-        Error::register();
-        \Yao\Facade\Provider::serve();
-        \Yao\Facade\Route::dispatch();
+        $this->error->register();
+        $this->provider->serve();
+        $this->route->dispatch();
     }
 
 }

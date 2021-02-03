@@ -67,22 +67,26 @@ class Route
 
     public function allowCors()
     {
-        if (isset($this->routes[Request::method()][Request::path()]['cors'])) {
-            $allows = $this->routes[Request::method()][Request::path()]['cors'];
+        if (isset($this->routes[$this->request->method()][$this->request->path()]['cors'])) {
+            $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
             $origin = $allows['origin'] ?? Config::get('cors.origin');
             $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? Config::get('cors.headers');
+            $age = $allows['age'] ?? Config::get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
-        } else if ('options' == Request::method()) {
+            header('Access-Control-Max-Age:' . $age);
+        } else if ('options' == $this->request->method()) {
             //需要优化下，解决了其他请求方式下的跨域问题
-            $allows = $this->routes[Request::method()][Request::path()]['cors'];
+            $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
             $origin = $allows['origin'] ?? Config::get('cors.origin');
             $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? Config::get('cors.headers');
+            $age = $allows['age'] ?? Config::get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
+            header('Access-Control-Max-Age:' . $age);
             header('Access-Control-Allow-Headers:' . $headers, true, 204);
             exit;
         }
@@ -90,21 +94,19 @@ class Route
 
     public function match()
     {
-        $this->method = Request::method();
-        $this->path = Request::path();
         $this->allowCors();
-        if (!array_key_exists($this->method, $this->routes)) {
-            throw new RouteNotFoundException('请求类型' . $this->method . '没有定义任何路由', 404);
+        if (!array_key_exists($this->request->method(), $this->routes)) {
+            throw new RouteNotFoundException('请求类型' . $this->request->method() . '没有定义任何路由', 404);
         }
 
-        if (isset($this->routes[$this->method][Request::path()]['route'])) {
-            return $this->_locate($this->routes[$this->method][Request::path()]['route']);
+        if (isset($this->routes[$this->request->method()][$this->request->path()]['route'])) {
+            return $this->_locate($this->routes[$this->request->method()][$this->request->path()]['route']);
         } else {
-            foreach ($this->routes[$this->method] as $uri => $location) {
+            foreach ($this->routes[$this->request->method()] as $uri => $location) {
                 //设置路由匹配正则
                 $uriRegexp = '#^' . $uri . '$#iU';
                 //路由和请求一致或者匹配到正则
-                if (preg_match($uriRegexp, Request::path(), $match)) {
+                if (preg_match($uriRegexp, $this->request->path(), $match)) {
                     //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
                     if (isset($match)) {
                         array_shift($match);
@@ -183,8 +185,8 @@ class Route
             $resData = function () {
                 return \Yao\Container::instance()->invokeMethod([$this->controller, $this->action], $this->param);
             };
-            if (isset($this->routes[$this->method][$this->path]['middleware'])) {
-                $middleware = $this->routes[$this->method][$this->path]['middleware'];
+            if (isset($this->routes[$this->request->method()][$this->request->path()]['middleware'])) {
+                $middleware = $this->routes[$this->request->method()][$this->request->path()]['middleware'];
             } else if (isset(get_class_vars($this->controller)['middleware'][$this->action])) {
                 $middleware = get_class_vars($this->controller)['middleware'][$this->action];
             }
@@ -298,29 +300,24 @@ class Route
      * 允许的头信息
      * @return $this
      */
-    public function cors($AllowOrigin = null, ?bool $AllowCredentials = null, $AllowHeaders = null): Route
+    public function cors($allowOrigin = null, ?bool $allowCredentials = null, $allowHeaders = null, $allowAge = 600): Route
     {
         //需要判断是否存在配置，不存在则默认
         $cors = Config::get('cors');
-        $AllowOrigin || $AllowOrigin = $cors['origin'];
-        $AllowHeaders || $AllowHeaders = $cors['headers'];
-        isset($AllowCredentials) || $AllowCredentials = $cors['credentials'];
-        $AllowCredentials = $AllowCredentials ? 'true' : 'false';
+        $allowOrigin || $allowOrigin = $cors['origin'];
+        $allowHeaders || $allowHeaders = $cors['headers'];
+        $allowAge || $allowAge = $cors['age'];
+        isset($allowCredentials) || $allowCredentials = $cors['credentials'];
+        $allowCredentials = $allowCredentials ? 'true' : 'false';
         foreach ((array)$this->method as $method) {
-            $this->_setCorsHeaders($method, $AllowOrigin, $AllowCredentials, $AllowHeaders);
+            $this->routes[$method][$this->path]['cors'] = [
+                'origin' => $allowOrigin,
+                'credentials' => $allowCredentials,
+                'headers' => $allowHeaders
+            ];
         }
         return $this;
     }
-
-    private function _setCorsHeaders($method, $origin, $credentials, $headers)
-    {
-        $this->routes[$method][$this->path]['cors'] = [
-            'origin' => $origin,
-            'credentials' => $credentials,
-            'headers' => $headers
-        ];
-    }
-
 
     /**
      * 多类型route注册

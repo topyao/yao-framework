@@ -4,10 +4,8 @@ namespace Yao;
 
 use Yao\Facade\{
     Log,
-    Config,
     Response
 };
-use Yao\Traits\SingleInstance;
 
 /**
  * 错误和异常注册类
@@ -17,28 +15,28 @@ use Yao\Traits\SingleInstance;
 class Error
 {
 
-    use SingleInstance;
-
     protected bool $debug;
     protected string $exceptionView;
 
-    public static function register()
-    {
-        set_error_handler([self::instance(), 'error']);
-        set_exception_handler([self::$instance, 'exception']);
-        register_shutdown_function([self::$instance, 'shutdown']);
-    }
 
-    private function __construct()
+    public function __construct(\Yao\Config $config)
     {
-        $this->debug = Config::get('app.debug');
+        $this->config = $config;
+        $this->debug = $this->config->get('app.debug');
         $iniSet = [
             [true => 'On', false => 'Off'],
             [true => E_ALL, false => 0]
         ];
         function_exists('ini_set') && ini_set('display_errors', $iniSet[0][$this->debug]);
         error_reporting($iniSet[1][$this->debug]);
-        $this->exceptionView = Config::get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
+        $this->exceptionView = $this->config->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
+    }
+
+    public function register()
+    {
+        set_error_handler([$this, 'error']);
+        set_exception_handler([$this, 'exception']);
+        register_shutdown_function([$this, 'shutdown']);
     }
 
     public function exception($exception)

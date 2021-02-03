@@ -105,7 +105,7 @@ class Container implements ContainerInterface, \ArrayAccess
                 $injectClass = $this->_getInjectObject($parameters);
                 $this->set($abstract, new $abstract(...[...$arguments, ...$injectClass]));
             } else {
-                throw new ContainerException('类不能实例化！');
+                throw new ContainerException("类{$abstract}不能实例化！");
             }
         }
         return $this->get($abstract);
