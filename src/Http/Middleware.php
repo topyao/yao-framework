@@ -4,12 +4,8 @@
 namespace Yao\Http;
 
 
-use Yao\Traits\SingleInstance;
-
 class Middleware
 {
-
-    use SingleInstance;
 
     public $middleware = [];
 

@@ -134,8 +134,8 @@ if (false === function_exists('url')) {
 }
 
 if (false === function_exists('app')) {
-    function app()
+    function app($app, $arguments = [], $singleInstance = false)
     {
-        return \Yao\Container::instance();
+        return \Yao\App::instance()->make($app,$arguments,$singleInstance);
     }
 }

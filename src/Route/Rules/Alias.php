@@ -4,7 +4,6 @@ namespace Yao\Route\Rules;
 
 
 use Exception;
-use Yao\Traits\SingleInstance;
 
 /**
  * 路由别名类
@@ -13,11 +12,8 @@ use Yao\Traits\SingleInstance;
  */
 class Alias
 {
-    use SingleInstance;
 
     protected array $alias = [];
-
-
 
     public function getAliasByUri($url)
     {

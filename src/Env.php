@@ -32,13 +32,18 @@ class Env
             'ROUTES_PATH' => $this->root . 'routes' . DIRECTORY_SEPARATOR,
             'VIEWS_PATH' => $this->root . 'views' . DIRECTORY_SEPARATOR,
             'PUBLIC_PATH' => $this->root . 'public' . DIRECTORY_SEPARATOR,
-            'CACHE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR,
+            'CACHE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
         ];
         $env = $envFile ?? ($this->env['ROOT_PATH'] . '.env');
         if (file_exists($env)) {
             $env = parse_ini_file($env, true, INI_SCANNER_TYPED);
             $this->env += array_change_key_case($env, CASE_UPPER);
         }
+    }
+
+    public function set(string $env, $value = null)
+    {
+        $this->env[strtoupper($env)] = $value;
     }
 
     public function get(?string $key = null, $default = null)
@@ -49,9 +54,5 @@ class Env
         return $this->parse($this->env, strtoupper($key), $default);
     }
 
-    public function set(string $env, $value)
-    {
-        $this->env[strtoupper($env)] = $value;
-    }
 
 }

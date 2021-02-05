@@ -3,9 +3,10 @@
 
 namespace Yao\Cache;
 
+use Psr\Cache\CacheItemInterface;
 use Yao\Traits\SingleInstance;
 
-abstract class Driver
+abstract class Driver implements CacheItemInterface
 {
     use SingleInstance;
 

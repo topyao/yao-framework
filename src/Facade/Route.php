@@ -21,11 +21,12 @@ namespace Yao\Facade;
  */
 class Route extends \Yao\Facade
 {
+
     protected static $singleInstance = true;
 
     protected static function getFacadeClass()
     {
-        return \Yao\Route\Route::class;
+        return 'route';
     }
 
 }

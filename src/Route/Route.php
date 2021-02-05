@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yao\Route;
 
+use Yao\App;
 use Yao\Exception\RouteNotFoundException;
-use Yao\Facade\{Config, Request, Response};
-use Yao\Http\Middleware;
-use Yao\Route\Rules\Alias;
+use Yao\Http\Request;
 
 /**
  * 路由操作类
@@ -33,8 +32,9 @@ class Route
 
     private $middleware;
 
-    public function __construct(\Yao\Http\Request $request)
+    public function __construct(App $app, Request $request)
     {
+        $this->app = $app;
         $this->request = $request;
     }
 
@@ -69,10 +69,10 @@ class Route
     {
         if (isset($this->routes[$this->request->method()][$this->request->path()]['cors'])) {
             $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
-            $origin = $allows['origin'] ?? Config::get('cors.origin');
-            $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
-            $headers = $allows['headers'] ?? Config::get('cors.headers');
-            $age = $allows['age'] ?? Config::get('cors.age');
+            $origin = $allows['origin'] ?? $this->app['config']->get('cors.origin');
+            $credentials = $allows['credentials'] ?? ($this->app['config']->get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? $this->app['config']->get('cors.headers');
+            $age = $allows['age'] ?? $this->app['config']->get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
@@ -80,10 +80,10 @@ class Route
         } else if ('options' == $this->request->method()) {
             //需要优化下，解决了其他请求方式下的跨域问题
             $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
-            $origin = $allows['origin'] ?? Config::get('cors.origin');
-            $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
-            $headers = $allows['headers'] ?? Config::get('cors.headers');
-            $age = $allows['age'] ?? Config::get('cors.age');
+            $origin = $allows['origin'] ?? $this->app['config']->get('cors.origin');
+            $credentials = $allows['credentials'] ?? ($this->app['config']->get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? $this->app['config']->get('cors.headers');
+            $age = $allows['age'] ?? $this->app['config']->get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Max-Age:' . $age);
@@ -161,7 +161,7 @@ class Route
 
     public function middleware($middleware)
     {
-        Middleware::instance()->set($middleware, $this->method, $this->path);
+        $this->app[\Yao\Http\Middleware::class]->set($middleware, $this->method, $this->path);
         $this->_rule($this->method, $this->path, $this->location, 'middleware', $middleware);
         return $this;
     }
@@ -183,7 +183,7 @@ class Route
             }
         } else if (is_string($this->controller)) {
             $resData = function () {
-                return \Yao\Container::instance()->invokeMethod([$this->controller, $this->action], $this->param);
+                return $this->app->invokeMethod([$this->controller, $this->action], $this->param);
             };
             if (isset($this->routes[$this->request->method()][$this->request->path()]['middleware'])) {
                 $middleware = $this->routes[$this->request->method()][$this->request->path()]['middleware'];
@@ -206,7 +206,9 @@ class Route
         if ($data instanceof \Closure) {
             return $this->output($data());
         } else {
-            return Response::data($data)->return();
+            return $this->app['response']
+                ->data($data)
+                ->return();
         }
     }
 
@@ -287,7 +289,7 @@ class Route
      */
     public function alias(string $name): Route
     {
-        Alias::instance()->set($name, $this->path);
+        $this->app[\Yao\Route\Rules\Alias::class]->set($name, $this->path);
         return $this;
     }
 
@@ -303,7 +305,7 @@ class Route
     public function cors($allowOrigin = null, ?bool $allowCredentials = null, $allowHeaders = null, $allowAge = 600): Route
     {
         //需要判断是否存在配置，不存在则默认
-        $cors = Config::get('cors');
+        $cors = $this->app['config']->get('cors');
         $allowOrigin || $allowOrigin = $cors['origin'];
         $allowHeaders || $allowHeaders = $cors['headers'];
         $allowAge || $allowAge = $cors['age'];

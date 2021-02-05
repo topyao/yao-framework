@@ -14,8 +14,13 @@ abstract class Controller
 
     public $middleware = [];
 
-    public function __construct()
+    protected $app;
+    protected $request;
+
+    public function __construct(App $app, \Yao\Http\Request $request)
     {
+        $this->app = $app;
+        $this->request = $request;
         $this->init();
         $this->_registerMiddleware();
     }
@@ -26,7 +31,7 @@ abstract class Controller
 
     final private function _registerMiddleware()
     {
-        Middleware::instance()->set($this->middleware, Request::method(), Request::path());
+        $this->app[Middleware::class]->set($this->middleware, Request::method(), Request::path());
     }
 
     /**
@@ -36,22 +41,12 @@ abstract class Controller
      */
     protected function validate(string $class = \App\Http\Validate::class, array $data = [], array $notice = [])
     {
-        return Container::instance()->make($class,$data,false)->notice($notice)->check();
+        return $this->app
+            ->make($class, $data, false)
+            ->notice($notice)
+            ->check();
 //        return (new $class($data))->notice($notice)->check();
     }
 
 
-//    /**
-//     * 静态方式调用类中的方法
-//     * @param string $method
-//     * @param array $args
-//     * @return mixed
-//     */
-//    public static function __callStatic(string $method, array $args)
-//    {
-//        if (method_exists($controller = new static, $method)) {
-//            return call_user_func_array([$controller, $method], $args);
-//        }
-//        throw new \Exception('类"' . static::class . '"中的方法"' . $method . '"不存在！');
-//    }
 }

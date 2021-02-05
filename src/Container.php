@@ -7,6 +7,7 @@ use Yao\Exception\ContainerException;
 
 class Container implements ContainerInterface, \ArrayAccess
 {
+
     private static $instance;
 
 
@@ -14,26 +15,13 @@ class Container implements ContainerInterface, \ArrayAccess
      * 依赖注入的类实例
      * @var array
      */
-    protected array $instances = [];
-    /**
-     * 当前实例化并调用方法的类名
-     * @var $instance
-     */
-//    protected static $abstract;
+    protected static array $instances = [];
+
     /**
      * 绑定的类名
      * @var array|string[]
      */
-    protected array $bind = [
-        'request' => Http\Request::class,
-        'validate' => \App\Http\Validate::class,
-        'file' => File::class,
-        'env' => Env::class,
-        'config' => Config::class,
-        'app' => App::class,
-        'view' => View\Render::class,
-        'route' => Route\Route::class
-    ];
+    protected array $bind = [];
 
 
     public static function instance()
@@ -47,14 +35,14 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function set($abstract, $instance)
     {
-        $this->instances[$abstract] = $instance;
+        static::$instances[$abstract] = $instance;
     }
 
     public function get($abstract)
     {
         $abstract = $this->_getBindClass($abstract);
         if ($this->has($abstract)) {
-            return $this->instances[$abstract];
+            return static::$instances[$abstract];
         }
         throw new ContainerException("实例'{$abstract}'没有找到");
     }
@@ -62,7 +50,7 @@ class Container implements ContainerInterface, \ArrayAccess
     public function has($abstract)
     {
         $abstract = $this->_getBindClass($abstract);
-        return isset($this->instances[$abstract]);
+        return isset(static::$instances[$abstract]);
     }
 
 
@@ -158,7 +146,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetGet($abstract)
     {
-        return $this->make($abstract);
+        return $this->make($abstract,[],true);
     }
 
     public function offsetSet($offset, $value)
@@ -171,5 +159,10 @@ class Container implements ContainerInterface, \ArrayAccess
         // TODO: Implement offsetUnset() method.
     }
 
+
+    public function __get($abstract)
+    {
+        return $this->make($abstract);
+    }
 
 }

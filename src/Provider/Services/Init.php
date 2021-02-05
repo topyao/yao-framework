@@ -13,11 +13,8 @@ use Yao\Route\Route;
 class Init implements Service
 {
 
-    protected $route;
-
-    public function __construct(Route $route, \Yao\Config $config, \Yao\Http\Session $session)
+    public function __construct(\Yao\Config $config, \Yao\Http\Session $session)
     {
-        $this->route = $route;
         $this->config = $config;
         $this->session = $session;
     }
@@ -28,8 +25,6 @@ class Init implements Service
 
     public function boot()
     {
-        $this->route->register();
-        $this->route->match();
         //是否默认开启session
         if ($this->config->get('app.auto_start')) {
             session_start();
