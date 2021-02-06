@@ -146,7 +146,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetGet($abstract)
     {
-        return $this->make($abstract,[],true);
+        return $this->make($abstract);
     }
 
     public function offsetSet($offset, $value)
@@ -162,7 +162,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function __get($abstract)
     {
-        return $this->make($abstract);
+        return $this->get($abstract);
     }
 
 }

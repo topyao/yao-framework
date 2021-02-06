@@ -4,6 +4,7 @@ namespace Yao\Provider\Services;
 
 use Yao\Provider\Service;
 use Yao\Route\Route;
+use Yao\App;
 
 /**
  * 框架初始化服务
@@ -12,11 +13,11 @@ use Yao\Route\Route;
  */
 class Init implements Service
 {
+    protected $app;
 
-    public function __construct(\Yao\Config $config, \Yao\Http\Session $session)
+    public function __construct(App $app)
     {
-        $this->config = $config;
-        $this->session = $session;
+        $this->app = $app;
     }
 
     public function register()
@@ -26,12 +27,12 @@ class Init implements Service
     public function boot()
     {
         //是否默认开启session
-        if ($this->config->get('app.auto_start')) {
+        if ($this->app['config']->get('app.auto_start')) {
             session_start();
             //session闪存检查
-            $this->session->flashCheck();
+            $this->app['session']->flashCheck();
         }
         //设置默认时区
-        date_default_timezone_set($this->config->get('app.default_timezone', 'PRC'));
+        date_default_timezone_set($this->app['config']->get('app.default_timezone', 'PRC'));
     }
 }

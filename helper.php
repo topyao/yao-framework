@@ -129,7 +129,8 @@ if (false === function_exists('redirect')) {
 if (false === function_exists('url')) {
     function url($alias, $args = [])
     {
-        return \Yao\Route\Rules\Alias::instance()->get($alias, $args);
+        return \Yao\App::instance()->invokeMethod([\Yao\Route\Rules\Alias::class,'get'],$args);
+//            \Yao\Route\Rules\Alias::instance()->get($alias, $args);
     }
 }
 

@@ -10,7 +10,7 @@ use Yao\Traits\Parse;
  * Class Config
  * @package Yao
  */
-class Config implements \ArrayAccess
+class Config
 {
     use Parse;
 
@@ -83,21 +83,4 @@ class Config implements \ArrayAccess
         return env('config_path') . $config . '.php';
     }
 
-    public function offsetUnset($offset)
-    {
-    }
-
-    public function offsetExists($offset)
-    {
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->parse($this->config, $offset);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        $this->config[$offset] = $value;
-    }
 }

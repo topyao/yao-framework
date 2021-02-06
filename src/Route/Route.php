@@ -32,10 +32,10 @@ class Route
 
     private $middleware;
 
-    public function __construct(App $app, Request $request)
+    public function __construct(App $app)
     {
         $this->app = $app;
-        $this->request = $request;
+        $this->request = $app['request'];
     }
 
     public function getRoute($requestMethod = null, $requestPath = null)

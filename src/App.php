@@ -14,10 +14,6 @@ defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARA
  */
 class App extends Container
 {
-
-    private $env;
-    private $request;
-
     /**
      * 绑定的类名
      * @var array|string[]
@@ -31,7 +27,9 @@ class App extends Container
         'view' => \Yao\View\Render::class,
         'route' => \Yao\Route\Route::class,
         'error' => \Yao\Error::class,
-        'provider' => \Yao\Provider\Provider::class
+        'provider' => \Yao\Provider\Provider::class,
+        'response' => \Yao\Http\Response::class,
+        'session' => \Yao\Http\Session::class
     ];
 
 
