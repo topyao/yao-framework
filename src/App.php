@@ -2,10 +2,6 @@
 
 namespace Yao;
 
-use Yao\Http\Request;
-use Yao\Provider\Provider;
-use Yao\Route\Route;
-
 defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARATOR);
 
 /**
@@ -22,6 +18,7 @@ class App extends Container
         'request' => \Yao\Http\Request::class,
         'validate' => \App\Http\Validate::class,
         'file' => \Yao\File::class,
+        'app' => \Yao\App::class,
         'env' => \Yao\Env::class,
         'config' => \Yao\Config::class,
         'view' => \Yao\View\Render::class,
@@ -29,12 +26,18 @@ class App extends Container
         'error' => \Yao\Error::class,
         'provider' => \Yao\Provider\Provider::class,
         'response' => \Yao\Http\Response::class,
-        'session' => \Yao\Http\Session::class
+        'session' => \Yao\Http\Session::class,
+        'log' => \Yao\Log::class
     ];
-
 
     public function __construct()
     {
+    }
+
+
+    public function init()
+    {
+
     }
 
     private function _setEnv()
@@ -55,9 +58,9 @@ class App extends Container
         ob_start();
         $this['error']->register();
         $this['route']->register();
-        $this['route']->match();
+        $this->route->match();
         $this['provider']->serve();
-        $this['route']->dispatch();
+        $this->route->dispatch();
     }
 
 }
