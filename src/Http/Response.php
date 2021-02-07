@@ -2,6 +2,7 @@
 
 namespace Yao\Http;
 
+use Yao\App;
 use Yao\Facade\Config;
 
 /**
@@ -12,11 +13,16 @@ use Yao\Facade\Config;
 class Response
 {
 
+    protected App $app;
     protected $response;
     protected $code = 200;
     protected $header = ['Content-Type:text/html; charset=UTF-8', 'X-Powered-By:YaoPHP'];
     protected $data;
 
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
 
     public function data($data)
     {
@@ -36,9 +42,9 @@ class Response
 
     public function cors($allows)
     {
-        $origin = $allows['origin'] ?? Config::get('cors.origin');
-        $credentials = $allows['credentials'] ?? (Config::get('cors.credentials') ? 'true' : 'false');
-        $headers = $allows['headers'] ?? Config::get('cors.headers');
+        $origin = $allows['origin'] ?? $this->app->configget('cors.origin');
+        $credentials = $allows['credentials'] ?? ($this->app->configget('cors.credentials') ? 'true' : 'false');
+        $headers = $allows['headers'] ?? $this->app->configget('cors.headers');
         $this->header([
             'Access-Control-Allow-Origin:' . $origin,
             'Access-Control-Allow-Credentials:' . $credentials,
@@ -55,7 +61,7 @@ class Response
 
     protected function create()
     {
-        \Yao\Facade\Route::allowCors();
+        $this->app->route->allowCors();
         foreach ($this->header as $header) {
             header($header);
         }

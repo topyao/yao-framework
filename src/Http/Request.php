@@ -2,6 +2,8 @@
 
 namespace Yao\Http;
 
+use Yao\App;
+
 /**
  * 请求类
  * Class Request
@@ -9,15 +11,41 @@ namespace Yao\Http;
  */
 class Request
 {
+
+    /**
+     * App类对象，用来获取容器内的实例
+     * @var App
+     */
+    protected App $app;
+
     /**
      * 请求类型
      * @var mixed|string|null
      */
     protected ?array $filters = [];
-    protected array $server = [];
 
+    /**
+     * 当前请求的控制器
+     * @var string
+     */
     protected string $controller = '';
+
+    /**
+     * 当前请求的方法
+     * @var string
+     */
     protected string $action = '';
+
+    /**
+     * Request constructor.
+     * @param App $app
+     * @param array|null $filters
+     */
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+        $this->filters = $this->app->config->get('app.filter');
+    }
 
     public function controller($controller = null)
     {
@@ -27,7 +55,7 @@ class Request
         $this->controller = $controller;
     }
 
-    public function action($action)
+    public function action($action = null)
     {
         if (!isset($controller)) {
             return $this->action;
@@ -40,26 +68,16 @@ class Request
         $this->$attribute = $value;
     }
 
-    /**
-     * 初始化请求类型
-     * Request constructor.
-     */
-    public function __construct(?array $filters = null)
-    {
-        $this->server = $_SERVER;
-        $this->filters = $filters ?? \Yao\Facade\Config::get('app.filter');
-    }
-
     public function server(?string $name = null)
     {
-        return $name ? ($this->server[strtoupper($name)] ?? null) : $this->server;
+        return $name ? ($_SERVER[strtoupper($name)] ?? null) : $_SERVER;
     }
 
     public function header(?string $header = null)
     {
         if (is_null($header)) {
             $headers = [];
-            array_walk($this->server, function ($value, $key) use (&$headers) {
+            array_walk($this->server(), function ($value, $key) use (&$headers) {
                 if ('HTTP_' == substr($key, 0, 5)) {
                     $headers[$key] = $value;
                 }
@@ -75,18 +93,18 @@ class Request
      */
     public function isMethod(string $method): bool
     {
-        return $this->server['REQUEST_METHOD'] == strtoupper($method);
+        return $this->server('REQUEST_METHOD') == strtoupper($method);
     }
 
     public function url(): string
     {
-        return $this->server['REQUEST_SCHEME'] . '://' . $this->server['HTTP_HOST'] . '/';
+        return $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . '/';
     }
 
     public function path()
     {
         //解析url中的path
-        $path = parse_url($this->server['REQUEST_URI'], PHP_URL_PATH);
+        $path = parse_url($this->server('REQUEST_URI'), PHP_URL_PATH);
         //解析出错抛出异常终止脚本
         if (!$path) {
             throw new \Exception('页面不存在', 404);
@@ -97,7 +115,7 @@ class Request
 
     public function method(): string
     {
-        return strtolower($this->server['REQUEST_METHOD']);
+        return strtolower($this->server('REQUEST_METHOD'));
     }
 
     public function cookie($field = null)
@@ -122,7 +140,7 @@ class Request
      */
     public function isAjax(): bool
     {
-        return !empty($this->server['HTTP_X_REQUESTED_WITH']) && $this->server['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+        return !empty($this->server('HTTP_X_REQUESTED_WITH')) && $this->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest';
     }
 
     /**

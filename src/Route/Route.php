@@ -6,7 +6,6 @@ namespace Yao\Route;
 
 use Yao\App;
 use Yao\Exception\RouteNotFoundException;
-use Yao\Http\Request;
 
 /**
  * 路由操作类
