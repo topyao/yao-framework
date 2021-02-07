@@ -3,6 +3,7 @@
 namespace Yao\Http;
 
 use Yao\App;
+use Yao\Exception\RouteNotFoundException;
 
 /**
  * 请求类
@@ -105,10 +106,7 @@ class Request
     {
         //解析url中的path
         $path = parse_url($this->server('REQUEST_URI'), PHP_URL_PATH);
-        //解析出错抛出异常终止脚本
-        if (!$path) {
-            throw new \Exception('页面不存在', 404);
-        }
+        //这里需要判断下是否解析成功，但是因为注册异常处理函数的步骤可能在这之后，不能捕获异常 DEBUG
         //去掉右边斜线
         return ('/' == $path) ? $path : rtrim($path, '/');
     }

@@ -2,7 +2,6 @@
 
 namespace Yao;
 
-use Yao\Facade\Request;
 use Yao\Http\Middleware;
 
 /**
@@ -17,12 +16,12 @@ abstract class Controller
     protected $app;
     protected $request;
 
-    public function __construct(App $app, \Yao\Http\Request $request)
+    public function __construct(App $app)
     {
         $this->app = $app;
-        $this->request = $request;
+        $this->request = $app->request;
         $this->init();
-        $this->_registerMiddleware();
+//        $this->_registerMiddleware();
     }
 
     protected function init()
@@ -31,7 +30,7 @@ abstract class Controller
 
     final private function _registerMiddleware()
     {
-        $this->app[Middleware::class]->set($this->middleware, Request::method(), Request::path());
+        $this->app[Middleware::class]->set($this->middleware, $this->request->method(), $this->request->path());
     }
 
     /**

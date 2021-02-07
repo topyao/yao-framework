@@ -22,7 +22,8 @@ class Collection implements \ArrayAccess, \JsonSerializable
     private $data = [];
 
 
-    public function isEmpty(){
+    public function isEmpty()
+    {
         return empty($this->data);
     }
 
@@ -33,7 +34,7 @@ class Collection implements \ArrayAccess, \JsonSerializable
 
     public function __get($arg)
     {
-        return $this->data[$arg] ?? null;
+        return $this->$arg ?? null;
     }
 
     public function __construct()
@@ -64,6 +65,7 @@ class Collection implements \ArrayAccess, \JsonSerializable
 
     public function offsetSet($offset, $value)
     {
+        $this->data[$offset] = $value;
     }
 
 
