@@ -117,15 +117,15 @@ if (false === function_exists('redirect')) {
     }
 }
 if (false === function_exists('url')) {
-    function url($alias, $args = [])
+    function url(string $alias, array $args = []): string
     {
-        return \Yao\App::instance()->invokeMethod([\Yao\Route\Rules\Alias::class,'get'],$args);
+        return \Yao\App::instance()->invokeMethod([\Yao\Route\Rules\Alias::class, 'get'], [$alias, $args]);
     }
 }
 
 if (false === function_exists('app')) {
     function app($app, $arguments = [], $singleInstance = false)
     {
-        return \Yao\App::instance()->make($app,$arguments,$singleInstance);
+        return \Yao\App::instance()->make($app, $arguments, $singleInstance);
     }
 }
