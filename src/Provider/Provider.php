@@ -3,6 +3,7 @@
 
 namespace Yao\Provider;
 
+use Yao\Db\DatabaseService;
 use Yao\Provider\Services\Init;
 
 /**
@@ -21,7 +22,8 @@ class Provider
     public function builtInServices()
     {
         return [
-            Init::class
+            Init::class,
+            DatabaseService::class
         ];
     }
 
