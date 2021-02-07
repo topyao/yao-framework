@@ -2,10 +2,7 @@
 
 namespace Yao;
 
-use Yao\Facade\{
-    Log,
-    Response
-};
+use Yao\Exception\ErrorException;
 
 /**
  * 错误和异常注册类
@@ -18,10 +15,16 @@ class Error
     protected bool $debug;
     protected string $exceptionView;
 
+    /**
+     * 日志实例
+     * @var mixed|Log
+     */
+    protected Log $log;
 
     public function __construct(App $app)
     {
         $this->app = $app;
+        $this->log = $app['log'];
         $this->debug = $this->app['config']->get('app.debug');
         $iniSet = [
             [true => 'On', false => 'Off'],
@@ -43,7 +46,7 @@ class Error
     {
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
-        Log::write('system', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path()]);
+        $this->log->write('Exception', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path()]);
         if ($this->debug) {
             $data = '<!DOCTYPE html>
             <html lang="zh">
@@ -65,19 +68,15 @@ class Error
 
     public function error($code, $message, $file, $line, $errContext)
     {
-        Log::write('system', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), $code, $file, $line]);
-        if ($this->debug) {
-            $data = ' <title>' .$message . '</title><b>Message:</b> ' . $message . ' <br><b>Code:</b>' . $code . ' <br><b>Location:</b> ' . $file . ' + ' . $line . '<br><b>Trace:</b><br>' . print_r($errContext, true);
-        } else {
-            $data = include_once $this->exceptionView;
-        }
-        exit($this->app['response']->data($data)->code(403)->return());
+        $this->log->write('Error', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), $code, $file, $line]);
+        throw new ErrorException($message, $code);
     }
 
     public function shutdown()
     {
         if ($error = error_get_last()) {
-            var_dump($error);
+            $this->log->write('Fetal', $error, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path()]);
+            throw new \Exception($error);
         }
     }
 }
