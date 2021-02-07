@@ -58,17 +58,7 @@ if (false === function_exists('view')) {
     }
 }
 
-if (false === function_exists('db')) {
-    /**
-     * Db类助手函数
-     * @param string $tableName
-     * @return \Yao\Db
-     */
-    function db(string $tableName)
-    {
-        return \Yao\Facade\Db::name($tableName);
-    }
-}
+
 if (false === function_exists('dump')) {
     function dump(...$dump)
     {
@@ -130,7 +120,6 @@ if (false === function_exists('url')) {
     function url($alias, $args = [])
     {
         return \Yao\App::instance()->invokeMethod([\Yao\Route\Rules\Alias::class,'get'],$args);
-//            \Yao\Route\Rules\Alias::instance()->get($alias, $args);
     }
 }
 
