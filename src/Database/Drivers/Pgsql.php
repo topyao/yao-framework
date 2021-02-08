@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Yao\Db\Drivers;
+namespace Yao\Database\Drivers;
 
 
-use Yao\Db\Driver;
+use Yao\Database\Driver;
 
 /**
  * Class Pgsql

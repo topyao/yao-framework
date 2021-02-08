@@ -1,6 +1,6 @@
 <?php
 
-namespace Yao\Db;
+namespace Yao\Database;
 
 use Yao\Facade\Config;
 
@@ -20,7 +20,7 @@ class Query
         if (!$database) {
             throw new \Exception('数据库配置文件不存在');
         }
-        $driver = '\\Yao\\Db\\Drivers\\' . ucfirst($database);
+        $driver = '\\Yao\\Database\\Drivers\\' . ucfirst($database);
         $this->driver = new $driver($database);
     }
 

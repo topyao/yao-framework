@@ -1,6 +1,6 @@
 <?php
 
-namespace Yao\Db;
+namespace Yao\Database;
 
 use Yao\{
     Traits\SingleInstance

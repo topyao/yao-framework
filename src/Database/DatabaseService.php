@@ -16,7 +16,7 @@ namespace {
 
 }
 
-namespace Yao\Db {
+namespace Yao\Database {
 
     use Yao\Provider\Service;
 

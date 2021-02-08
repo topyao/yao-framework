@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Yao\Db;
+namespace Yao\Database;
 
 use Yao\Collection;
 use Yao\Facade\Config;
@@ -169,7 +169,7 @@ abstract class Driver
     /**
      * 设置查询字段
      * @param string|array $field
-     * @return \Yao\Db\Driver
+     * @return \Yao\Database\Driver
      */
     public function field($field)
     {

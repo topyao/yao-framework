@@ -28,7 +28,7 @@ class Model
     /**
      * @param $function_name
      * @param $arguments
-     * @return \Yao\Db\Driver
+     * @return \Yao\Database\Driver
      */
     public function __call($functionName, $arguments)
     {

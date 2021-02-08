@@ -3,7 +3,7 @@
 
 namespace Yao\Provider;
 
-use Yao\Db\DatabaseService;
+use Yao\Database\DatabaseService;
 use Yao\Provider\Services\Init;
 
 /**
