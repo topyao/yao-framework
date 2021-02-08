@@ -84,19 +84,30 @@ class Container implements ContainerInterface, \ArrayAccess
     public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
     {
         $abstract = $this->_getBindClass($abstract);
-        if (!$this->has($abstract) || !$singleInstance) {
-            $reflectionClass = new \ReflectionClass($abstract);
-            if (null === ($constructor = $reflectionClass->getConstructor())) {
-                $this->set($abstract, new $abstract(...$arguments));
-            } else if ($constructor->isPublic()) {
-                $parameters = $constructor->getParameters();
-                $injectClass = $this->_getInjectObject($parameters);
-                $this->set($abstract, new $abstract(...[...$arguments, ...$injectClass]));
-            } else {
-                throw new ContainerException("类{$abstract}不能实例化！");
-            }
+
+        if (!$singleInstance) {
+            return $this->_inject($abstract, $arguments);
         }
+
+        if (!$this->has($abstract)) {
+            $this->set($abstract, $this->_inject($abstract, $arguments));
+        }
+
         return $this->get($abstract);
+    }
+
+    private function _inject($abstract, $arguments)
+    {
+        $reflectionClass = new \ReflectionClass($abstract);
+        if (null === ($constructor = $reflectionClass->getConstructor())) {
+            return new $abstract(...$arguments);
+        } else if ($constructor->isPublic()) {
+            $parameters = $constructor->getParameters();
+            $injectClass = $this->_getInjectObject($parameters);
+            return new $abstract(...[...$arguments, ...$injectClass]);
+        } else {
+            throw new ContainerException("类{$abstract}不能实例化！");
+        }
     }
 
 
