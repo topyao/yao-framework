@@ -50,7 +50,7 @@ class Route
      * @param int $code
      * @param array|string[] $requestMethods
      */
-    public function redirect(string $path, string $location, int $code = 200, array $requestMethods = ['get'])
+    public function redirect(string $path, string $location, int $code = 302, array $requestMethods = ['get'])
     {
         $this->_rule($requestMethods, $path, $location, 'route', function () use ($code, $location) {
             return redirect($location, $code);
@@ -171,11 +171,12 @@ class Route
             throw new \Exception('页面不存在！', 404);
         }
         if ($this->controller instanceof \Closure) {
+            dump($this->controller);
             $resData = function () {
                 return call_user_func_array($this->controller, $this->param);
             };
-            if (isset($this->routes[$this->method][$this->path]['middleware'])) {
-                $middleware = $this->routes[$this->method][$this->path]['middleware'];
+            if (isset($this->routes[$this->request->method()][$this->request->path()]['middleware'])) {
+                $middleware = $this->routes[$this->request->method()][$this->request->path()]['middleware'];
                 return (new $middleware)->handle($resData, function ($request) {
                     return $this->output($request);
                 });
