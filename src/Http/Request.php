@@ -209,7 +209,7 @@ class Request
     {
         $return = [];
         foreach ($argument as $key => $value) {
-            $return[$value] = $predefinedConstant[$value] ?? ($default[$key] ?? null);
+            $return[$value] = isset($predefinedConstant[$value]) ? $this->_filter($predefinedConstant[$value]): ($default[$value] ?? null);
         }
         return $return;
     }
