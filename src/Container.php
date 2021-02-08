@@ -71,21 +71,19 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 获取类对象，支持依赖注入
-     * @param $abstract
-     * 需要实例化的类
+     * 注入的外部接口方法
+     * @param string $abstract
      * @param array $arguments
-     * 给构造方法传递的参数
      * @param bool $singleInstance
-     * 为true表示单例
      * @return mixed
-     * @throws \ReflectionException
      */
     public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
     {
         $abstract = $this->_getBindClass($abstract);
 
+        //非单例会强制刷新当前存在的单例实例
         if (!$singleInstance) {
+            $this->remove($abstract);
             return $this->_inject($abstract, $arguments);
         }
 
@@ -94,6 +92,20 @@ class Container implements ContainerInterface, \ArrayAccess
         }
 
         return $this->get($abstract);
+    }
+
+    /**
+     * 注销实例
+     * @param $abstract
+     */
+    public function remove($abstract)
+    {
+        $abstract = $this->_getBindClass($abstract);
+        if ($this->has($abstract)) {
+            unset(self::$instances[$abstract]);
+        } else {
+            throw new ContainerException('需要注销的实例不存在!');
+        }
     }
 
     private function _inject($abstract, $arguments)
