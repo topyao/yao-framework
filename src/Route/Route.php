@@ -171,7 +171,6 @@ class Route
             throw new \Exception('页面不存在！', 404);
         }
         if ($this->controller instanceof \Closure) {
-            dump($this->controller);
             $resData = function () {
                 return call_user_func_array($this->controller, $this->param);
             };
