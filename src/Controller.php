@@ -28,7 +28,7 @@ abstract class Controller
     {
     }
 
-    final private function _registerMiddleware()
+    final protected function _registerMiddleware()
     {
         $this->app[Middleware::class]->set($this->middleware, $this->request->method(), $this->request->path());
     }
@@ -38,13 +38,9 @@ abstract class Controller
      * @param array $data 验证数据
      * @param array $notice 验证失败提示消息
      */
-    protected function validate(string $class = \App\Http\Validate::class, array $data = [], array $notice = [])
+    final protected function validate(string $class = \App\Http\Validate::class, array $data = [], array $notice = [])
     {
-        return $this->app
-            ->make($class, $data, false)
-            ->notice($notice)
-            ->check();
-//        return (new $class($data))->notice($notice)->check();
+        return (new $class($data))->notice($notice)->check();
     }
 
 
