@@ -3,6 +3,7 @@
 namespace Yao;
 
 use Yao\Http\Middleware;
+use Yao\Http\Request;
 
 /**
  * Class Controller
@@ -13,8 +14,8 @@ abstract class Controller
 
     public $middleware = [];
 
-    protected $app;
-    protected $request;
+    protected App $app;
+    protected Request $request;
 
     public function __construct(App $app)
     {
