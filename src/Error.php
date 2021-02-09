@@ -26,17 +26,17 @@ class Error
         $this->app = $app;
         $this->log = $app['log'];
         $this->debug = $this->app['config']->get('app.debug');
+        $this->exceptionView = $this->app['config']->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
+    }
+
+    public function register()
+    {
         $iniSet = [
             [true => 'On', false => 'Off'],
             [true => E_ALL, false => 0]
         ];
         function_exists('ini_set') && ini_set('display_errors', $iniSet[0][$this->debug]);
         error_reporting($iniSet[1][$this->debug]);
-        $this->exceptionView = $this->app['config']->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
-    }
-
-    public function register()
-    {
         set_error_handler([$this, 'error']);
         set_exception_handler([$this, 'exception']);
         register_shutdown_function([$this, 'shutdown']);
