@@ -30,11 +30,6 @@ class App extends Container
         'log' => \Yao\Log::class
     ];
 
-    public function __construct()
-    {
-    }
-
-
     public function init()
     {
 

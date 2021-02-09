@@ -4,9 +4,12 @@ namespace Yao;
 
 use Psr\Container\ContainerInterface;
 use Yao\Exception\ContainerException;
+use Yao\Traits\SingleInstance;
 
 class Container implements ContainerInterface, \ArrayAccess
 {
+
+    use SingleInstance;
 
     /**
      * 依赖注入的类实例
@@ -20,8 +23,11 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     protected array $bind = [];
 
-
-    public static function instance()
+    /**
+     * 单例模式获取类实例
+     * @return object
+     */
+    public static function instance(): object
     {
         if (!isset(static::$instances[static::class]) || !static::$instances[static::class] instanceof static) {
             static::$instances[static::class] = new static();
@@ -29,12 +35,24 @@ class Container implements ContainerInterface, \ArrayAccess
         return static::$instances[static::class];
     }
 
-
-    public function set($abstract, $instance)
+    /**
+     * 将实例化的类存放到数组中
+     * @param string $abstract
+     * 类名
+     * @param object $instance
+     * 实例话后的对象
+     */
+    public function set(string $abstract, object $instance): void
     {
         static::$instances[$abstract] = $instance;
     }
 
+    /**
+     * 获取已经实例化的对象
+     * @param $abstract
+     * 类名
+     * @return mixed
+     */
     public function get($abstract)
     {
         $abstract = $this->_getBindClass($abstract);
@@ -44,14 +62,26 @@ class Container implements ContainerInterface, \ArrayAccess
         throw new ContainerException("实例'{$abstract}'没有找到");
     }
 
+    /**
+     * 判断类的实例是否存在
+     * @param $abstract
+     * 类名
+     * @return bool
+     */
     public function has($abstract)
     {
         $abstract = $this->_getBindClass($abstract);
         return isset(static::$instances[$abstract]);
     }
 
-
-    public function bind($id, $className)
+    /**
+     * 添加绑定类的标识
+     * @param string $id
+     * 绑定的类标识
+     * @param string $className
+     * 绑定的类名
+     */
+    public function bind(string $id, string $className): void
     {
         $this->bind[$id] = $className;
     }
@@ -74,7 +104,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param bool $singleInstance
      * @return mixed
      */
-    public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
+    public function make(string $abstract, array $arguments = [], bool $singleInstance = true): object
     {
         $abstract = $this->_getBindClass($abstract);
 
@@ -95,7 +125,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * 注销实例
      * @param $abstract
      */
-    public function remove($abstract)
+    public function remove(string $abstract): bool
     {
         $abstract = $this->_getBindClass($abstract);
         if ($this->has($abstract)) {
@@ -105,17 +135,16 @@ class Container implements ContainerInterface, \ArrayAccess
         return false;
     }
 
-    private function _inject($abstract, $arguments)
+    private function _inject(string $abstract, array $arguments): object
     {
         $reflectionClass = new \ReflectionClass($abstract);
         if (null === ($constructor = $reflectionClass->getConstructor())) {
             return new $abstract(...$arguments);
-        } else if ($constructor->isPublic()) {
+        }
+        if ($constructor->isPublic()) {
             $parameters = $constructor->getParameters();
             $injectClass = $this->_getInjectObject($parameters);
             return new $abstract(...[...$arguments, ...$injectClass]);
-        } else {
-            throw new ContainerException("类{$abstract}不能实例化！");
         }
     }
 
@@ -147,7 +176,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param $parameters
      * @return array
      */
-    protected function _getInjectObject(array $parameters)
+    protected function _getInjectObject(array $parameters): array
     {
         //此处有bug，所有注入的类都成了单例的了
         $injectClass = [];
