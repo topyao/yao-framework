@@ -8,9 +8,6 @@ use Yao\Exception\ContainerException;
 class Container implements ContainerInterface, \ArrayAccess
 {
 
-    private static $instance;
-
-
     /**
      * 依赖注入的类实例
      * @var array
