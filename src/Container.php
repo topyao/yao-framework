@@ -100,9 +100,9 @@ class Container implements ContainerInterface, \ArrayAccess
         $abstract = $this->_getBindClass($abstract);
         if ($this->has($abstract)) {
             unset(self::$instances[$abstract]);
-        } else {
-            throw new ContainerException('需要注销的实例不存在!');
+            return true;
         }
+        return false;
     }
 
     private function _inject($abstract, $arguments)
