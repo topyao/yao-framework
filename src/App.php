@@ -27,7 +27,8 @@ class App extends Container
         'provider' => \Yao\Provider\Provider::class,
         'response' => \Yao\Http\Response::class,
         'session' => \Yao\Http\Session::class,
-        'log' => \Yao\Log::class
+        'log' => \Yao\Log::class,
+        'alias' => \Yao\Route\Rules\Alias::class
     ];
 
     public function init()

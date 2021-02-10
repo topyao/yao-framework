@@ -59,7 +59,7 @@ class Container implements ContainerInterface, \ArrayAccess
         if ($this->has($abstract)) {
             return static::$instances[$abstract];
         }
-        throw new ContainerException("实例'{$abstract}'没有找到");
+        throw new ContainerException("'{$abstract}'还没有实例化！");
     }
 
     /**

@@ -44,7 +44,7 @@ EOT;
                                 } else if ($locate['route'] instanceof \Closure) {
                                     $locate['route'] = '\Closure';
                                 }
-                                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\Route\Rules\Alias::instance()->getAliasByUri($route), 15) . "|\n";
+                                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 25) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Yao\App::instance()->make('alias')->getAliasByUri($route), 15) . "|\n";
                             }
                         }
                         exit(self::SEPARATOR);

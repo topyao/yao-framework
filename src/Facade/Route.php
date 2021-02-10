@@ -27,7 +27,7 @@ class Route extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return 'route';
+        return \Yao\Route\Route::class;
     }
 
 }

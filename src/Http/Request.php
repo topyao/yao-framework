@@ -45,7 +45,8 @@ class Request
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->filters = $this->app->config->get('app.filter');
+        $this->config = $app['config'];
+        $this->filters = $this->config->get('app.filter');
     }
 
     public function controller($controller = null)
@@ -209,7 +210,7 @@ class Request
     {
         $return = [];
         foreach ($argument as $key => $value) {
-            $return[$value] = isset($predefinedConstant[$value]) ? $this->_filter($predefinedConstant[$value]): ($default[$value] ?? null);
+            $return[$value] = isset($predefinedConstant[$value]) ? $this->_filter($predefinedConstant[$value]) : ($default[$value] ?? null);
         }
         return $return;
     }

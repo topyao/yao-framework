@@ -35,6 +35,7 @@ class Route
     {
         $this->app = $app;
         $this->request = $app['request'];
+        $this->config = $app['config'];
     }
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -68,10 +69,10 @@ class Route
     {
         if (isset($this->routes[$this->request->method()][$this->request->path()]['cors'])) {
             $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
-            $origin = $allows['origin'] ?? $this->app['config']->get('cors.origin');
-            $credentials = $allows['credentials'] ?? ($this->app['config']->get('cors.credentials') ? 'true' : 'false');
-            $headers = $allows['headers'] ?? $this->app['config']->get('cors.headers');
-            $age = $allows['age'] ?? $this->app['config']->get('cors.age');
+            $origin = $allows['origin'] ?? $this->config->get('cors.origin');
+            $credentials = $allows['credentials'] ?? ($this->config->get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? $this->config->get('cors.headers');
+            $age = $allows['age'] ?? $this->config->get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
@@ -79,10 +80,10 @@ class Route
         } else if ('options' == $this->request->method()) {
             //需要优化下，解决了其他请求方式下的跨域问题
             $allows = $this->routes[$this->request->method()][$this->request->path()]['cors'];
-            $origin = $allows['origin'] ?? $this->app['config']->get('cors.origin');
-            $credentials = $allows['credentials'] ?? ($this->app['config']->get('cors.credentials') ? 'true' : 'false');
-            $headers = $allows['headers'] ?? $this->app['config']->get('cors.headers');
-            $age = $allows['age'] ?? $this->app['config']->get('cors.age');
+            $origin = $allows['origin'] ?? $this->config->get('cors.origin');
+            $credentials = $allows['credentials'] ?? ($this->config->get('cors.credentials') ? 'true' : 'false');
+            $headers = $allows['headers'] ?? $this->config->get('cors.headers');
+            $age = $allows['age'] ?? $this->config->get('cors.age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Max-Age:' . $age);
@@ -304,7 +305,7 @@ class Route
     public function cors($allowOrigin = null, ?bool $allowCredentials = null, $allowHeaders = null, $allowAge = 600): Route
     {
         //需要判断是否存在配置，不存在则默认
-        $cors = $this->app['config']->get('cors');
+        $cors = $this->config->get('cors');
         $allowOrigin || $allowOrigin = $cors['origin'];
         $allowHeaders || $allowHeaders = $cors['headers'];
         $allowAge || $allowAge = $cors['age'];
