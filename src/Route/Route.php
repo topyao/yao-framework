@@ -133,8 +133,8 @@ class Route
      */
     public function view(string $path, string $view, array $data = [], array $requestMethods = ['get'])
     {
-        $this->_rule($requestMethods, $path, $view, 'route', function () use ($data) {
-            return view($this->location, $data);
+        $this->_rule($requestMethods, $path, $view, 'route', function () use ($view, $data) {
+            return view($view, $data);
         });
         return $this;
     }
