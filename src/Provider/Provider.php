@@ -19,7 +19,7 @@ class Provider
         return [];
     }
 
-    public function builtInServices()
+    final public function builtInServices()
     {
         return [
             Init::class,
