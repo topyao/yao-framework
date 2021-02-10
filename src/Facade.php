@@ -10,18 +10,10 @@ namespace Yao;
 class Facade
 {
     /**
-     * 存放单例的数组
-     * @var array
-     */
-    protected static array $instance = [];
-
-    /**
      * 是否单例，false表示非单例
      * @var bool
      */
     protected static $singleInstance = false;
-
-    protected static $params = [];
 
     /**
      * 获取当前Facade对应类名
@@ -38,20 +30,15 @@ class Facade
      */
     protected static function createFacade()
     {
-//        $facadeClass = static::getFacadeClass();
-//        Container::instance()->make($facadeClass);
+        //这里需要完全用容器接管
         $class = static::getFacadeClass();
-        if (!class_exists($class)) {
-            throw new \Exception('类' . $class . '不存在', 404);
-        }
         if (!static::$singleInstance) {
             return new $class();
-        } else {
-            if (!isset(static::$instance[$class]) || !(static::$instance[$class] instanceof $class)) {
-                static::$instance[$class] = new $class();
-            }
-            return static::$instance[$class];
         }
+        if (!isset(static::$instance[$class]) || !(static::$instance[$class] instanceof $class)) {
+            static::$instance[$class] = new $class();
+        }
+        return static::$instance[$class];
     }
 
     /**
