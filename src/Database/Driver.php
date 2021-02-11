@@ -3,7 +3,6 @@
 
 namespace Yao\Database;
 
-use Yao\Collection;
 use Yao\Facade\Config;
 
 /**
