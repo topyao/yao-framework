@@ -2,9 +2,27 @@
 
 namespace Yao;
 
+use App\Http\Validate;
+use Yao\Http\{Middleware, Request, Response, Session};
+use Yao\Provider\Provider;
+use Yao\Route\{Route, Rules\Alias};
+use Yao\View\Render;
+
 defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARATOR);
 
 /**
+ * @property Request $request
+ * @property Validate $validate
+ * @property Env $env
+ * @property Config $config
+ * @property Render $view
+ * @property Route $route
+ * @property Response $response
+ * @property Session $session
+ * @property Log $log
+ * @property Alias $alias
+ * @property Provider $provider
+ * @property Middleware $middleware
  * Class App
  * @package Yao
  */
@@ -15,20 +33,21 @@ class App extends Container
      * @var array|string[]
      */
     protected array $bind = [
-        'request' => \Yao\Http\Request::class,
-        'validate' => \App\Http\Validate::class,
-        'file' => \Yao\File::class,
-        'app' => \Yao\App::class,
-        'env' => \Yao\Env::class,
-        'config' => \Yao\Config::class,
-        'view' => \Yao\View\Render::class,
-        'route' => \Yao\Route\Route::class,
-        'error' => \Yao\Error::class,
-        'provider' => \Yao\Provider\Provider::class,
-        'response' => \Yao\Http\Response::class,
-        'session' => \Yao\Http\Session::class,
-        'log' => \Yao\Log::class,
-        'alias' => \Yao\Route\Rules\Alias::class
+        'request' => Request::class,
+        'validate' => Validate::class,
+        'file' => File::class,
+        'app' => App::class,
+        'env' => Env::class,
+        'config' => Config::class,
+        'view' => Render::class,
+        'route' => Route::class,
+        'error' => Error::class,
+        'provider' => Provider::class,
+        'response' => Response::class,
+        'session' => Session::class,
+        'log' => Log::class,
+        'alias' => Alias::class,
+        'middleware' => Middleware::class
     ];
 
     public function init()

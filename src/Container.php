@@ -6,6 +6,10 @@ use Psr\Container\ContainerInterface;
 use Yao\Exception\ContainerException;
 use Yao\Traits\SingleInstance;
 
+/**
+ * Class Container
+ * @package Yao
+ */
 class Container implements ContainerInterface, \ArrayAccess
 {
 
