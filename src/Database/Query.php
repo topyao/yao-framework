@@ -2,7 +2,7 @@
 
 namespace Yao\Database;
 
-use Yao\Facade\Config;
+use Yao\App;
 
 /**
  * 数据库外部接口
@@ -12,11 +12,10 @@ use Yao\Facade\Config;
 class Query
 {
     public $driver;
-    public array $config = [];
 
-    public function __construct()
+    public function __construct(App $app)
     {
-        $database = Config::get('database.type');
+        $database = $app->config->get('database.type');
         if (!$database) {
             throw new \Exception('数据库配置文件不存在');
         }

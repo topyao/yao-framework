@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yao\Route;
 
 use Yao\App;
+use Yao\Config;
 use Yao\Exception\RouteNotFoundException;
+use Yao\Http\Request;
 
 /**
  * 路由操作类
@@ -15,8 +17,8 @@ use Yao\Exception\RouteNotFoundException;
 class Route
 {
 
-    private $request;
-    private $config;
+    private Request $request;
+    private Config $config;
 
 
     protected array $routes = [];

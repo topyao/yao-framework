@@ -13,7 +13,7 @@ class Facade
      * 是否单例，false表示非单例
      * @var bool
      */
-    protected static $singleInstance = false;
+    protected static $singleInstance = true;
 
     /**
      * 获取当前Facade对应类名
@@ -30,19 +30,12 @@ class Facade
      */
     protected static function createFacade()
     {
-        //这里需要完全用容器接管
-        $class = static::getFacadeClass();
-        if (!static::$singleInstance) {
-            return new $class();
-        }
-        if (!isset(static::$instance[$class]) || !(static::$instance[$class] instanceof $class)) {
-            static::$instance[$class] = new $class();
-        }
-        return static::$instance[$class];
+        return App::instance()
+            ->make(static::getFacadeClass(), [], static::$singleInstance);
     }
 
     /**
-     * 调用实际类的方法
+     * 调用实际类的方法,默认支持依赖注入
      * @param string $method
      * @param array $params
      * @return mixed

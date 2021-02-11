@@ -18,11 +18,17 @@ use Yao\Facade\Db;
 class Model
 {
 
-    public $name = null;
+    public ?string $name = null;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->name = $this->name ?? strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
+    }
+
+
+    public function init()
+    {
+
     }
 
     /**
@@ -30,7 +36,7 @@ class Model
      * @param $arguments
      * @return \Yao\Database\Driver
      */
-    public function __call($functionName, $arguments)
+    final public function __call($functionName, $arguments)
     {
         return Db::name($this->name)->$functionName(...$arguments);
     }
