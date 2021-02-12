@@ -29,7 +29,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     /**
      * 单例模式获取类实例
-     * @return Container
+     * @return static
      */
     public static function instance()
     {
