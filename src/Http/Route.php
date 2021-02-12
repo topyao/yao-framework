@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yao\Route;
+namespace Yao\Http;
 
 use Yao\App;
 use Yao\Config;
@@ -288,7 +288,7 @@ class Route
      */
     public function alias(string $name): Route
     {
-        $this->app[\Yao\Route\Rules\Alias::class]->set($name, $this->path);
+        $this->app['alias']->set($name, $this->path);
         return $this;
     }
 

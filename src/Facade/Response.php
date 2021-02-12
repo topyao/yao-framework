@@ -15,6 +15,6 @@ class Response extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Http\Response::class;
+        return 'response';
     }
 }

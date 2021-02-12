@@ -16,7 +16,7 @@ class Env extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Env::class;
+        return 'env';
     }
 
 }

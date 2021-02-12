@@ -16,6 +16,6 @@ class Config extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Config::class;
+        return 'config';
     }
 }

@@ -16,7 +16,7 @@ class Session extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Http\Session::class;
+        return 'session';
     }
 
 }

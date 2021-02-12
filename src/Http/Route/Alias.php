@@ -1,7 +1,6 @@
 <?php
 
-namespace Yao\Route\Rules;
-
+namespace Yao\Http\Route;
 
 use Exception;
 

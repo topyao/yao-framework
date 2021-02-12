@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Yao\Route\Rules;
+namespace Yao\Http\Route;
 
 use Yao\Facade\Config;
 use Yao\Facade\Request;

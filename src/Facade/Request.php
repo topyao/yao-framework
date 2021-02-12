@@ -27,6 +27,6 @@ class Request extends \Yao\Facade
 
     protected static function getFacadeClass()
     {
-        return \Yao\Http\Request::class;
+        return 'request';
     }
 }

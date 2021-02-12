@@ -5,7 +5,7 @@ namespace Yao;
 use App\Http\Validate;
 use Yao\Http\{Middleware, Request, Response, Session};
 use Yao\Provider\Provider;
-use Yao\Route\{Route, Rules\Alias};
+use Yao\Http\{Route, Route\Alias};
 use Yao\View\Render;
 
 defined('ROOT_PATH') || define('ROOT_PATH', dirname(getcwd()) . DIRECTORY_SEPARATOR);
