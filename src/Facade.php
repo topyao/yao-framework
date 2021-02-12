@@ -16,6 +16,12 @@ class Facade
     protected static $singleInstance = true;
 
     /**
+     * 方法注入设置属性，true时所有Facade调用的方法都支持依赖注入
+     * @var bool
+     */
+    protected static $methodInjection = false;
+
+    /**
      * 获取当前Facade对应类名
      * @access protected
      * @return string
@@ -42,7 +48,10 @@ class Facade
      */
     public static function __callStatic($method, $params)
     {
-        return App::instance()
-            ->invokeMethod([static::getFacadeClass(), $method], $params, static::$singleInstance);
+        if (static::$methodInjection) {
+            return App::instance()
+                ->invokeMethod([static::getFacadeClass(), $method], $params, static::$singleInstance);
+        }
+        return call_user_func_array([static::createFacade(), $method], $params);
     }
 }
