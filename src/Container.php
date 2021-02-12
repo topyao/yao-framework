@@ -53,14 +53,13 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 获取已经实例化的对象
-     * @param $abstract
-     * 类名
+     * @param string $id
+     * 类的标识[完整类名]
      * @return mixed
      */
-    public function get($abstract)
+    public function get($id)
     {
-        $abstract = $this->_getBindClass($abstract);
+        $abstract = $this->_getBindClass($id);
         if ($this->has($abstract)) {
             return static::$instances[$abstract];
         }
@@ -69,13 +68,13 @@ class Container implements ContainerInterface, \ArrayAccess
 
     /**
      * 判断类的实例是否存在
-     * @param $abstract
-     * 类名
+     * @param string $id
+     * 类的标识[完整类名]
      * @return bool
      */
-    public function has($abstract)
+    public function has($id)
     {
-        $abstract = $this->_getBindClass($abstract);
+        $abstract = $this->_getBindClass($id);
         return isset(static::$instances[$abstract]);
     }
 

@@ -3,6 +3,7 @@
 namespace Yao\Http;
 
 use Yao\App;
+use Yao\Config;
 use Yao\Exception\RouteNotFoundException;
 
 /**
@@ -20,6 +21,12 @@ class Request
     protected App $app;
 
     /**
+     * Config类实例
+     * @var mixed|object|Config
+     */
+    protected Config $config;
+
+    /**
      * 请求类型
      * @var mixed|string|null
      */
@@ -30,6 +37,7 @@ class Request
      * @var string
      */
     protected string $controller = '';
+
 
     /**
      * 当前请求的方法
@@ -65,7 +73,7 @@ class Request
         $this->action = $action;
     }
 
-    public function set($attribute, $value)
+    private function _set($attribute, $value)
     {
         $this->$attribute = $value;
     }

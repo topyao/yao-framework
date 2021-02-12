@@ -50,7 +50,7 @@ class App extends Container
         'middleware' => Middleware::class
     ];
 
-    public function init()
+    protected function init()
     {
 
     }
