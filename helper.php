@@ -36,14 +36,6 @@ if (false === function_exists('env')) {
     }
 }
 
-if (false === function_exists('request')) {
-    function request()
-    {
-        return \Yao\Facade\Request::instance();
-    }
-}
-
-
 if (false === function_exists('view')) {
     /**
      * 视图赋值和渲染方法
