@@ -8,6 +8,7 @@ use Yao\App;
 use Yao\Config;
 use Yao\Exception\RouteNotFoundException;
 use Yao\Http\Request;
+use Yao\Http\Response;
 
 /**
  * 路由操作类
@@ -19,6 +20,7 @@ class Route
 
     private Request $request;
     private Config $config;
+    private Response $response;
 
 
     protected array $routes = [];
@@ -38,6 +40,7 @@ class Route
         $this->app = $app;
         $this->request = $app['request'];
         $this->config = $app['config'];
+        $this->response = $app['response'];
     }
 
     public function getRoute($requestMethod = null, $requestPath = null)
@@ -205,13 +208,7 @@ class Route
 
     public function output($data)
     {
-        if ($data instanceof \Closure) {
-            return $this->output($data());
-        } else {
-            return $this->app['response']
-                ->data($data)
-                ->return();
-        }
+        return $this->response->data($data)->return();
     }
 
     /**

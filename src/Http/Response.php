@@ -26,6 +26,9 @@ class Response
 
     public function data($data)
     {
+        if ($data instanceof \Closure) {
+            $data = $data();
+        }
         if (is_array($data)) {
             $this->header('Content-Type:application/json; charset=UTF-8');
             $data = json_encode($data, 256);
