@@ -70,11 +70,23 @@ class Request
         $this->$attribute = $value;
     }
 
+    /**
+     * 获取$_SERVER变量
+     * @param string|null $name
+     * 标识
+     * @return array|mixed|null
+     */
     public function server(?string $name = null)
     {
         return $name ? ($_SERVER[strtoupper($name)] ?? null) : $_SERVER;
     }
 
+    /**
+     * 获取Header头信息
+     * @param string|null $header
+     * 头信息标识
+     * @return array|mixed|null
+     */
     public function header(?string $header = null)
     {
         if (is_null($header)) {
@@ -91,6 +103,7 @@ class Request
 
     /** 请求类型判断
      * @param string $method
+     * 请求类型
      * @return bool
      */
     public function isMethod(string $method): bool
@@ -98,11 +111,19 @@ class Request
         return $this->server('REQUEST_METHOD') == strtoupper($method);
     }
 
+    /**
+     * 获取请求的url
+     * @return string
+     */
     public function url(): string
     {
         return $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . '/';
     }
 
+    /**
+     * 获取请求的path
+     * @return array|false|int|string|null
+     */
     public function path()
     {
         //解析url中的path
@@ -112,6 +133,19 @@ class Request
         return ('/' == $path) ? $path : rtrim($path, '/');
     }
 
+    /**
+     * REMOTE_ADDR
+     * @return array|mixed|null
+     */
+    public function ip()
+    {
+        return $this->server('REMOTE_ADDR');
+    }
+
+    /**
+     * 返回当前请求类型
+     * @return string
+     */
     public function method(): string
     {
         return strtolower($this->server('REQUEST_METHOD'));
