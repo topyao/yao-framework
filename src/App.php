@@ -70,6 +70,9 @@ class App extends Container
 
     public function run()
     {
+        set_time_limit(30);
+        @ini_set('memory_limit', '64M');
+//        ignore_user_abort(true);
         ob_start();
         $this['error']->register();
         $this['route']->register();
