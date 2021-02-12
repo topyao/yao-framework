@@ -29,9 +29,9 @@ class Container implements ContainerInterface, \ArrayAccess
 
     /**
      * 单例模式获取类实例
-     * @return object
+     * @return Container
      */
-    public static function instance(): Container
+    public static function instance()
     {
         if (!isset(static::$instances[static::class]) || !static::$instances[static::class] instanceof static) {
             static::$instances[static::class] = new static();

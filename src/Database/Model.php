@@ -18,14 +18,22 @@ use Yao\Facade\Db;
 class Model
 {
 
+    /**
+     * 表名
+     * @var string|null
+     */
     public ?string $name = null;
+
 
     final public function __construct()
     {
         $this->name = $this->name ?? strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));
     }
 
-
+    /**
+     * 模型初始化方法
+     * 不要再使用__construct
+     */
     public function init()
     {
 
