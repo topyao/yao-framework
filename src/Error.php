@@ -3,6 +3,7 @@
 namespace Yao;
 
 use Yao\Exception\ErrorException;
+use Yao\Http\Request;
 
 /**
  * 错误和异常注册类
@@ -14,6 +15,7 @@ class Error
 
     protected bool $debug;
     protected string $exceptionView;
+    protected Request $request;
 
     /**
      * 日志实例
@@ -25,8 +27,9 @@ class Error
     {
         $this->app = $app;
         $this->log = $app['log'];
+        $this->request = $app['request'];
         $this->debug = $this->app['config']->get('app.debug');
-        $this->exceptionView = $this->app['config']->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
+        $this->exceptionView = $this->app->config->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
 
     public function register()
@@ -46,7 +49,7 @@ class Error
     {
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
-        $this->log->write('Exception', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path()]);
+        $this->log->write('Exception', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->request->path(), 'ip' => $this->request->ip()]);
         if ($this->debug) {
             $data = '<!DOCTYPE html>
             <html lang="zh">
@@ -68,7 +71,7 @@ class Error
 
     public function error($code, $message, $file, $line, $errContext)
     {
-        $this->log->write('Error', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), $code, $file, $line]);
+        $this->log->write('Error', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), 'ip' => $this->request->ip(), $code, $file, $line]);
         throw new ErrorException($message, $code);
     }
 
