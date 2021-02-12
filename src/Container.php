@@ -48,6 +48,7 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function set(string $abstract, object $instance): void
     {
+//        $abstract = $this->_getBindClass($abstract);
         static::$instances[$abstract] = $instance;
     }
 
@@ -104,14 +105,17 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 注入的外部接口方法
      * @param string $abstract
+     * 需要实例化的类名
      * @param array $arguments
+     * 索引数组的参数列表
      * @param bool $singleInstance
+     * 是否单例，true为单例，false为非单例
      * @return mixed
      */
     public function make(string $abstract, array $arguments = [], bool $singleInstance = true): object
     {
         $abstract = $this->_getBindClass($abstract);
-
+        $arguments = array_values($arguments);
         //非单例会强制刷新当前存在的单例实例
         if (!$singleInstance) {
             $this->remove($abstract);
@@ -194,7 +198,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        // TODO: Implement offsetExists() method.
+        return $this->has($offset);
     }
 
     public function offsetGet($abstract)
@@ -204,14 +208,13 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        // TODO: Implement offsetSet() method.
+        $this->set($offset, $value);
     }
 
     public function offsetUnset($offset)
     {
-        // TODO: Implement offsetUnset() method.
+        return $this->get($offset);
     }
-
 
     public function __get($abstract)
     {
