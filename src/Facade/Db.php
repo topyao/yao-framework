@@ -15,18 +15,14 @@ use Yao\Facade;
  */
 class Db extends Facade
 {
+    /**
+     * 非单例
+     * @var static $singleInstance bool
+     */
     protected static $singleInstance = false;
 
     protected static function getFacadeClass()
     {
         return \Yao\Database\Query::class;
     }
-
-    public static function __callStatic($method, $params)
-    {
-        return static::createFacade()->$method(...$params);
-//        return call_user_func_array([static::createFacade(), $method], $params);
-    }
-
-
 }
