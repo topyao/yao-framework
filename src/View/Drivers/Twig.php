@@ -8,7 +8,8 @@ use Yao\View\Driver;
 
 class Twig extends Driver
 {
-    private $twig;
+
+    private Environment $twig;
 
     private function _setOptions()
     {

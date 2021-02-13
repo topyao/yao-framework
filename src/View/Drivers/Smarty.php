@@ -6,7 +6,7 @@ use Yao\View\Driver;
 
 class Smarty extends Driver
 {
-    private $smarty = null;
+    private \Smarty $smarty;
 
     private function _setOptions()
     {
@@ -20,7 +20,6 @@ class Smarty extends Driver
             ->setCompileDir(env('cache_path') . 'view' . DIRECTORY_SEPARATOR . 'compile')
             ->setCacheDir(env('cache_path') . 'view');
     }
-
 
     public function render($arguments = [])
     {

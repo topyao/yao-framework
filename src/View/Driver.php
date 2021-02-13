@@ -1,33 +1,47 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Yao\View;
 
-use Yao\Facade\Config;
-use Yao\Traits\SingleInstance;
+use Yao\Config;
 
 abstract class Driver
 {
 
-    use SingleInstance;
-
+    /**
+     * 默认模板后缀
+     */
     protected const SUFFIX = 'html';
 
+    /**
+     * View配置
+     * @var array|mixed
+     */
     protected array $config = [];
 
-    public static function instance($template)
-    {
-        if (!static::$instance instanceof static) {
-            static::$instance = new static($template);
-        }
-        return static::$instance;
-    }
+    /**
+     * 处理后的模板名
+     * @var string
+     */
+    protected $template;
 
-    final private function __construct($template)
+    /**
+     * Driver constructor.
+     * @param $template
+     * 需要渲染的模板
+     * @param Config $config
+     */
+    public function __construct($template, Config $config)
     {
-        $this->config = Config::getByType('view');
+        $this->config = $config->getByType('view');
         $this->template = str_replace('/', DIRECTORY_SEPARATOR, $template) . '.' . $this->config['suffix'] ?: self::SUFFIX;
     }
 
+    /**
+     * 驱动实现方法
+     * @param array $arguments
+     * 给模板传递的参数
+     * @return mixed
+     */
     abstract public function render($arguments = []);
 }
