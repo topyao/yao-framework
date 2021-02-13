@@ -3,7 +3,7 @@
 
 namespace Yao\Database;
 
-use Yao\Facade\Config;
+use Yao\Config;
 
 /**
  * 数据库驱动基类
@@ -16,7 +16,7 @@ abstract class Driver
     protected string $name;
     protected string $field = '*';
     protected array $bindParam = [];
-    protected $collection;
+    protected Collection $collection;
     //存放拼接sql的必要数组
     protected array $construction = [
         'where' => '',
@@ -28,9 +28,11 @@ abstract class Driver
 
     public $query;
 
-    final public function __construct($database)
+    protected ?array $config = null;
+
+    final public function __construct($database, Config $config)
     {
-        $this->config = Config::get('database.' . $database);
+        $this->config = $config->get('database.' . $database);
         if (empty($this->config)) {
             throw new \Exception('没有找到数据库配置文件');
         }

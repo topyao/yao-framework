@@ -11,6 +11,7 @@ use Yao\App;
  */
 class Query
 {
+
     public $driver;
 
     public function __construct(App $app)
@@ -20,7 +21,7 @@ class Query
             throw new \Exception('数据库配置文件不存在');
         }
         $driver = '\\Yao\\Database\\Drivers\\' . ucfirst($database);
-        $this->driver = new $driver($database);
+        $this->driver = $app->make($driver, [$database],false);
     }
 
     public function __call($method, $args)
