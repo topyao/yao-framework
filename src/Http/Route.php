@@ -371,6 +371,7 @@ class Route
      * @param null $AllowOrigin
      * 允许跨域域名
      * @param null $AllowCredentials
+     * 是否可以将对请求的响应暴露给页面
      * @param null $AllowHeaders
      * 允许的头信息
      * @return $this
