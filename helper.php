@@ -108,6 +108,7 @@ if (false === function_exists('redirect')) {
         exit;
     }
 }
+
 if (false === function_exists('url')) {
     function url(string $alias, array $args = []): string
     {
