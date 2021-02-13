@@ -40,7 +40,10 @@ abstract class Driver
         $this->collection = new Collection();
     }
 
-
+    /**
+     * PDO连接DSN
+     * @return string
+     */
     abstract public function dsn(): string;
 
     /**
@@ -54,6 +57,11 @@ abstract class Driver
         return $this;
     }
 
+    /**
+     * 带前缀的表名
+     * @param string $table_name
+     * @return $this
+     */
     final public function table(string $table_name)
     {
         $this->name = $table_name;
@@ -94,6 +102,11 @@ abstract class Driver
         return $this->collection;
     }
 
+    /**
+     * 获取某一个值的查询
+     * @param $value
+     * @return |null
+     */
     public function value($value)
     {
         $query = 'SELECT ' . $value . ' FROM ' . $this->name . $this->_condition();

@@ -8,6 +8,7 @@ use Yao\Exception\ContainerException;
 use Yao\Traits\SingleInstance;
 
 /**
+ * 一个简单的容器类
  * Class Container
  * @package Yao
  */
@@ -143,6 +144,12 @@ class Container implements ContainerInterface, \ArrayAccess
         return false;
     }
 
+    /**
+     * @param string $abstract
+     * @param array $arguments
+     * @return object
+     * @throws \ReflectionException
+     */
     private function _inject(string $abstract, array $arguments): object
     {
         $reflectionClass = new \ReflectionClass($abstract);

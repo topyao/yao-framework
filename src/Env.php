@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Yao;
 
 /**
- * Env变量加载和获取类
+ * Env加载和获取
  * Class Env
  * @package Yao
  */
@@ -13,7 +13,16 @@ class Env
 
     use \Yao\Traits\Parse;
 
+    /**
+     * 存放env的数组
+     * @var array
+     */
     protected array $env = [];
+
+    /**
+     * root目录
+     * @var string
+     */
     protected string $root = '';
 
     public function __construct()
@@ -42,11 +51,24 @@ class Env
         }
     }
 
+    /**
+     * 设置env
+     * @param string $env
+     * @param null $value
+     */
     public function set(string $env, $value = null)
     {
         $this->env[strtoupper($env)] = $value;
     }
 
+    /**
+     * 获取env
+     * @param string|null $key
+     * 标识
+     * @param null $default
+     * 默认值
+     * @return array|mixed|null
+     */
     public function get(?string $key = null, $default = null)
     {
         if (is_null($key)) {
@@ -54,6 +76,4 @@ class Env
         }
         return $this->parse($this->env, strtoupper($key), $default);
     }
-
-
 }

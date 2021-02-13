@@ -50,11 +50,17 @@ class App extends Container
         'middleware' => Middleware::class
     ];
 
+    /**
+     * App初始化方法
+     */
     protected function init()
     {
 
     }
 
+    /**
+     * 环境变量设置
+     */
     private function _setEnv()
     {
         $this->env->set('ROOT_PATH', ROOT_PATH);
@@ -68,6 +74,10 @@ class App extends Container
         $this->env->set('CACHE_PATH', ROOT_PATH . 'storage' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
     }
 
+    /**
+     * App运行
+     * @throws \Exception
+     */
     public function run()
     {
         set_time_limit(30);

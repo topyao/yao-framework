@@ -6,8 +6,16 @@ use Yao\View\Driver;
 
 class Smarty extends Driver
 {
+
+    /**
+     * Smarty实例
+     * @var \Smarty
+     */
     private \Smarty $smarty;
 
+    /**
+     * Smarty配置
+     */
     private function _setOptions()
     {
         $this->smarty = new \Smarty();
@@ -21,6 +29,11 @@ class Smarty extends Driver
             ->setCacheDir(env('cache_path') . 'view');
     }
 
+    /**
+     * @param array $arguments
+     * @return mixed|void
+     * @throws \SmartyException
+     */
     public function render($arguments = [])
     {
         $this->_setOptions();

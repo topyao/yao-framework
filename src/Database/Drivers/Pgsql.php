@@ -14,6 +14,7 @@ class Pgsql extends Driver
 {
 
     /**
+     * Pgsql数量限制
      * @param $limit
      * @param null $offset
      * @return $this

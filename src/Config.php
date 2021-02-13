@@ -6,7 +6,7 @@ namespace Yao;
 use Yao\Traits\Parse;
 
 /**
- * 配置文件加载和访问类
+ * 配置文件加载和获取
  * Class Config
  * @package Yao
  */
@@ -45,21 +45,20 @@ class Config
     }
 
 
-//    public function load($key)
-
-//    {
-//        if (is_null($key)) {
-//            array_map(function ($config) {
-//                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
-//                $this->config[$config_suffix] = include_once($config);
-//            }, glob($this->_getConfig('*')));
-//        } else if (false !== ($point = strpos($key, '.'))) {
-//            $config = substr($key, 0, $point);
-//            if (!isset($this->config[$config])) {
-//                $this->config[$config] = include_once($this->_getConfig($config));
-//            }
-//        }
-//    }
+    /*public function load($key)
+    {
+        if (is_null($key)) {
+            array_map(function ($config) {
+                $config_suffix = substr($config, strrpos($config, DIRECTORY_SEPARATOR) + 1, -4);
+                $this->config[$config_suffix] = include_once($config);
+            }, glob($this->_getConfig('*')));
+        } else if (false !== ($point = strpos($key, '.'))) {
+            $config = substr($key, 0, $point);
+            if (!isset($this->config[$config])) {
+                $this->config[$config] = include_once($this->_getConfig($config));
+            }
+        }
+    }*/
 
     /**
      * 获取config配置中type对应的配置

@@ -5,6 +5,10 @@ namespace Yao\View;
 
 use Yao\Config;
 
+/**
+ * Class Driver
+ * @package Yao\View
+ */
 abstract class Driver
 {
 

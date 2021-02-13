@@ -12,16 +12,45 @@ use Yao\App;
 class Response
 {
 
+    /**
+     * 容器实例
+     * @var App
+     */
     protected App $app;
+
+    /**
+     * 响应状态码
+     * @var int
+     */
     protected int $code = 200;
+
+    /**
+     * 响应头信息
+     * @var array|string[]
+     */
     protected array $header = ['Content-Type:text/html; charset=UTF-8', 'X-Powered-By:YaoPHP'];
+
+    /**
+     * 响应的额外数据
+     * @var
+     */
     protected $data;
 
+    /**
+     * 初始化容器实例
+     * Response constructor.
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
     }
 
+    /**
+     * 添加响应数据
+     * @param \Closure|array|string $data
+     * @return $this
+     */
     public function data($data)
     {
         if ($data instanceof \Closure) {
@@ -35,12 +64,22 @@ class Response
         return $this;
     }
 
-    public function code($code = null)
+    /**
+     * 设置响应状态码
+     * @param null|int $code
+     * @return $this
+     */
+    public function code(?int $code = null)
     {
         isset($code) && $this->code = $code;
         return $this;
     }
 
+    /**
+     * 跨域支持，该方法目前不可用
+     * @param $allows
+     * @return $this
+     */
     public function cors($allows)
     {
         $origin = $allows['origin'] ?? $this->app->config->get('cors.origin');
@@ -54,6 +93,11 @@ class Response
         return $this;
     }
 
+    /**
+     * 设置响应头
+     * @param null|string|array $header
+     * @return $this
+     */
     public function header($header = null)
     {
         $this->header = [...$this->header, ...(array)$header];
@@ -69,6 +113,9 @@ class Response
         http_response_code($this->code);
     }
 
+    /**
+     * 响应执行
+     */
     public function return()
     {
         $this->create();

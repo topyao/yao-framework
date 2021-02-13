@@ -7,23 +7,38 @@ class Session
 {
     use \Yao\Traits\Parse;
 
+    /**
+     * 初始化session
+     * Session constructor.
+     */
     public function __construct()
     {
         isset($_SESSION) || session_start();
     }
 
-
+    /**
+     * session获取方法
+     * @param $name
+     * @return array|mixed|string|null
+     */
     public function get($name)
     {
         return $this->parse($_SESSION, $name);
     }
 
-
+    /**
+     * session设置方法
+     * @param string $name
+     * @param $value
+     */
     public function set(string $name, $value)
     {
         $_SESSION[$name] = $value;
     }
 
+    /**
+     * session销毁
+     */
     public function destroy()
     {
         $_SESSION = [];
@@ -31,6 +46,9 @@ class Session
         session_destroy();
     }
 
+    /**
+     * 检查session闪存
+     */
     public function flashCheck()
     {
         if (true === $this->get('yao_session_flash_flag')) {
@@ -41,6 +59,12 @@ class Session
         }
     }
 
+    /**
+     * session闪存设置
+     * @param $name
+     * @param null $value
+     * @return array|mixed|string|null
+     */
     public function flash($name, $value = null)
     {
         if (isset($value)) {

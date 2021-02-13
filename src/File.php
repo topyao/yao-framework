@@ -12,7 +12,10 @@ namespace Yao;
  */
 class File
 {
-
+    /**
+     * 文件信息
+     * @var array
+     */
     protected array $file = [];
 
     protected array $validate = [];

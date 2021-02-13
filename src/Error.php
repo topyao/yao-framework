@@ -14,8 +14,16 @@ use Yao\Http\Request;
 class Error
 {
 
-    protected bool $debug;
-    protected string $exceptionView;
+    /**
+     * 容器实例
+     * @var App
+     */
+    protected App $app;
+
+    /**
+     * 请求对象
+     * @var mixed|object|Request
+     */
     protected Request $request;
 
     /**
@@ -24,6 +32,24 @@ class Error
      */
     protected Log $log;
 
+    /**
+     * 调试模式开关
+     * @var bool
+     */
+    protected bool $debug;
+
+    /**
+     * 异常视图模板文件
+     * @var array|mixed|string
+     */
+    protected string $exceptionView;
+
+
+    /**
+     * 初始化实例列表和参数
+     * Error constructor.
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
@@ -33,6 +59,9 @@ class Error
         $this->exceptionView = $this->app->config->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
 
+    /**
+     * 错误和异常注册
+     */
     public function register()
     {
         $iniSet = [
@@ -46,6 +75,10 @@ class Error
         register_shutdown_function([$this, 'shutdown']);
     }
 
+    /**
+     * 异常回调函数
+     * @param $exception
+     */
     public function exception($exception)
     {
         $code = $exception->getCode() ?: 'Exception';
@@ -70,12 +103,25 @@ class Error
         exit($this->app['response']->data($data)->code((int)$exception->getCode())->return());
     }
 
+    /**
+     * 错误回调函数
+     * @param $code
+     * @param $message
+     * @param $file
+     * @param $line
+     * @param $errContext
+     * @throws ErrorException
+     */
     public function error($code, $message, $file, $line, $errContext)
     {
         $this->log->write('Error', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), 'ip' => $this->request->ip(), $code, $file, $line]);
         throw new ErrorException($message, $code);
     }
 
+    /**
+     * 脚本终止回调函数
+     * @throws \Exception
+     */
     public function shutdown()
     {
         if ($error = error_get_last()) {

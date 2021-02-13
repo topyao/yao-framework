@@ -11,11 +11,29 @@ use Yao\App;
 abstract class Controller
 {
 
+    /**
+     * 控制器中间件列表
+     * @var array
+     */
     public $middleware = [];
 
+    /**
+     * 容器实例
+     * @var App
+     */
     protected App $app;
+
+    /**
+     * 请求实例
+     * @var Request
+     */
     protected Request $request;
 
+    /**
+     * 初始化实例列表和配置
+     * Controller constructor.
+     * @param App $app
+     */
     final public function __construct(App $app)
     {
         $this->app = $app;
@@ -24,10 +42,16 @@ abstract class Controller
 //        $this->_registerMiddleware();
     }
 
+    /**
+     * 用户可自定义的初始化方法
+     */
     protected function init()
     {
     }
 
+    /**
+     * 控制器中间件注册方法
+     */
     final protected function _registerMiddleware()
     {
         $this->app->middleware

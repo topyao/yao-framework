@@ -57,6 +57,11 @@ class Request
         $this->filters = $this->config->get('app.filter');
     }
 
+    /**
+     * 当前请求的控制器，设置和获取
+     * @param null $controller
+     * @return string
+     */
     public function controller($controller = null)
     {
         if (!isset($controller)) {
@@ -65,6 +70,11 @@ class Request
         $this->controller = $controller;
     }
 
+    /**
+     * 当前请求的方法，设置和获取
+     * @param null $action
+     * @return string
+     */
     public function action($action = null)
     {
         if (!isset($controller)) {
@@ -159,6 +169,11 @@ class Request
         return strtolower($this->server('REQUEST_METHOD'));
     }
 
+    /**
+     * cookie获取方法
+     * @param null $field
+     * @return array|mixed|null
+     */
     public function cookie($field = null)
     {
         if (isset($field)) {
@@ -229,6 +244,12 @@ class Request
         return $this->_request($put, $field, $default);
     }
 
+    /**
+     * debug $_FILES 获取方法
+     * @param null $field
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function file($field = null)
     {
         if (is_null($field)) {

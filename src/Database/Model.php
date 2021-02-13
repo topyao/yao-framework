@@ -24,7 +24,16 @@ class Model
      */
     public ?string $name = null;
 
+    /**
+     * 默认主键
+     * @var string
+     */
+    public $key = 'id';
 
+    /**
+     * 初始化表名
+     * Model constructor.
+     */
     final public function __construct()
     {
         $this->name = $this->name ?? strtolower(ltrim(strrchr(get_called_class(), '\\'), '\\'));

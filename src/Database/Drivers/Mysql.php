@@ -19,6 +19,10 @@ class Mysql extends Driver
         return $this;
     }
 
+    /**
+     * Mysql PDO-DSN
+     * @return string
+     */
     public function dsn(): string
     {
         return 'mysql:host=' . $this->config['host'] . ';port=' . $this->config['port'] . ';dbname=' . $this->config['dbname'] . ';charset=' . $this->config['charset'];

@@ -18,23 +18,83 @@ use Yao\Http\Response;
 class Route
 {
 
-    private Request $request;
-    private Config $config;
-    private Response $response;
+    /**
+     * 容器实例
+     * @var App
+     */
+    protected App $app;
 
+    /**
+     * 请求实例
+     * @var mixed|object|\Yao\Http\Request
+     */
+    protected Request $request;
 
+    /**
+     * Config配置实例
+     * @var mixed|object|Config
+     */
+    protected Config $config;
+
+    /**
+     * 响应实例
+     * @var mixed|object|\Yao\Http\Response
+     */
+    protected Response $response;
+
+    /**
+     * 路由注册树
+     * @var array
+     */
     protected array $routes = [];
 
-    public $controller = 'App\\Http\\Controllers';
+    /**
+     * 当前请求的控制器
+     * @var string
+     */
+    public string $controller = 'App\\Http\\Controllers';
+
+    /**
+     * 当前请求的方法
+     * @var string
+     */
     public string $action = '';
+
+    /**
+     * 路由传递的参数
+     * @var array
+     */
     public array $param = [];
 
+    /**
+     * 注册路由的方法
+     * @var
+     */
     private $method;
+
+    /**
+     * 注册路由的path
+     * @var string
+     */
     private string $path = '';
+
+    /**
+     * 路由注册的地址
+     * @var
+     */
     private $location;
 
+    /**
+     * 路由中间件
+     * @var
+     */
     private $middleware;
 
+    /**
+     * 初始化实例列表
+     * Route constructor.
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
@@ -43,6 +103,12 @@ class Route
         $this->response = $app['response'];
     }
 
+    /**
+     * 获取路由列表
+     * @param null $requestMethod
+     * @param null $requestPath
+     * @return array|mixed
+     */
     public function getRoute($requestMethod = null, $requestPath = null)
     {
         return $requestPath ? $this->routes[$requestMethod][$requestPath] : ($requestMethod ? $this->routes[$requestMethod] : $this->routes);
@@ -64,12 +130,21 @@ class Route
         return $this;
     }
 
+    /**
+     * 未匹配到路由
+     * @param \Closure $closure
+     * @param array $data
+     * @return $this
+     */
     public function none(\Closure $closure, $data = [])
     {
         $this->routes['none'] = ['route' => $closure, 'data' => $data];
         return $this;
     }
 
+    /**
+     * 跨域支持
+     */
     public function allowCors()
     {
         if (isset($this->routes[$this->request->method()][$this->request->path()]['cors'])) {
@@ -103,7 +178,6 @@ class Route
         if (!array_key_exists($this->request->method(), $this->routes)) {
             throw new RouteNotFoundException('请求类型' . $this->request->method() . '没有定义任何路由', 404);
         }
-
         if (isset($this->routes[$this->request->method()][$this->request->path()]['route'])) {
             return $this->_locate($this->routes[$this->request->method()][$this->request->path()]['route']);
         } else {
@@ -335,6 +409,9 @@ class Route
         return $this;
     }
 
+    /**
+     * 路由注册方法
+     */
     public function register()
     {
         if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {

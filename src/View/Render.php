@@ -14,8 +14,16 @@ class Render
      */
     protected App $app;
 
+    /**
+     * 驱动类名
+     * @var string
+     */
     public string $driver = '';
 
+    /**
+     * Render constructor.
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;

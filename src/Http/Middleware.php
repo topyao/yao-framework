@@ -7,6 +7,10 @@ namespace Yao\Http;
 class Middleware
 {
 
+    /**
+     * 中间件注册方法
+     * @var array
+     */
     public $middleware = [];
 
     public function handle($request, \Closure $next)

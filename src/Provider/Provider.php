@@ -14,11 +14,19 @@ use Yao\Provider\Services\Init;
 class Provider
 {
 
+    /**
+     * 用户自定义服务列表
+     * @return array
+     */
     public function services()
     {
         return [];
     }
 
+    /**
+     * 内置服务列表
+     * @return string[]
+     */
     final public function builtInServices()
     {
         return [
@@ -27,6 +35,10 @@ class Provider
         ];
     }
 
+    /**
+     * 服务启动方法
+     * @throws \Exception
+     */
     public function serve()
     {
         $services = [...(array)$this->services(), ...$this->builtInServices()];

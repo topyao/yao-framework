@@ -9,6 +9,10 @@ use Yao\View\Driver;
 class Twig extends Driver
 {
 
+    /**
+     * Twig实例
+     * @var Environment
+     */
     private Environment $twig;
 
     private function _setOptions()
