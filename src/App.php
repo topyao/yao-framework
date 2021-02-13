@@ -3,8 +3,7 @@
 namespace Yao;
 
 use App\Http\Validate;
-use Yao\Http\{Middleware, Request, Response, Session};
-use Yao\Http\{Route, Route\Alias};
+use Yao\Http\{Middleware, Request, Response, Route, Route\Alias, Session};
 use Yao\Provider\Provider;
 use Yao\View\Render;
 
