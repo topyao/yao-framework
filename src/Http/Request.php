@@ -27,7 +27,7 @@ class Request
     protected Config $config;
 
     /**
-     * 请求类型
+     * 请求参数过滤函数
      * @var mixed|string|null
      */
     protected ?array $filters = [];
@@ -241,18 +241,18 @@ class Request
         }
     }
 
-    private function _makeStringArgument($predefinedConstant, $argument, $default = '')
+    private function _makeStringArgument($input, $argument, $default = '')
     {
-        return isset($predefinedConstant[$argument])
-            ? $this->_filter($predefinedConstant[$argument])
+        return isset($input[$argument])
+            ? $this->_filter($input[$argument])
             : $default;
     }
 
-    private function _makeArrayArguments($predefinedConstant, array $argument, $default = [])
+    private function _makeArrayArguments($input, array $argument, $default = [])
     {
         $return = [];
         foreach ($argument as $key => $value) {
-            $return[$value] = isset($predefinedConstant[$value]) ? $this->_filter($predefinedConstant[$value]) : ($default[$value] ?? null);
+            $return[$value] = isset($input[$value]) ? $this->_filter($input[$value]) : ($default[$value] ?? null);
         }
         return $return;
     }
