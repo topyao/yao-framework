@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Yao;
 
 use Yao\Exception\ErrorException;
-use Yao\Http\Request;
+use Yao\Http\{Request, Response};
 
 /**
  * 错误和异常注册类
@@ -25,6 +25,12 @@ class Error
      * @var mixed|object|Request
      */
     protected Request $request;
+
+    /**
+     * 响应实例
+     * @var mixed|object|Response
+     */
+    protected Response $response;
 
     /**
      * 日志实例
@@ -55,6 +61,7 @@ class Error
         $this->app = $app;
         $this->log = $app['log'];
         $this->request = $app['request'];
+        $this->response = $app['response'];
         $this->debug = $this->app['config']->get('app.debug');
         $this->exceptionView = $this->app->config->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
@@ -83,7 +90,8 @@ class Error
     {
         $code = $exception->getCode() ?: 'Exception';
         $message = $exception->getMessage();
-        $this->log->write('Exception', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->request->path(), 'ip' => $this->request->ip()]);
+        $this->log->write('Exception', $message, 'notice', ['Method' => $this->request->method(), 'Path' => $this->request->path(), 'ip' => $this->request->ip()]);
+        $return = $this->response;
         if ($this->debug) {
             $data = '<!DOCTYPE html>
             <html lang="zh">
@@ -94,13 +102,14 @@ class Error
             </head>
             <body>
             <b>Message:</b> ' . $message . '
-             <br><b>Code:</b>' . $code . '<br><b> File:</b> ' . $exception->getFile() . '<br ><b > Line:</b > ' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em" >' . $exception->getTraceAsString() . '</pre>
-            </body >
-            </html > ';
+             <br><b>Code:</b>' . $code . '<br><b> File:</b> ' . $exception->getFile() . '<br ><b> Line:</b> ' . $exception->getLine() . '<pre style = "font-size:1.4em;margin-top: .5em" >' . $exception->getTraceAsString() . '</pre>
+            </body>
+            </html> ';
+            $return = $return->data($data);
         } else {
-            $data = include_once $this->exceptionView;
+            include_once $this->exceptionView;
         }
-        exit($this->app['response']->data($data)->code((int)$exception->getCode())->return());
+        exit($return->code((int)$exception->getCode())->return());
     }
 
     /**
@@ -114,7 +123,7 @@ class Error
      */
     public function error($code, $message, $file, $line, $errContext)
     {
-        $this->log->write('Error', $message, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path(), 'ip' => $this->request->ip(), $code, $file, $line]);
+        $this->log->write('Error', $message, 'notice', ['Method' => $this->request->method(), 'Path' => $this->request->path(), 'ip' => $this->request->ip(), $code, $file, $line]);
         throw new ErrorException($message, $code);
     }
 
@@ -125,7 +134,7 @@ class Error
     public function shutdown()
     {
         if ($error = error_get_last()) {
-            $this->log->write('Fetal', $error, 'notice', ['Method' => $this->app['request']->method(), 'Path' => $this->app['request']->path()]);
+            $this->log->write('Fetal', $error, 'notice', ['Method' => $this->request->method(), 'Path' => $this->request->path()]);
             throw new \Exception($error);
         }
     }
