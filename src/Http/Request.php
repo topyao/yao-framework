@@ -108,8 +108,9 @@ class Request
     public function header(?string $header = null)
     {
         if (is_null($header)) {
+            $server = $this->server();
             $headers = [];
-            array_walk($this->server(), function ($value, $key) use (&$headers) {
+            array_walk($server, function ($value, $key) use (&$headers) {
                 if ('HTTP_' == substr($key, 0, 5)) {
                     $headers[$key] = $value;
                 }
@@ -179,8 +180,9 @@ class Request
         if (isset($field)) {
             if (is_string($field)) {
                 return isset($_COOKIE[$field]) ? $_COOKIE[$field] : null;
-            } else if (is_array($field)) {
-                static $return = [];
+            }
+            if (is_array($field)) {
+                $return = [];
                 foreach ($field as $key) {
                     $return[$key] = $this->cookie($key);
                 }
