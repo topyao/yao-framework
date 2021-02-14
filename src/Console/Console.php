@@ -3,31 +3,48 @@
 namespace Yao\Console;
 
 use Yao\Console\Commands\Help;
+use Yao\Facade\Config;
 
 class Console
 {
 
-    public $command;
+    /**
+     * 命令
+     * @var mixed|string
+     */
+    public string $command = '';
 
-    public $argv;
+    /**
+     * 参数
+     * @var array
+     */
+    public array $argv = [];
+
+    /**
+     * 框架预定义命令
+     * @var array|string[]
+     */
+    protected array $register = [
+        'serve' => Commands\Serve::class,
+        'route' => Commands\Route::class,
+    ];
 
     public function __construct($argv)
     {
         if (!isset($argv[1])) {
             exit((new Help())->out());
         }
-        if (file_exists($commands = env('root_path') . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'commands.php')) {
-            $userCommands = include_once($commands);
-            is_array($userCommands) || $userCommands = [];
-        }
-        $builtInCommands = include_once(__DIR__ . DIRECTORY_SEPARATOR . 'register.php');
-        $commands = array_merge($userCommands, $builtInCommands);
+        $userCommands = Config::get('console');
+        $commands = array_merge($userCommands, $this->register);
         if (array_key_exists($argv[1], $commands)) {
             $this->command = $commands[$argv[1]];
         }
         $this->argv = array_slice($argv, 2);
     }
 
+    /**
+     * 运行
+     */
     public function run()
     {
         if (!class_exists($this->command)) {

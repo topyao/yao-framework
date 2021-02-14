@@ -4,7 +4,7 @@ namespace {
     if (false === function_exists('batch')) {
         function batch()
         {
-            
+
         }
     }
 }
