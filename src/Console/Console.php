@@ -35,7 +35,7 @@ class Console
             exit((new Help())->out());
         }
         $userCommands = Config::get('console');
-        $commands = array_merge($userCommands, $this->register);
+        $commands = array_merge((array)$userCommands, $this->register);
         if (array_key_exists($argv[1], $commands)) {
             $this->command = $commands[$argv[1]];
         }

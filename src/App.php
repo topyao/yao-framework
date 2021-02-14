@@ -90,6 +90,7 @@ class App extends Container
         }
         date_default_timezone_set($this->config->get('app.default_timezone', 'PRC'));
         $this['error']->register();
+        $this->bind = array_merge((array)$this->config->get('app.alias'), $this->bind);
         $this['route']->register();
         $this->route->match();
 //        $this['provider']->serve();
