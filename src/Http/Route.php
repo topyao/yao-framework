@@ -152,7 +152,7 @@ class Route
             $origin = $allows['origin'] ?? $this->config->get('cors.origin');
             $credentials = $allows['credentials'] ?? ($this->config->get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? $this->config->get('cors.headers');
-            $age = $allows['age'] ?? $this->config->get('cors.age');
+            $age = $allows['max_age'] ?? $this->config->get('cors.max_age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Allow-Headers:' . $headers);
@@ -163,7 +163,7 @@ class Route
             $origin = $allows['origin'] ?? $this->config->get('cors.origin');
             $credentials = $allows['credentials'] ?? ($this->config->get('cors.credentials') ? 'true' : 'false');
             $headers = $allows['headers'] ?? $this->config->get('cors.headers');
-            $age = $allows['age'] ?? $this->config->get('cors.age');
+            $age = $allows['max_age'] ?? $this->config->get('cors.max_age');
             header('Access-Control-Allow-Origin:' . $origin);
             header('Access-Control-Allow-Credentials:' . $credentials);
             header('Access-Control-Max-Age:' . $age);
@@ -382,7 +382,7 @@ class Route
         $cors = $this->config->get('cors');
         $allowOrigin || $allowOrigin = $cors['origin'];
         $allowHeaders || $allowHeaders = $cors['headers'];
-        $allowAge || $allowAge = $cors['age'];
+        $allowAge || $allowAge = $cors['max_age'];
         isset($allowCredentials) || $allowCredentials = $cors['credentials'];
         $allowCredentials = $allowCredentials ? 'true' : 'false';
         foreach ((array)$this->method as $method) {
