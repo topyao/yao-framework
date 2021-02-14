@@ -36,7 +36,7 @@ class Env
         $this->env = [
             'ROOT_PATH' => $this->root,
             'APP_PATH' => $this->root . 'app' . DIRECTORY_SEPARATOR,
-            'YAO_PATH' => __DIR__ . DIRECTORY_SEPARATOR,
+            'YAO_PATH' => dirname(__DIR__) . DIRECTORY_SEPARATOR,
             'CONFIG_PATH' => $this->root . 'config' . DIRECTORY_SEPARATOR,
             'STORAGE_PATH' => $this->root . 'storage' . DIRECTORY_SEPARATOR,
             'ROUTES_PATH' => $this->root . 'routes' . DIRECTORY_SEPARATOR,

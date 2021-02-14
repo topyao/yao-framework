@@ -63,7 +63,7 @@ class Error
         $this->request = $app['request'];
         $this->response = $app['response'];
         $this->debug = $this->app['config']->get('app.debug');
-        $this->exceptionView = $this->app->config->get('app.exception_view') ?: dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'exception.html';
+        $this->exceptionView = $this->app->config->get('app.exception_view') ?: dirname(__DIR__) . DIRECTORY_SEPARATOR . 'tpl' . DIRECTORY_SEPARATOR . 'exception.html';
     }
 
     /**
