@@ -256,8 +256,8 @@ class Route
             };
             if (isset($this->routes[$this->request->method()][$this->request->path()]['middleware'])) {
                 $middleware = $this->routes[$this->request->method()][$this->request->path()]['middleware'];
-                return (new $middleware)->handle($resData, function ($request) {
-                    return $this->output($request);
+                return (new $middleware)->handle($resData, function ($resData) {
+                    return $this->response->data($resData)->return();
                 });
             }
         } else if (is_string($this->controller)) {
@@ -270,20 +270,15 @@ class Route
                 $middleware = get_class_vars($this->controller)['middleware'][$this->action];
             }
             if (isset($middleware)) {
-                return (new $middleware)->handle($resData, function ($request) {
-                    return $this->output($request);
+                return (new $middleware)->handle($resData, function ($resData) {
+                    return $this->response->data($resData)->return();
                 });
             } else {
-                return $this->output($resData);
+                return $this->response->data($resData)->return();
             }
         }
-        return $this->output($resData);
     }
 
-    public function output($data)
-    {
-        return $this->response->data($data)->return();
-    }
 
     /**
      * get方式注册的路由
