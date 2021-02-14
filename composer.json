@@ -11,10 +11,10 @@
   ],
   "autoload": {
     "files": [
-      "helper.php"
+      "src/helper.php"
     ],
     "psr-4": {
-      "Yao\\": "src/"
+      "Yao\\": "src/yao/"
     }
   },
   "require": {
