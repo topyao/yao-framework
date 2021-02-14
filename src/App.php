@@ -84,10 +84,15 @@ class App extends Container
         @ini_set('memory_limit', '64M');
 //        ignore_user_abort(true);
         ob_start();
+        if ($this['config']->get('app.auto_start')) {
+            session_start();
+            $this['session']->flashCheck();
+        }
+        date_default_timezone_set($this->config->get('app.default_timezone', 'PRC'));
         $this['error']->register();
         $this['route']->register();
         $this->route->match();
-        $this['provider']->serve();
+//        $this['provider']->serve();
         $this->route->dispatch();
     }
 

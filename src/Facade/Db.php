@@ -15,14 +15,10 @@ use Yao\Facade;
  */
 class Db extends Facade
 {
-    /**
-     * 非单例
-     * @var static $singleInstance bool
-     */
-    protected static $singleInstance = false;
 
     protected static function getFacadeClass()
     {
         return \Yao\Database\Query::class;
     }
+
 }
