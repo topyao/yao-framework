@@ -5,6 +5,7 @@ namespace Yao\Http;
 use Yao\App;
 
 /**
+ * 基础控制器
  * Class Controller
  * @package Yao\Http
  */

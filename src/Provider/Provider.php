@@ -44,8 +44,8 @@ class Provider
         $services = [...(array)$this->services(), ...$this->builtInServices()];
         foreach ($services as $service) {
             if (in_array(Service::class, class_implements($service))) {
-                \Yao\Container::instance()->invokeMethod([$service, 'boot']);
-//                call_user_func([new $service, 'boot']);
+//                \Yao\Container::instance()->invokeMethod([$service, 'boot']);
+                call_user_func([new $service, 'boot']);
             } else {
                 throw new \Exception("{$service}没有实现服务接口");
             }

@@ -12,7 +12,6 @@ namespace Yao\Http;
  * @method Validate required(array $rule)
  * @method Validate regexp(array $rule)
  * @method Validate confirm(array $rule)
- * @method Validate func(string $field, \Closure $limit, array $data = [])
  * @author ：chengyao
  * @version : 0.0.1
  * Class Validate
