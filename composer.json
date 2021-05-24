@@ -1,0 +1,34 @@
+{
+  "name": "max/framework",
+  "description": "MaxPHP核心！",
+  "keywords": [
+    "轻量",
+    "PHP框架",
+    "MaxPHP"
+  ],
+  "type": "library",
+  "license": "Apache-2.0",
+  "homepage": "https://www.chengyao.xyz",
+  "authors": [
+    {
+      "name": "chengyao",
+      "email": "bigyao@139.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "src/Max/Foundation/helper.php"
+    ],
+    "psr-4": {
+      "Max\\": "src/Max/"
+    }
+  },
+  "require": {
+    "php": ">=7.2.0",
+    "psr/http-message": "^1.0",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "psr/container": "^1.0",
+    "psr/log": "^1.1.3"
+  }
+}
