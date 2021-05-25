@@ -7,15 +7,16 @@ use Psr\Container\ContainerInterface;
 use Max\Exception\ContainerException;
 
 /**
- * 一个简单的容器类
  * Class Container
- * @package Max
+ * @package Max\Foundation
+ * @author chengyao
+ * @todo PHP8.0废弃ReflectionClass -> getClass()
  */
 class Container implements ContainerInterface, \ArrayAccess
 {
 
     /**
-     * 依赖注入的类实例
+     * 容器
      * @var array
      */
     protected static $instances = [];
@@ -120,9 +121,7 @@ class Container implements ContainerInterface, \ArrayAccess
     {
         $abstract = $this->bound($abstract);
         if (!$singleInstance) {
-            //非单例会强制刷新当前存在的单例实例
             $this->remove($abstract);
-            //返回依赖注入后的实例
             return $this->resolve($abstract, $arguments);
         }
         if (!$this->has($abstract)) {
@@ -182,7 +181,6 @@ class Container implements ContainerInterface, \ArrayAccess
                 $this->refreshable = true;
             }
         }
-        //构造方法不存在直接实例化
         if ($reflectionClass->hasMethod('__setter')) {
             $setter = $reflectionClass->getMethod('__setter');
             if ($setter->isPublic() && $setter->isStatic()) {
@@ -192,9 +190,7 @@ class Container implements ContainerInterface, \ArrayAccess
         if (null === ($constructor = $reflectionClass->getConstructor())) {
             return new $abstract(...$arguments);
         }
-//构造方法为public
         if ($constructor->isPublic()) {
-            //通过构造方法的参数列表注入实例
             return new $abstract(...$this->bindParams($constructor, $arguments));
         }
         throw new ContainerException('Cannot initialize class: ' . $abstract);
@@ -280,10 +276,8 @@ class Container implements ContainerInterface, \ArrayAccess
             //TODO $dependence->getType()->isBuiltIn()
             //如果是一个类,这里可能需要对闭包进行注入
             if (!is_null($class = $dependence->getClass()) && 'Closure' !== $class->getName()) {
-                //使用容器实例化该类并存放到reject中
                 $injection[] = $this->make($class->getName());
             } else if (!empty($arguments)) {
-                //按顺序将非实例的参数存放到参数列表
                 $injection[] = array_shift($arguments);
             }
         }

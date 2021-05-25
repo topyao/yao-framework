@@ -86,11 +86,16 @@ class Error
      */
     public function exception(\Throwable $exception)
     {
-        $file    = $exception->getFile();
-        $line    = $exception->getLine();
-        $message = $exception->getMessage();
-        $code    = $exception->getCode() ?? '200';
-        $this->log->error("[{$this->request->ip()} '{$this->request->method()}': '{$this->request->url(true)}'] " . $message, [
+        [$file, $line, $message, $code] =
+            [
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getMessage(),
+                $exception->getCode() ?? '200'
+            ];
+        $this->log->error(
+            "[{$this->request->ip()} '{$this->request->method()}': '{$this->request->url(true)}'] " . $message,
+            [
                 'File: ' => $file,
                 'Line: ' => $line,
                 'Code: ' => $code
