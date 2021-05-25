@@ -15,10 +15,22 @@ use Psr\Http\Message\StreamInterface;
 class Response extends HttpMessage implements ResponseInterface
 {
 
+    /**
+     * 响应头
+     * @var array
+     */
     protected $header = [];
 
+    /**
+     * 状态码
+     * @var int
+     */
     protected $code = 200;
 
+    /**
+     * 响应体
+     * @var
+     */
     protected $body;
 
     /**
@@ -27,6 +39,9 @@ class Response extends HttpMessage implements ResponseInterface
      */
     protected $app;
 
+    /**
+     * 默认编码
+     */
     const CHARSET = 'UTF-8';
 
     /**
@@ -56,8 +71,7 @@ class Response extends HttpMessage implements ResponseInterface
         }
 
         if (is_array($body)) {
-            $this->contentType('application/json');
-            $body = json($body);
+            return $this->json($body);
         } else {
             $this->contentType('text/html');
         }
@@ -66,7 +80,19 @@ class Response extends HttpMessage implements ResponseInterface
             throw new \Exception('Invalid type of response body: ' . gettype($body));
         }
         echo $body;
-//        $this->body = $body;
+        return $this;
+    }
+
+    /**
+     * Json数据响应
+     * @param array $jsonSerializable
+     * @return $this
+     * @throws \Exception
+     */
+    public function json(array $jsonSerializable)
+    {
+        $this->contentType('application/json');
+        echo json($jsonSerializable);
         return $this;
     }
 
@@ -82,12 +108,22 @@ class Response extends HttpMessage implements ResponseInterface
         return $this;
     }
 
+    /**
+     * 响应缓存
+     * @param int $expire
+     * @return $this
+     */
     public function cache(int $expire)
     {
         $this->withHeader('Cache-Control', 'max-age=' . $expire);
         return $this;
     }
 
+    /**
+     * 重定向
+     * @param string $url
+     * @param int $code
+     */
     public function redirect(string $url, int $code = 302)
     {
         $this->withHeader('location', $url)
@@ -105,6 +141,12 @@ class Response extends HttpMessage implements ResponseInterface
         // TODO: Implement withProtocolVersion() method.
     }
 
+    /**
+     * 添加响应头
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
     public function withHeader($name, $value)
     {
         $this->header[$name] = $value;
@@ -116,6 +158,11 @@ class Response extends HttpMessage implements ResponseInterface
         // TODO: Implement withAddedHeader() method.
     }
 
+    /**
+     * 移除响应头
+     * @param string $name
+     * @return $this
+     */
     public function withoutHeader($name)
     {
         if (isset($this->header[$name])) {
@@ -124,6 +171,11 @@ class Response extends HttpMessage implements ResponseInterface
         return $this;
     }
 
+    /**
+     * 取得响应体
+     * @return $this|bool|float|int|string
+     * @throws \Exception
+     */
     public function getBody()
     {
         if ($this->body instanceof static) {
@@ -153,11 +205,21 @@ class Response extends HttpMessage implements ResponseInterface
         return $this;
     }
 
+    /**
+     * Http状态码取得
+     * @return int
+     */
     public function getStatusCode()
     {
         return $this->code;
     }
 
+    /**
+     * 设置状态码
+     * @param int $code
+     * @param string $reasonPhrase
+     * @return $this
+     */
     public function withStatus($code, $reasonPhrase = '')
     {
         $this->code = $code;
@@ -169,6 +231,9 @@ class Response extends HttpMessage implements ResponseInterface
         // TODO: Implement getReasonPhrase() method.
     }
 
+    /**
+     * 发送响应
+     */
     public function send()
     {
         http_response_code((int)$this->code);
