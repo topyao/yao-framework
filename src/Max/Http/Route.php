@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Max\Http;
 
 use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, Lang\Lang};
-use Max\Http\Route\{Cors, Group};
+use Max\Http\Route\Cors;
 
 /**
  * 路由操作类
@@ -49,15 +49,14 @@ class Route
      * @var array
      */
     protected $routesMap = [
-        'get'    => [],
-        'post'   => [],
-        'put'    => [],
+        'get' => [],
+        'post' => [],
+        'put' => [],
         'delete' => [],
-        'patch'  => [],
-        'head'   => []
+        'patch' => [],
+        'head' => []
     ];
 
-    protected $group = [];
 
     /**
      * 注册路由的方法
@@ -162,7 +161,7 @@ class Route
     {
         $this->routesMap['none'] = [
             'route' => $closure,
-            'data'  => $data
+            'data' => $data
         ];
         return $this;
     }
