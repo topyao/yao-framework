@@ -171,11 +171,8 @@ class Response extends HttpMessage implements ResponseInterface
 
     public function send()
     {
-//        $this->header(
-//            'X-Powered-By',
-//            $this->app->config->get('app.powered_by', 'MaxPHP')
-//        );
         http_response_code((int)$this->code);
+        $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
         foreach ($this->header as $name => $value) {
             header("{$name}: {$value}");
         }
