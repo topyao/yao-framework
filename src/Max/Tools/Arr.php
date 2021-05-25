@@ -52,18 +52,6 @@ class Arr
 
     public function toJson(array $array): string
     {
-        try {
-            // 返回JSON数据格式到客户端 包含状态信息
-            $json = json_encode($array, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            if (false === $json) {
-                throw new \Exception(json_last_error_msg());
-            }
-        } catch (\Exception $e) {
-            if ($e->getPrevious()) {
-                throw $e->getPrevious();
-            }
-            throw $e;
-        }
-        return $json;
+        return json($array);
     }
 }

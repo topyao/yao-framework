@@ -48,6 +48,32 @@ if (false === function_exists('invoke')) {
     }
 }
 
+if (false === function_exists('json')) {
+    /**
+     * 数组转json
+     * @param array $array
+     * @return string
+     * @throws Exception
+     */
+    function json(array $array): string
+    {
+        try {
+            // 返回JSON数据格式到客户端 包含状态信息
+            $json = json_encode($array, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if (false === $json) {
+                throw new \Exception(json_last_error_msg());
+            }
+        } catch (\Exception $e) {
+            if ($e->getPrevious()) {
+                throw $e->getPrevious();
+            }
+            throw $e;
+        }
+        return $json;
+    }
+}
+
+
 if (false === function_exists('abort')) {
     /**
      * @param string|array $message
@@ -59,7 +85,7 @@ if (false === function_exists('abort')) {
     function abort($message, $code = 0, $class = \Exception::class, $options = null)
     {
         if (is_array($message)) {
-            $message = json_encode($message, JSON_UNESCAPED_UNICODE);
+            $message = json($message);
         }
         throw new $class($message, $code, $options);
     }
@@ -147,47 +173,15 @@ if (false === function_exists('halt')) {
     }
 }
 
-if (false === function_exists('json')) {
-    /**
-     * 数组转json
-     * @param array $array
-     * @return string
-     * @throws Exception
-     */
-    function json(array $array): string
-    {
-        try {
-            // 返回JSON数据格式到客户端 包含状态信息
-            $json = json_encode($array, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            if (false === $json) {
-                throw new \Exception(json_last_error_msg());
-            }
-        } catch (\Exception $e) {
-            if ($e->getPrevious()) {
-                throw $e->getPrevious();
-            }
-            throw $e;
-        }
-        return $json;
-    }
-}
 
 if (false === function_exists('response')) {
     /**
      * 响应
-     * @param $data
-     * 数据
-     * @param int|null $code
-     * 状态码
-     * @param array|string|null $header
-     * 头信息
+     * @return \Max\Http\Response
      */
-    function response($data = '', int $code = 200, array $header = [])
+    function response()
     {
-        return app('response')->body($data)
-            ->withHeader($header)
-            ->withStatus($code)
-            ->send();
+        return app('response');
     }
 }
 
