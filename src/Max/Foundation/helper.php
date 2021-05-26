@@ -45,6 +45,7 @@ if (false === function_exists('invoke')) {
         if ($callable instanceof Closure) {
             return app()->invokeFunc($callable, $arguments);
         }
+        throw new Exception('Cannot invoke method.');
     }
 }
 
@@ -203,13 +204,25 @@ if (false === function_exists('session')) {
 }
 
 if (false === function_exists('redirect')) {
+    /**
+     * 重定向
+     * @param string $url
+     * @param int $code
+     */
     function redirect(string $url, int $code = 302)
     {
-        return invoke(['response', 'redirect'], [$url, $code]);
+        return response()->redirect($url, $code);
     }
 }
 
 if (false === function_exists('url')) {
+    /**
+     * url生成
+     * @param string $alias
+     * @param array $args
+     * @return string
+     * @throws Exception
+     */
     function url(string $alias, array $args = []): string
     {
         return invoke(['alias', 'get'], [$alias, $args]);
@@ -220,7 +233,7 @@ if (false === function_exists('csrf')) {
 
     function csrf()
     {
-        App::instance()->make('session')->set('token', md5(uniqid()));
+        app('session')->set('token', md5(uniqid()));
     }
 }
 
