@@ -14,9 +14,16 @@ class Middleware
      */
     protected $app;
 
+    /**
+     * @var Request
+     */
+    protected $request;
 
+    /**
+     * 中间件队列
+     * @var array
+     */
     protected $middlewares = [];
-
 
     /**
      * Middleware constructor.
@@ -27,6 +34,11 @@ class Middleware
         $this->app = $app;
     }
 
+    /**
+     * 传递中间件
+     * @param $middleware
+     * @return $this
+     */
     public function through($middleware)
     {
         $this->middlewares = (array)$middleware;
@@ -36,7 +48,7 @@ class Middleware
     /**
      * 不完整的中间件
      * @param $request
-     * @return \Closure
+     * @return $this
      */
     public function then($request)
     {
@@ -58,6 +70,10 @@ class Middleware
         return $this;
     }
 
+    /**
+     * 返回执行结果
+     * @return Request
+     */
     public function end()
     {
         return $this->request;

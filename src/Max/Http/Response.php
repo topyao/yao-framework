@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Max\Http;
 
 use Max\Foundation\App;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\{ResponseInterface, StreamInterface};
 
 /**
  * 响应类
@@ -14,6 +13,12 @@ use Psr\Http\Message\StreamInterface;
  */
 class Response implements ResponseInterface
 {
+
+    /**
+     * 容器实例
+     * @var App
+     */
+    protected $app;
 
     /**
      * 响应头
@@ -32,12 +37,6 @@ class Response implements ResponseInterface
      * @var
      */
     protected $body;
-
-    /**
-     * 容器实例
-     * @var App
-     */
-    protected $app;
 
     /**
      * 默认编码
@@ -154,6 +153,11 @@ class Response implements ResponseInterface
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return $this
+     */
     public function withAddedHeader($name, $value)
     {
         foreach (headers_list() as $header) {
@@ -270,7 +274,7 @@ class Response implements ResponseInterface
     public function hasHeader($name)
     {
         $headers = array_change_key_case($this->header, CASE_UPPER);
-        return isset($header[strtoupper($name)]);
+        return isset($headers[strtoupper($name)]);
     }
 
     /**

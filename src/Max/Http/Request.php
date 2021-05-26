@@ -3,12 +3,9 @@ declare(strict_types=1);
 
 namespace Max\Http;
 
-use Max\Foundation\App;
-use Max\Foundation\Config;
 use Max\Tools\Arr;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
+use Max\Foundation\{App, Config};
+use Psr\Http\Message\{RequestInterface, StreamInterface, UriInterface};
 
 /**
  * 请求类
