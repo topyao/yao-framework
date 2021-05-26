@@ -115,7 +115,8 @@ class Response extends HttpMessage implements ResponseInterface
      */
     public function cache(int $expire)
     {
-        $this->withHeader('Cache-Control', 'max-age=' . $expire);
+        $this->withHeader('Cache-Control', 'max-age=' . $expire)
+            ->withoutHeader('Pragma');
         return $this;
     }
 
@@ -155,7 +156,11 @@ class Response extends HttpMessage implements ResponseInterface
 
     public function withAddedHeader($name, $value)
     {
-        // TODO: Implement withAddedHeader() method.
+        foreach (headers_list() as $header) {
+            [$name, $value] = explode(': ', $header);
+            $this->header[$name] = $value;
+        }
+        return $this;
     }
 
     /**
@@ -168,6 +173,7 @@ class Response extends HttpMessage implements ResponseInterface
         if (isset($this->header[$name])) {
             unset($this->header[$name]);
         }
+        header_remove($name);
         return $this;
     }
 
@@ -241,7 +247,6 @@ class Response extends HttpMessage implements ResponseInterface
         foreach ($this->header as $name => $value) {
             header("{$name}: {$value}");
         }
-//        echo $this->getBody();
         ob_end_flush();
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
