@@ -12,7 +12,7 @@ use Psr\Http\Message\StreamInterface;
  * Class Response
  * @package Max\Http
  */
-class Response extends HttpMessage implements ResponseInterface
+class Response implements ResponseInterface
 {
 
     /**
@@ -150,7 +150,7 @@ class Response extends HttpMessage implements ResponseInterface
      */
     public function withHeader($name, $value)
     {
-        $this->header[strtoupper($name)] = $value;
+        $this->header[$name] = $value;
         return $this;
     }
 
@@ -158,7 +158,7 @@ class Response extends HttpMessage implements ResponseInterface
     {
         foreach (headers_list() as $header) {
             [$name, $value] = explode(': ', $header);
-            $this->header[strtoupper($name)] = $value;
+            $this->header[$name] = $value;
         }
         return $this;
     }
@@ -170,7 +170,6 @@ class Response extends HttpMessage implements ResponseInterface
      */
     public function withoutHeader($name)
     {
-        $name = strtoupper($name);
         if (isset($this->header[$name])) {
             unset($this->header[$name]);
         }
@@ -253,5 +252,56 @@ class Response extends HttpMessage implements ResponseInterface
             fastcgi_finish_request();
         }
     }
+
+    /**
+     * 取得所有Header
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return array_change_key_case($this->header, CASE_UPPER);
+    }
+
+    /**
+     * 判断Header是否存在
+     * @param string $name
+     * @return bool
+     */
+    public function hasHeader($name)
+    {
+        $headers = array_change_key_case($this->header, CASE_UPPER);
+        return isset($header[strtoupper($name)]);
+    }
+
+    /**
+     * 取得某一个Header
+     * @param string $name
+     * @return array
+     */
+    public function getHeader($name)
+    {
+        $headers = array_change_key_case($this->header, CASE_UPPER);
+        $name    = strtoupper($name);
+        if (isset($headers[$name])) {
+            $header = [$name, $headers[$name]];
+        }
+        return $header ?? [];
+    }
+
+    /**
+     * 取一行Header
+     * @param string $name
+     * @return string
+     */
+    public function getHeaderLine($name)
+    {
+        $headers = array_change_key_case($this->header, CASE_UPPER);
+        $name    = strtoupper($name);
+        if (isset($headers[$name])) {
+            $header = "{$name}: {$headers[$name]}";
+        }
+        return $header ?? '';
+    }
+
 
 }
