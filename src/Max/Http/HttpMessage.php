@@ -23,7 +23,7 @@ abstract class HttpMessage
      */
     public function hasHeader($name)
     {
-        return isset($this->header[$name]);
+        return isset($this->header[strtoupper($name)]);
     }
 
     /**
@@ -33,6 +33,7 @@ abstract class HttpMessage
      */
     public function getHeader($name)
     {
+        $name = strtoupper($name);
         if ($this->hasHeader($name)) {
             $header = [$name, $this->header[$name]];
         }
@@ -46,6 +47,7 @@ abstract class HttpMessage
      */
     public function getHeaderLine($name)
     {
+        $name = strtoupper($name);
         if ($this->hasHeader($name)) {
             $header = "{$name}: {$this->header[$name]}";
         }

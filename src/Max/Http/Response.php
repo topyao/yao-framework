@@ -150,7 +150,7 @@ class Response extends HttpMessage implements ResponseInterface
      */
     public function withHeader($name, $value)
     {
-        $this->header[$name] = $value;
+        $this->header[strtoupper($name)] = $value;
         return $this;
     }
 
@@ -158,7 +158,7 @@ class Response extends HttpMessage implements ResponseInterface
     {
         foreach (headers_list() as $header) {
             [$name, $value] = explode(': ', $header);
-            $this->header[$name] = $value;
+            $this->header[strtoupper($name)] = $value;
         }
         return $this;
     }
@@ -170,6 +170,7 @@ class Response extends HttpMessage implements ResponseInterface
      */
     public function withoutHeader($name)
     {
+        $name = strtoupper($name);
         if (isset($this->header[$name])) {
             unset($this->header[$name]);
         }
