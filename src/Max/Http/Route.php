@@ -49,12 +49,12 @@ class Route
      * @var array
      */
     protected $routesMap = [
-        'get' => [],
-        'post' => [],
-        'put' => [],
+        'get'    => [],
+        'post'   => [],
+        'put'    => [],
         'delete' => [],
-        'patch' => [],
-        'head' => []
+        'patch'  => [],
+        'head'   => []
     ];
 
 
@@ -161,7 +161,7 @@ class Route
     {
         $this->routesMap['none'] = [
             'route' => $closure,
-            'data' => $data
+            'data'  => $data
         ];
         return $this;
     }
@@ -363,12 +363,14 @@ class Route
         if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
             $this->routesMap = unserialize(file_get_contents($routes));
         } else {
-            $route = $this->request->isAjax() ? 'api' : 'web';
-            $file  = env('route_path') . $route . '.php';
-            if (!file_exists($file)) {
-                throw new RouteNotFoundException('Route file not exist: ' . $route);
+            $routes = $this->request->isAjax() ? ['api'] : ['web'];
+            array_push($routes, 'both');
+            foreach ($routes as $route) {
+                $file = env('route_path') . $route . '.php';
+                if (file_exists($file)) {
+                    include $file;
+                }
             }
-            include $file;
         }
         return $this;
     }
