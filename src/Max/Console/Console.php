@@ -42,7 +42,7 @@ class Console
     public function __construct($argv, App $app)
     {
         $this->app = $app;
-        $app['provider']->serve($this->app['config']->get('provider.cli', []));
+        $app['provider']->serve($this->app['config']->get('app.provider.cli', []));
         $this->app->make(Error::class)->register();
         if (!function_exists('passthru')) {
             exit('环境不支持passthru函数，请取消禁用！');
