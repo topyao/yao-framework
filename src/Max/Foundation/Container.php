@@ -273,12 +273,14 @@ class Container implements ContainerInterface, \ArrayAccess
         $dependences = $reflectionMethod->getParameters();
         $injection   = [];
         foreach ($dependences as $dependence) {
-            //TODO $dependence->getType()->isBuiltIn()
-            //如果是一个类,这里可能需要对闭包进行注入
-            if (!is_null($class = $dependence->getClass()) && 'Closure' !== $class->getName()) {
-                $injection[] = $this->make($class->getName());
-            } else if (!empty($arguments)) {
-                $injection[] = array_shift($arguments);
+            $type = $dependence->getType();
+            // TODO Closure的处理，之前做了，但是忘记在哪里会有问题
+            if(is_null($type) || $type->isBuiltin()){
+                if(!empty($arguments)){
+                    $injection[] = array_shift($arguments);
+                }
+            }else{
+                $injection[] = $this->make($type->getName());
             }
         }
         return $injection;
