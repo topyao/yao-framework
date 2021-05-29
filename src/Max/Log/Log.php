@@ -49,10 +49,7 @@ class Log extends \Psr\Log\AbstractLogger
 
     public function __destruct()
     {
-        if (true == $this->config->get('app.log') || 'cli' == PHP_SAPI) {
-            if (empty($this->logs)) {
-                return;
-            }
+        if (true == $this->config->get('app.log') && !empty($this->logs)) {
             foreach ($this->logs as $level => $log) {
                 file_put_contents($this->getPath($level) . date('d') . '.log', $log, FILE_APPEND);
             }
