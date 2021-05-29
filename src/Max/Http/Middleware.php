@@ -71,6 +71,15 @@ class Middleware
     }
 
     /**
+     * 添加中间件
+     * @param string $middleware
+     */
+    public function add(string $middleware)
+    {
+        array_push($this->middlewares, $middleware);
+    }
+
+    /**
      * 返回执行结果
      * @return Request
      */

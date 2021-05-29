@@ -40,7 +40,7 @@ abstract class Controller
     {
         $this->app     = $app;
         $this->request = $app->request;
-        $this->app['middleware']->through((function () {
+        $app['middleware']->through((function () {
             $middlewares = [];
             foreach ($this->middleware as $middleware => $actions) {
                 if (is_string($actions)) {
