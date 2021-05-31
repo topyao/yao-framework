@@ -166,7 +166,7 @@ class Error
             }
             $timeCost    = microtime(true) - APP_START_TIME;
             $memoryUsage = (memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024;
-            echo '</pre><div class="title" style="display: flex;justify-content: space-between"><div id="status">运行时间：' . round($timeCost, 3) . 'S 内存消耗：' . round($memoryUsage, 3) . 'MB QPS: ' . round(1 / $timeCost, 3) . ' fetches/sec </div><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
+            echo '</pre><div class="title" style="display: flex;justify-content: space-between"><div id="status">运行时间：' . round($timeCost, 3) . 'S 内存消耗：' . round($memoryUsage, 3) . 'MB QPS: ' . round(1 / $timeCost, 3) . ' REQ/S </div><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
         } else {
             echo str_replace(['{{code}}', '{{message}}'], [$code, $message], file_get_contents($this->exceptionView));
         }
