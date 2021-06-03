@@ -188,25 +188,9 @@ class Response implements ResponseInterface
      */
     public function getBody()
     {
-        if ($this->body instanceof static) {
-            return $this;
-        }
-
-        if ($this->body instanceof \Closure) {
-            $this->body = ($this->body)();
-            return $this->getBody();
-        }
-
-        if (is_array($this->body)) {
-            $this->contentType('application/json');
-            $this->body = json($this->body);
-        }
-
-        if (!is_scalar($this->body) && !is_null($this->body)) {
-            throw new \Exception('Invalid type of response body: ' . gettype($body));
-        }
-
-        return $this->body;
+        $body = ob_get_contents();
+        ob_end_clean();
+        return $body;
     }
 
     public function withBody(StreamInterface $body)
