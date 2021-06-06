@@ -29,6 +29,7 @@ class Session
     public function init()
     {
         isset($_SESSION) || session_start();
+        $this->flashCheck();
         return $this;
     }
 
@@ -77,7 +78,7 @@ class Session
      */
     public function flashCheck()
     {
-        if (true === $this->init()->get('max_session_flash_flag')) {
+        if (true === $this->get('max_session_flash_flag')) {
             $this->set('max_session_flash_flag', false);
         } else if (false === $this->get('max_session_flash_flag')) {
             $this->set('max_session_flash_flag', null);

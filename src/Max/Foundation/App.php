@@ -62,12 +62,11 @@ class App extends Container
     public function run()
     {
         ob_start();
-        $config = $this['config']->get('app');
+        $config     = $this['config']->get('app');
+        $this->bind = array_merge($config['alias'], $this->bind);
         $this['error']->register();
         $this['lang']->import($config['language']);
-        $this->bind = array_merge($config['alias'], $this->bind);
-        $this['provider']->serve($this['config']->get('app.provider.http', []));
-        $this['session']->flashCheck();
+        $this['provider']->serve($config['provider']['http'] ?? []);
         date_default_timezone_set($config['default_timezone']);
         return $this['response']
             ->body($this['middleware']
