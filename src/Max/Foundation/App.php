@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace Max\Foundation;
 
+use App\Console\Console;
 use Max\Event\Event;
 use Max\Http\Middleware;
 use Max\Http\Request;
@@ -23,6 +24,7 @@ use Max\Lang\Lang;
  * @property Event $event      事件实例
  * @property Middleware $middleware 中间件实例
  * @property Lang $lang  多语言
+ * @property Console $console
  * Class App
  * @package Max
  */
@@ -48,7 +50,8 @@ class App extends Container
         'alias'      => Alias::class,
         'middleware' => Middleware::class,
         'provider'   => Provider::class,
-        'lang'       => Lang::class
+        'lang'       => Lang::class,
+        'console'    => Console::class
     ];
 
     public function rootPath()
