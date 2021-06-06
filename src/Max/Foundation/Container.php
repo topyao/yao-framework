@@ -5,14 +5,14 @@ namespace Max\Foundation;
 
 use Psr\Container\ContainerInterface;
 use Max\Exception\ContainerException;
+use ArrayAccess;
 
 /**
  * Class Container
  * @package Max\Foundation
  * @author chengyao
- * @todo PHP8.0废弃ReflectionClass -> getClass()
  */
-class Container implements ContainerInterface, \ArrayAccess
+class Container implements ContainerInterface, ArrayAccess
 {
 
     /**
@@ -275,11 +275,11 @@ class Container implements ContainerInterface, \ArrayAccess
         foreach ($dependences as $dependence) {
             $type = $dependence->getType();
             // TODO Closure的处理，之前做了，但是忘记在哪里会有问题
-            if(is_null($type) || $type->isBuiltin()){
-                if(!empty($arguments)){
+            if (is_null($type) || $type->isBuiltin()) {
+                if (!empty($arguments)) {
                     $injection[] = array_shift($arguments);
                 }
-            }else{
+            } else {
                 $injection[] = $this->make($type->getName());
             }
         }
