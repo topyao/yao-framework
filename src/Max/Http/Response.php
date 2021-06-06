@@ -71,8 +71,6 @@ class Response implements ResponseInterface
 
         if (is_array($body)) {
             return $this->json($body);
-        } else {
-            $this->contentType('text/html');
         }
 
         if (!is_scalar($body) && !is_null($body)) {
