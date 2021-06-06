@@ -39,6 +39,12 @@ class Route
     protected $response;
 
     /**
+     * 已注册标识
+     * @var bool
+     */
+    protected $registered = false;
+
+    /**
      * 多语言
      * @var Lang
      */
@@ -74,8 +80,7 @@ class Route
      * 路由注册的地址
      * @var
      */
-    private $location;
-
+    protected $location;
 
     /**
      * 初始化实例列表
@@ -149,6 +154,15 @@ class Route
     {
         $this->setRoute($requestMethods, $uri, $location);
         return $this;
+    }
+
+    /**
+     * 返回已注册标识
+     * @return bool
+     */
+    public function isRegistered(): bool
+    {
+        return $this->registered;
     }
 
     /**
@@ -323,7 +337,6 @@ class Route
         })->end();
     }
 
-
     private function hasRoute($method, $path)
     {
         return isset($this->routesMap[$method][$path]['route']);
@@ -360,15 +373,18 @@ class Route
      */
     public function register()
     {
-        if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
-            $this->routesMap = unserialize(file_get_contents($routes));
-        } else {
-            $routes = $this->request->isAjax() ? ['api'] : ['web'];
-            array_push($routes, 'both');
-            foreach ($routes as $route) {
-                $file = env('route_path') . $route . '.php';
-                if (file_exists($file)) {
-                    include $file;
+        if (false === $this->registered) {
+            $this->registered = true;
+            if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
+                $this->routesMap = unserialize(file_get_contents($routes));
+            } else {
+                $routes = $this->request->isAjax() ? ['api'] : ['web'];
+                array_push($routes, 'both');
+                foreach ($routes as $route) {
+                    $file = env('route_path') . $route . '.php';
+                    if (file_exists($file)) {
+                        include $file;
+                    }
                 }
             }
         }
