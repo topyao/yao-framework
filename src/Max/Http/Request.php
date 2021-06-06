@@ -268,6 +268,24 @@ class Request implements RequestInterface
     }
 
     /**
+     * 获取请求uri
+     * @return mixed
+     */
+    public function uri()
+    {
+        return $this->server['REQUEST_URI'];
+    }
+
+    /**
+     * 获取请求查询字符串
+     * @return mixed
+     */
+    public function queryString()
+    {
+        return $this->server['QUERY_STRING'];
+    }
+
+    /**
      * 获取请求的PATH
      * @return string
      */
