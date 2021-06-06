@@ -39,34 +39,40 @@ class Console
         'config' => Config::class
     ];
 
-    public function __construct($argv, App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
-        $app['provider']->serve($this->app['config']->get('app.provider.cli', []));
-        $this->app->make(Error::class)->register();
+        $app->make(Error::class)->register();
         if (!function_exists('passthru')) {
             exit('环境不支持passthru函数，请取消禁用！');
         }
-        if (!isset($argv[1])) {
-            exit((new Help())->out());
-        }
-        $commands = array_merge($this->register, $this->builtIn);
-        if (isset($commands[$argv[1]])) {
-            $this->command = $commands[$argv[1]];
-        }
-        $this->argv = array_slice($argv, 2);
+
     }
 
     /**
-     * 运行
+     * 动态添加命令
+     * @param $command
+     * @param $handle
      */
+    public function add($command, $handle)
+    {
+        $this->register[$command] = $handle;
+        return $this;
+    }
+
     public function run()
     {
-        if (!class_exists($this->command)) {
-            return (new Help())->out();
+        global $argv;
+
+        $this->app['provider']->serve($this->app['config']->get('app.provider.cli', []));
+        $commands = array_merge($this->register, $this->builtIn);
+
+        if (!isset($argv[1]) || !isset($commands[$argv[1]])) {
+            exit((new Help())->out());
         }
+        
         return $this->app
-            ->make($this->command, $this->argv, false)
+            ->make($commands[$argv[1]], array_slice($argv, 2))
             ->out();
     }
 }
