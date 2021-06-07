@@ -42,12 +42,10 @@ class Alias
      */
     public function set(string $alias, string $path)
     {
-        if ($alias) {
-            if (isset($this->alias[$alias])) {
-                throw new Exception("Path:'{$path}'的别名'{$alias}'已经被注册！");
-            }
-            $this->alias[$alias] = $path;
+        if (isset($this->alias[$alias])) {
+            throw new Exception("Path:'{$path}'的别名'{$alias}'已经被注册！");
         }
+        $this->alias[$alias] = $path;
     }
 
     /**
@@ -66,7 +64,7 @@ class Alias
                     throw new Exception("别名:{$alias}需要传入{$argNums}个参数！");
                 }
                 $match = '';
-                $args = array_values($args);
+                $args  = array_values($args);
                 foreach ($rep as $k => $r) {
                     $match .= ($r . ($args[$k] ?? ''));
                 }

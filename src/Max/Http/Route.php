@@ -7,6 +7,11 @@ use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, La
 use Max\Http\Route\Cors;
 
 /**
+ * @method $this get(string $path, mixed $location)
+ * @method $this post(string $path, mixed $location)
+ * @method $this delete(string $path, mixed $location)
+ * @method $this put(string $path, mixed $location)
+ * @method $this patch(string $path, mixed $location)
  * 路由操作类
  * Class Route
  * @package Max
@@ -63,24 +68,31 @@ class Route
         'head'   => []
     ];
 
-
     /**
      * 注册路由的方法
      * @var string|array
      */
-    private $method;
+    protected $method;
+
+    protected $controller;
 
     /**
      * 注册路由的path
      * @var string
      */
-    private $path = '';
+    protected $path = '';
+
+    protected $namespace;
 
     /**
      * 路由注册的地址
      * @var
      */
     protected $location;
+
+    protected $middleware = '';
+
+    protected $ext = '';
 
     /**
      * 初始化实例列表
@@ -188,6 +200,8 @@ class Route
      */
     public function middleware($middleware)
     {
+        $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
+        return $this;
         foreach ((array)$this->method as $method) {
             if ($this->request->isMethod($method) && $this->request->is($this->path)) {
                 $this->app['middleware']->through($middleware);
@@ -221,6 +235,16 @@ class Route
         return $this;
     }
 
+    public function group($name, \Closure $group)
+    {
+        foreach ($name as $k => $v) {
+            $this->$k = $v;
+        }
+        $group($this);
+        foreach ($name as $k => $v) {
+            $this->$k = '';
+        }
+    }
 
     /**
      * 路由允许跨域设置
@@ -264,7 +288,13 @@ class Route
     {
         [$this->method, $this->path] = [$method, '/' . trim($uri, '/')];
         foreach ((array)$this->method as $method) {
-            $this->routesMap[$method][$this->path]['route'] = $location;
+            $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
+                'route'      => $location,
+                'middleware' => $this->middleware,
+                'ext'        => $this->ext,
+                'controller' => $this->controller,
+                'namespace'  => $this->namespace
+            ];
         }
     }
 
