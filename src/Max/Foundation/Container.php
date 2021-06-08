@@ -159,7 +159,7 @@ class Container implements ContainerInterface, ArrayAccess
     {
         $abstract = $this->bound($abstract);
         if ($this->has($abstract)) {
-            unset(self::$instances[$abstract]);
+            unset(static::$instances[$abstract]);
             return true;
         }
         return false;
@@ -309,7 +309,7 @@ class Container implements ContainerInterface, ArrayAccess
 
     public function __get($abstract)
     {
-        return $this->get($abstract);
+        return $this->make($abstract);
     }
 
     private function __clone()
