@@ -5,6 +5,7 @@ namespace Max\Foundation;
 
 use App\Console\Console;
 use Max\Event\Event;
+use Max\Http;
 use Max\Http\Middleware;
 use Max\Http\Request;
 use Max\Http\Response;
@@ -36,6 +37,7 @@ class App extends Container
      * @var array|string[]
      */
     protected $bind = [
+        'http'       => Http::class,
         'request'    => Request::class,
         'file'       => \Max\FileSystem\File::class,
         'app'        => App::class,
@@ -54,32 +56,14 @@ class App extends Container
         'console'    => Console::class
     ];
 
+    public function __construct()
+    {
+        self::$instances[__CLASS__] = $this;
+    }
+
     public function rootPath()
     {
         return ('cli' === PHP_SAPI ? getcwd() : dirname($_SERVER['DOCUMENT_ROOT'])) . '/';
     }
-
-    public function run()
-    {
-        ob_start();
-        $config     = $this['config']->get('app');
-        $this->bind = array_merge($config['alias'], $this->bind);
-        $this['error']->register();
-        $this['lang']->import($config['language']);
-        $this['provider']->serve($config['provider']['http'] ?? []);
-        date_default_timezone_set($config['default_timezone']);
-        return $this['response']
-            ->body($this['middleware']
-                ->through($config['middleware'])
-                ->then(function () {
-                    return $this['route']->register()->dispatch();
-                })->end())
-            ->send();
-    }
-
-//    public function __destruct()
-//    {
-//        $this['event']->trigger('response_sent');
-//    }
 
 }
