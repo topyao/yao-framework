@@ -84,6 +84,8 @@ class Route
 
     protected $namespace;
 
+    protected $callable;
+
     /**
      * 路由注册的地址
      * @var
@@ -332,38 +334,27 @@ class Route
 
     public function dispatch()
     {
-        $dispatch = $this->matched();
-        if ($dispatch instanceof \Closure) {
-            $this->request->controller($dispatch);
-            return $this->dispatchToRoute();
-        }
-        if (is_string($dispatch)) {
-            $dispatch = explode('@', $dispatch, 2);
-            if (!isset($dispatch[1])) {
+        $this->callable = $this->matched();
+        if (is_string($this->callable)) {
+            $callable = explode('@', $this->callable, 2);
+            if (!isset($callable[1])) {
                 throw new RouteNotFoundException($this->lang->out('no action found'), 404);
             }
-            [$controller, $action] = $dispatch;
-            $controller = 'App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
+            [$controller, $action] = $callable;
+            $controller     = 'App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
                     return ucfirst($value);
                 }, explode('/', $controller)));
-            $dispatch   = [$controller, $action];
+            $this->callable = [$controller, $action];
         }
-        $this->request->controller($dispatch[0]);
-        $this->request->action($dispatch[1]);
-        return $this->dispatchToRoute();
-    }
-
-    public function dispatchToRoute()
-    {
         return $this->app->middleware->then(function () {
-            if ($this->request->controller() instanceof \Closure) {
+            if ($this->callable instanceof \Closure) {
                 $request = function () {
-                    return $this->app->invokeFunc($this->request->controller());
+                    return $this->app->invokeFunc($this->callable);
                 };
-            } else if (is_string($this->request->controller())) {
-                $controller = $this->app->make($this->request->controller());
-                $request    = function () use ($controller) {
-                    return $this->app->invokeMethod([$controller, $this->request->action()], $this->request->routeParams());
+            } else if (is_array($this->callable) && 2 === count($this->callable)) {
+                $this->app->make($this->callable[0]);
+                $request = function () {
+                    return $this->app->invokeMethod($this->callable, $this->request->routeParams());
                 };
             } else {
                 throw new \Exception('Cannot resolve request');
@@ -371,6 +362,7 @@ class Route
             return $this->app->middleware->then($request)->end();
         })->end();
     }
+
 
     /**
      * 获取路由列表
