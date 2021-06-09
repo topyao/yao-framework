@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Http;
 
-use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, Lang\Lang};
+use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, Http\Route\Alias, Lang\Lang};
 use Max\Http\Route\Cors;
 
 /**
@@ -231,7 +231,7 @@ class Route
      */
     public function alias(string $name): Route
     {
-        $this->app['alias']->set($name, $this->path);
+        $this->app[Alias::class]->set($name, $this->path);
         return $this;
     }
 

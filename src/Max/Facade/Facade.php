@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Max\Facade;
 
+use Max\Foundation\App;
+
 /**
  * 门面实现基类
  * Class Facade
@@ -10,11 +12,12 @@ namespace Max\Facade;
  */
 abstract class Facade
 {
+
     /**
-     * 是否单例，false表示非单例
+     * 重新实例化
      * @var bool
      */
-    protected static $singleInstance = true;
+    protected static $renew = false;
 
     /**
      * 方法注入设置属性，true时所有Facade调用的方法都支持依赖注入
@@ -41,10 +44,10 @@ abstract class Facade
      */
     final protected static function createFacade()
     {
-        return \Max\Foundation\App::instance()->make(
+        return App::instance()->make(
             static::getFacadeClass(),
             static::$constructorArguments,
-            static::$singleInstance
+            static::$renew
         );
     }
 
@@ -57,11 +60,11 @@ abstract class Facade
     final public static function __callStatic(string $method, array $params)
     {
         if (static::$methodInjection) {
-            return \Max\Foundation\App::instance()
+            return App::instance()
                 ->invokeMethod(
                     [static::getFacadeClass(), $method],
                     $params,
-                    static::$singleInstance,
+                    static::$renew,
                     static::$constructorArguments
                 );
         }

@@ -23,7 +23,7 @@ abstract class Manager
      * 保存在容器中
      * @var bool
      */
-    protected $singleInstance = true;
+    protected $renew = false;
 
     /**
      * 构造函数的参数
@@ -58,7 +58,7 @@ abstract class Manager
     final public function __call($method, $vars)
     {
         return $this->app
-            ->make($this->extension, $this->constructParameters, $this->singleInstance)
+            ->make($this->extension, $this->constructParameters, $this->renew)
             ->{$method}(...$vars);
     }
 

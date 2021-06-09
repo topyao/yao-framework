@@ -113,14 +113,14 @@ class Container implements ContainerInterface, ArrayAccess
      * 需要实例化的类名
      * @param array $arguments
      * 索引数组的参数列表
-     * @param bool $singleInstance
+     * @param bool $renew
      * 是否单例，true为单例，false为非单例
      * @return mixed
      */
-    public function make(string $abstract, array $arguments = [], bool $singleInstance = true)
+    public function make(string $abstract, array $arguments = [], bool $renew = false)
     {
         $abstract = $this->bound($abstract);
-        if (!$singleInstance) {
+        if ($renew) {
             $this->remove($abstract);
             return $this->resolve($abstract, $arguments);
         }
@@ -203,13 +203,13 @@ class Container implements ContainerInterface, ArrayAccess
      * 可调用的类或者实例和方法数组[$class|$concrete, $method]
      * @param array $arguments
      * 给方法传递的参数
-     * @param false $singleInstance
+     * @param false $renew
      * true表示单例
      * @param array $constructorParameters
      * 给构造方法传递的参数
      * @return mixed
      */
-    public function invokeMethod(array $callable, $arguments = [], bool $singleInstance = true, array $constructorParameters = [])
+    public function invokeMethod(array $callable, $arguments = [], bool $renew = true, array $constructorParameters = [])
     {
         [$abstract, $method] = [$callable[0], $callable[1]];
         if (is_string($abstract)) {
@@ -222,7 +222,7 @@ class Container implements ContainerInterface, ArrayAccess
                 return $reflectionMethod->invokeArgs(null, $injectArguments);
             }
             if (!is_object($abstract)) {
-                $abstract = $this->make($abstract, $constructorParameters, $singleInstance);
+                $abstract = $this->make($abstract, $constructorParameters, $renew);
             }
             return $abstract->{$method}(...$injectArguments);
         }
@@ -258,7 +258,6 @@ class Container implements ContainerInterface, ArrayAccess
             $arguments
         ));
     }
-
 
     /**
      * 反射获取方法的参数列表

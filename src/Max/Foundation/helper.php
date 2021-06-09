@@ -8,18 +8,18 @@ use Max\Foundation\App;
 
 if (false === function_exists('app')) {
     /**
-     * 容器实例话和获取实例
-     * @param ?string|null $id
+     * 容器实例化和获取实例
+     * @param string|null $id
      * @param array $arguments
-     * @param bool $singleInstance
-     * @return mixed|object
+     * @param bool $renew
+     * @return App|mixed|object
      */
-    function app(string $id = null, array $arguments = [], bool $singleInstance = true)
+    function app(string $id = null, array $arguments = [], bool $renew = false)
     {
         if (is_null($id)) {
             return App::instance();
         }
-        return App::instance()->make($id, $arguments, $singleInstance);
+        return App::instance()->make($id, $arguments, $renew);
     }
 }
 
@@ -30,17 +30,17 @@ if (false === function_exists('invoke')) {
      * 数组或者闭包
      * @param array $arguments
      * 给方法传递的参数列表
-     * @param bool $singleInstance
-     * 单例，仅$callable为数组时候生效
+     * @param bool $renew
+     * 重新实例化，仅$callable为数组时候生效
      * @param array $constructorParameters
      * 构造函数参数数组，仅$callable为数组时候生效
      * @return mixed
      * @throws Exception
      */
-    function invoke($callable, array $arguments = [], bool $singleInstance = true, array $constructorParameters = [])
+    function invoke($callable, array $arguments = [], bool $renew = false, array $constructorParameters = [])
     {
         if (is_array($callable)) {
-            return app()->invokeMethod($callable, $arguments, $singleInstance, $constructorParameters);
+            return app()->invokeMethod($callable, $arguments, $renew, $constructorParameters);
         }
         if ($callable instanceof Closure) {
             return app()->invokeFunc($callable, $arguments);
