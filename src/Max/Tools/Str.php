@@ -11,16 +11,7 @@ class Str
     {
         $field = explode('.', $string);
         foreach ($field as $v) {
-            if (isset($value[$v])) {
-                if(empty($value[$v]) && isset($default)){
-                    $value = $default;
-                }else{
-                    $value = $value[$v];
-                }
-            } else {
-                $value = $default;
-                break;
-            }
+            $value = $value[$v] ?? $default;
         }
         return $value;
     }
