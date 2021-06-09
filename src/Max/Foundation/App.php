@@ -25,15 +25,14 @@ use Max\Log\Log;
  */
 class App extends Container
 {
+
     /**
      * 绑定的类名
-     * php7.4可以使用protected array $bind;
      * @var array|string[]
      */
     protected $bind = [
         'http'       => Http::class,
         'request'    => Request::class,
-        'app'        => App::class,
         'env'        => Env::class,
         'config'     => Config::class,
         'route'      => Route::class,
@@ -41,7 +40,6 @@ class App extends Container
         'response'   => Response::class,
         'session'    => Session::class,
         'log'        => Log::class,
-        'alias'      => Alias::class,
         'middleware' => Middleware::class,
         'provider'   => Provider::class,
         'lang'       => Lang::class,
@@ -50,7 +48,9 @@ class App extends Container
 
     public function __construct()
     {
-        self::$instances[__CLASS__] = $this;
+        $class                   = static::class;
+        $this->bind['app']       = $class;
+        self::$instances[$class] = $this;
     }
 
     public function rootPath()

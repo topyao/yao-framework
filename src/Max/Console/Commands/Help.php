@@ -13,7 +13,7 @@ class Help extends Command
         echo <<<EOT
 (1). 启动服务[php max serve]
 (2). 新建资源
-(3). 路由操作[php max route] 重大bug，暂时不要使用
+(3). 路由操作[php max route]
 (4). 退出
 输入选项<1,2,3>：
 EOT;

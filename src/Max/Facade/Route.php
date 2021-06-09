@@ -17,7 +17,7 @@ use Max\Http\Route as HttpRoute;
  * @method static HttpRoute redirect(string $path, string $url, int $code = 302, array $requestMethod = ['get']) 路由重定向
  * @method static HttpRoute rule(string $uri, mixed $location, array $type = ['get', 'post'])
  * @method static HttpRoute source(string $uri, mixed $location)
- * @method static getRoute(string $requestMethod = null, string $requestPath = null)
+ * @method static all(string $requestMethod = null, string $requestPath = null)
  * Class Route
  * @package \Max\Facade
  */

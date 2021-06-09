@@ -44,12 +44,6 @@ class Route
     protected $response;
 
     /**
-     * 已注册标识
-     * @var bool
-     */
-    protected $registered = false;
-
-    /**
      * 多语言
      * @var Lang
      */
@@ -59,14 +53,7 @@ class Route
      * 路由注册树
      * @var array
      */
-    protected $routesMap = [
-        'get'    => [],
-        'post'   => [],
-        'put'    => [],
-        'delete' => [],
-        'patch'  => [],
-        'head'   => []
-    ];
+    protected $routesMap = [];
 
     /**
      * 注册路由的方法
@@ -103,11 +90,10 @@ class Route
      */
     public function __construct(App $app)
     {
-        $this->app      = $app;
-        $this->request  = $app['request'];
-        $this->config   = $app['config'];
-        $this->response = $app['response'];
-        $this->lang     = $app['lang'];
+        $this->app     = $app;
+        $this->request = $app['request'];
+        $this->config  = $app['config'];
+        $this->lang = $app['lang'];
     }
 
     /**
@@ -118,11 +104,8 @@ class Route
      */
     public function __call($method, $arguments)
     {
-        if (isset($this->routesMap[$method])) {
-            $this->setRoute($method, ...$arguments);
-            return $this;
-        }
-        throw new RouteNotFoundException('Method Not Allowed: ' . $method);
+        $this->setRoute($method, ...$arguments);
+        return $this;
     }
 
     /**
@@ -281,7 +264,7 @@ class Route
     public function cache(int $expire)
     {
         if ($this->request->is($this->path)) {
-            $this->response->cache($expire);
+            $this->app->response->cache($expire);
         }
         return $this;
     }
@@ -306,9 +289,9 @@ class Route
      */
     public function matched()
     {
-        $method = $this->request->method();
+        $method = strtolower($this->request->method());
         if (!isset($this->routesMap[$method])) {
-            throw new RouteNotFoundException("Method not allowed: {$method}", 415);
+            throw new RouteNotFoundException("The request method {$method} has no route.", 415);
         }
         $path = $this->request->path();
         if (isset($this->routesMap[$method][$path])) {
@@ -370,7 +353,7 @@ class Route
      * @param null $requestPath
      * @return array|mixed
      */
-    public function getRoute($requestMethod = null, $requestPath = null)
+    public function all($requestMethod = null, $requestPath = null)
     {
         return $requestPath ? $this->routesMap[$requestMethod][$requestPath] : ($requestMethod ? $this->routesMap[$requestMethod] : $this->routesMap);
     }
@@ -382,18 +365,15 @@ class Route
      */
     public function register()
     {
-        if (false === $this->registered) {
-            $this->registered = true;
-            if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
-                $this->routesMap = unserialize(file_get_contents($routes));
-            } else {
-                $routes = $this->request->isAjax() ? ['api'] : ['web'];
-                array_push($routes, 'both');
-                foreach ($routes as $route) {
-                    $file = env('route_path') . $route . '.php';
-                    if (file_exists($file)) {
-                        include $file;
-                    }
+        if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
+            $this->routesMap = unserialize(file_get_contents($routes));
+        } else {
+            $routes = $this->request->isAjax() ? ['api'] : ['web'];
+            array_push($routes, 'both');
+            foreach ($routes as $route) {
+                $file = env('route_path') . $route . '.php';
+                if (file_exists($file)) {
+                    include $file;
                 }
             }
         }

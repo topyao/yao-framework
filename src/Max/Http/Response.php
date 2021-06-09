@@ -32,6 +32,8 @@ class Response implements ResponseInterface
      */
     protected $code = 200;
 
+    protected $withoutHeader = [];
+
     /**
      * 响应体
      * @var
@@ -148,6 +150,9 @@ class Response implements ResponseInterface
     public function withHeader($name, $value)
     {
         $this->header[$name] = $value;
+        if (isset($this->withoutHeader[$name])) {
+            unset($this->withoutHeader[$name]);
+        }
         return $this;
     }
 
@@ -175,7 +180,7 @@ class Response implements ResponseInterface
         if (isset($this->header[$name])) {
             unset($this->header[$name]);
         }
-        header_remove($name);
+        $this->withoutHeader[] = $name;
         return $this;
     }
 
@@ -232,6 +237,9 @@ class Response implements ResponseInterface
         $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
         foreach ($this->header as $name => $value) {
             header("{$name}: {$value}");
+        }
+        foreach ($this->withoutHeader as $value) {
+            header_remove($value);
         }
         ob_end_flush();
         if (function_exists('fastcgi_finish_request')) {
