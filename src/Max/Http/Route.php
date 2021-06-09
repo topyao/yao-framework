@@ -201,7 +201,7 @@ class Route
     public function middleware($middleware)
     {
         $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
-        return $this;
+        //TODO 重复注册
         foreach ((array)$this->method as $method) {
             if ($this->request->isMethod($method) && $this->request->is($this->path)) {
                 $this->app['middleware']->through($middleware);
@@ -298,36 +298,41 @@ class Route
         }
     }
 
+    /**
+     * 路由匹配
+     * @return mixed
+     */
+    public function matched()
+    {
+        $method = $this->request->method();
+        if (!isset($this->routesMap[$method])) {
+            throw new RouteNotFoundException("Method not allowed: {$method}", 415);
+        }
+        $path = $this->request->path();
+        if (isset($this->routesMap[$method][$path])) {
+            return $this->routesMap[$method][$path]['route'];
+        }
+        $routes = $this->routesMap[$method];
+        foreach ($routes as $uri => $location) {
+            $uriRegexp = '#^' . $uri . '$#iU';
+            if (preg_match($uriRegexp, $path, $match)) {
+                if (isset($match)) {
+                    array_shift($match);
+                    $this->request->routeParams($match);
+                }
+                return $location['route'];
+            }
+        }
+        if (isset($this->routesMap['none'])) {
+            return $this->routesMap['none']['route'];
+        }
+        throw new RouteNotFoundException($this->lang->out("Page not found: {$path}"), 404);
+    }
+
+
     public function dispatch()
     {
-        $method   = $this->request->method();
-        $path     = $this->request->path();
-        $dispatch = null;
-        if ($this->hasRoute($method, $path)) {
-            $dispatch = $this->getRoutes($method, $path);
-        } else {
-            foreach ($this->withMethod($method) as $uri => $location) {
-                //设置路由匹配正则
-                $uriRegexp = '#^' . $uri . '$#iU';
-                //路由和请求一致或者匹配到正则
-                if (preg_match($uriRegexp, $path, $match)) {
-                    //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
-                    if (isset($match)) {
-                        array_shift($match);
-                        $this->request->routeParams($match);
-                    }
-                    $dispatch = $location['route'];
-                    break;
-                }
-            }
-        }
-        if (is_null($dispatch)) {
-            if (!isset($this->routesMap['none'])) {
-                throw new RouteNotFoundException($this->lang->out('page not found', $this->request->path()), 404);
-            }
-            $this->request->routeParams($this->routesMap['none']['data']);
-            $dispatch = $this->routesMap['none']['route'];
-        }
+        $dispatch = $this->matched();
         if ($dispatch instanceof \Closure) {
             $this->request->controller($dispatch);
             return $this->dispatchToRoute();
@@ -367,24 +372,6 @@ class Route
         })->end();
     }
 
-    private function hasRoute($method, $path)
-    {
-        return isset($this->routesMap[$method][$path]['route']);
-    }
-
-    private function getRoutes($method, $path)
-    {
-        return $this->routesMap[$method][$path]['route'];
-    }
-
-    private function withMethod($method)
-    {
-        if (!isset($this->routesMap[$method])) {
-            throw new RouteNotFoundException('Method Not Allowed: ' . $method, 415);
-        }
-        return (array)$this->routesMap[$method];
-    }
-
     /**
      * 获取路由列表
      * @param null $requestMethod
@@ -396,10 +383,10 @@ class Route
         return $requestPath ? $this->routesMap[$requestMethod][$requestPath] : ($requestMethod ? $this->routesMap[$requestMethod] : $this->routesMap);
     }
 
-
     /**
      * 路由注册方法
      * @return $this
+     * @throws \Exception
      */
     public function register()
     {
