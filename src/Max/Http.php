@@ -23,7 +23,6 @@ class Http
     {
         ob_start();
         $config = $this->app['config']->get('app');
-//        $this->bind = array_merge($config['alias'], $this->bind);
         $this->app['error']->register();
         $this->app['lang']->import($config['language']);
         $this->app['provider']->serve($config['provider']['http'] ?? []);

@@ -45,7 +45,6 @@ class Console
             exit('环境不支持passthru函数，请取消禁用！');
         }
         $app->make(Error::class)->register();
-        $app->provider->serve($app->config->get('app.provider.cli', []));
         $this->app = $app;
     }
 
@@ -63,6 +62,8 @@ class Console
     public function run()
     {
         global $argv;
+
+        $this->app->provider->serve($this->app->config->get('app.provider.cli', []));
 
         $commands = array_merge($this->register, $this->builtIn);
 
