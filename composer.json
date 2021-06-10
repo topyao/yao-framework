@@ -30,7 +30,6 @@
     "ext-json": "*",
     "psr/container": "^1.0",
     "psr/log": "^1.1.3",
-    "opis/closure": "^3.6",
-    "max/console": "dev-master"
+    "opis/closure": "^3.6"
   }
 }
