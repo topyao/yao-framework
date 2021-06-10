@@ -225,7 +225,7 @@ if (false === function_exists('url')) {
      */
     function url(string $alias, array $args = []): string
     {
-        return app('alias')->get($alias, $args);
+        return app(\Max\Http\Route\Alias::class)->get($alias, $args);
     }
 }
 
