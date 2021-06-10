@@ -57,7 +57,7 @@ EOT;
         foreach (\Max\Facade\Route::all() as $method => $routes) {
             foreach ($routes as $route => $locate) {
                 if (is_array($locate['route'])) {
-                    $locate['route'] = implode('->', $locate['route']);
+                    $locate['route'] = implode('@', $locate['route']);
                 } else if ($locate['route'] instanceof \Closure) {
                     $locate['route'] = '\Closure';
                 }
@@ -80,7 +80,15 @@ EOT;
             unlink($this->cacheFile);
         }
         \Max\Facade\Route::register();
-        file_put_contents($this->cacheFile, serialize(array_filter(\Max\Facade\Route::all())));
+        $routes = \Max\Facade\Route::all();
+        foreach ($routes as $method => $route) {
+            foreach ($route as $path => $location) {
+                if ($location['route'] instanceof \Closure) {
+                    $routes[$method][$path]['route'] = \Opis\Closure\serialize($location['route']);
+                }
+            }
+        }
+        file_put_contents($this->cacheFile, serialize(array_filter($routes)));
         exit("缓存生成成功\n");
     }
 

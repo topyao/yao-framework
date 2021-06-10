@@ -14,10 +14,10 @@ class Serve extends Command
 
         echo <<<EOT
 +------------------------------------------------------+
-|                         Max                          |
+|                         MaxPHP                       |
 |             https://github.com/topyao/max            |
 +------------------------------------------------------+
-MaxPHP                         Press 'CTRL + C' to quit.
+Welcome!                       Press 'CTRL + C' to exit.
 
 EOT;
         passthru('php -S 127.0.0.1:' . ($port ?? 8080) . ' -t public ./server.php');
