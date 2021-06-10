@@ -20,7 +20,7 @@ class Error extends \Max\Foundation\Error
         $line = $exception->getLine();
         $message = $exception->getMessage();
         $code = $exception->getCode() ?? '200';
-        $this->log->write('error', 'CLI: ' . $message, ['File: ' => $file, 'Line: ' => $line, 'Code: ' => $code]);
+        $this->app->log->write('error', 'CLI: ' . $message, ['File: ' => $file, 'Line: ' => $line, 'Code: ' => $code]);
         exit($message . "\n");
     }
 }
