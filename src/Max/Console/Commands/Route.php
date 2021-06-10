@@ -80,7 +80,7 @@ EOT;
             unlink($this->cacheFile);
         }
         \Max\Facade\Route::register();
-        file_put_contents($this->cacheFile, serialize(array_filter(\Max\Facade\Route::getRoute())));
+        file_put_contents($this->cacheFile, serialize(array_filter(\Max\Facade\Route::all())));
         exit("缓存生成成功\n");
     }
 

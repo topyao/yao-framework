@@ -1,10 +1,14 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Max\Http;
 
-use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, Http\Route\Alias, Lang\Lang};
-use Max\Http\Route\Cors;
+use Max\Exception\RouteNotFoundException;
+use Max\Foundation\App;
+use Max\Foundation\Config;
+use Max\Http\Route\Alias;use Max\Http\Route\Cors;
+
+use Max\Lang\Lang;
 
 /**
  * @method $this get(string $path, mixed $location)
@@ -90,9 +94,9 @@ class Route
      */
     public function __construct(App $app)
     {
-        $this->app     = $app;
+        $this->app = $app;
         $this->request = $app['request'];
-        $this->config  = $app['config'];
+        $this->config = $app['config'];
         $this->lang = $app['lang'];
     }
 
@@ -172,7 +176,7 @@ class Route
     {
         $this->routesMap['none'] = [
             'route' => $closure,
-            'data'  => $data
+            'data' => $data,
         ];
         return $this;
     }
@@ -187,7 +191,7 @@ class Route
     {
         $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
         //TODO 重复注册
-        foreach ((array)$this->method as $method) {
+        foreach ((array) $this->method as $method) {
             if ($this->request->isMethod($method) && $this->request->is($this->path)) {
                 $this->app['middleware']->through($middleware);
             }
@@ -202,7 +206,7 @@ class Route
      */
     public function ext(string $ext)
     {
-        foreach ((array)$this->method as $method) {
+        foreach ((array) $this->method as $method) {
             $this->routesMap[$method][$this->path]['ext'] = $ext;
         }
         return $this;
@@ -272,13 +276,13 @@ class Route
     private function setRoute($method, $uri, $location)
     {
         [$this->method, $this->path] = [$method, '/' . trim($uri, '/')];
-        foreach ((array)$this->method as $method) {
+        foreach ((array) $this->method as $method) {
             $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
-                'route'      => $location,
+                'route' => $location,
                 'middleware' => $this->middleware,
-                'ext'        => $this->ext,
+                'ext' => $this->ext,
                 'controller' => $this->controller,
-                'namespace'  => $this->namespace
+                'namespace' => $this->namespace,
             ];
         }
     }
@@ -314,7 +318,6 @@ class Route
         throw new RouteNotFoundException($this->lang->out("Page not found: {$path}"), 404);
     }
 
-
     public function dispatch()
     {
         $this->callable = $this->matched();
@@ -323,11 +326,9 @@ class Route
             if (!isset($callable[1])) {
                 throw new RouteNotFoundException($this->lang->out('no action found'), 404);
             }
-            [$controller, $action] = $callable;
-            $controller     = 'App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
-                    return ucfirst($value);
-                }, explode('/', $controller)));
-            $this->callable = [$controller, $action];
+            $this->callable = ['App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
+                return ucfirst($value);
+            }, explode('/', $callable[0]))), $callable[1]];
         }
         return $this->app->middleware->then(function () {
             if ($this->callable instanceof \Closure) {
@@ -345,7 +346,6 @@ class Route
             return $this->app->middleware->then($request)->end();
         })->end();
     }
-
 
     /**
      * 获取路由列表

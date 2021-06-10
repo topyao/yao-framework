@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Max\Foundation;
 
-use Max\Contracts\Service;
-
 /**
  * 服务提供类
  * Class Provider
