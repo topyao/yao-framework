@@ -1,10 +1,13 @@
 <?php
-declare(strict_types=1);
+declare (strict_types=1);
 
 namespace Max\Http;
 
-use Max\{Exception\RouteNotFoundException, Foundation\App, Foundation\Config, Lang\Lang};
-use Max\Http\Route\Cors;
+use Max\Exception\RouteNotFoundException;
+use Max\Foundation\{App, Config};
+use Max\Http\Route\{Alias, Cors};
+
+use Max\Lang\Lang;
 
 /**
  * @method $this get(string $path, mixed $location)
@@ -44,12 +47,6 @@ class Route
     protected $response;
 
     /**
-     * 已注册标识
-     * @var bool
-     */
-    protected $registered = false;
-
-    /**
      * 多语言
      * @var Lang
      */
@@ -59,14 +56,7 @@ class Route
      * 路由注册树
      * @var array
      */
-    protected $routesMap = [
-        'get'    => [],
-        'post'   => [],
-        'put'    => [],
-        'delete' => [],
-        'patch'  => [],
-        'head'   => []
-    ];
+    protected $routesMap = [];
 
     /**
      * 注册路由的方法
@@ -83,6 +73,8 @@ class Route
     protected $path = '';
 
     protected $namespace;
+
+    protected $callable;
 
     /**
      * 路由注册的地址
@@ -101,11 +93,10 @@ class Route
      */
     public function __construct(App $app)
     {
-        $this->app      = $app;
-        $this->request  = $app['request'];
-        $this->config   = $app['config'];
-        $this->response = $app['response'];
-        $this->lang     = $app['lang'];
+        $this->app     = $app;
+        $this->request = $app['request'];
+        $this->config  = $app['config'];
+        $this->lang    = $app['lang'];
     }
 
     /**
@@ -116,11 +107,8 @@ class Route
      */
     public function __call($method, $arguments)
     {
-        if (isset($this->routesMap[$method])) {
-            $this->setRoute($method, ...$arguments);
-            return $this;
-        }
-        throw new RouteNotFoundException('Method Not Allowed: ' . $method);
+        $this->setRoute($method, ...$arguments);
+        return $this;
     }
 
     /**
@@ -187,7 +175,7 @@ class Route
     {
         $this->routesMap['none'] = [
             'route' => $closure,
-            'data'  => $data
+            'data'  => $data,
         ];
         return $this;
     }
@@ -201,7 +189,7 @@ class Route
     public function middleware($middleware)
     {
         $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
-        return $this;
+        //TODO 重复注册
         foreach ((array)$this->method as $method) {
             if ($this->request->isMethod($method) && $this->request->is($this->path)) {
                 $this->app['middleware']->through($middleware);
@@ -231,7 +219,7 @@ class Route
      */
     public function alias(string $name): Route
     {
-        $this->app['alias']->set($name, $this->path);
+        $this->app[Alias::class]->set($name, $this->path);
         return $this;
     }
 
@@ -279,7 +267,7 @@ class Route
     public function cache(int $expire)
     {
         if ($this->request->is($this->path)) {
-            $this->response->cache($expire);
+            $this->app->response->cache($expire);
         }
         return $this;
     }
@@ -293,72 +281,67 @@ class Route
                 'middleware' => $this->middleware,
                 'ext'        => $this->ext,
                 'controller' => $this->controller,
-                'namespace'  => $this->namespace
+                'namespace'  => $this->namespace,
             ];
         }
     }
 
-    public function dispatch()
+    /**
+     * 路由匹配
+     * @return mixed
+     */
+    public function matched()
     {
-        $method   = $this->request->method();
-        $path     = $this->request->path();
-        $dispatch = null;
-        if ($this->hasRoute($method, $path)) {
-            $dispatch = $this->getRoutes($method, $path);
-        } else {
-            foreach ($this->withMethod($method) as $uri => $location) {
-                //设置路由匹配正则
-                $uriRegexp = '#^' . $uri . '$#iU';
-                //路由和请求一致或者匹配到正则
-                if (preg_match($uriRegexp, $path, $match)) {
-                    //如果是正则匹配到的uri且有参数传入则将参数传递给成员属性param
-                    if (isset($match)) {
-                        array_shift($match);
-                        $this->request->routeParams($match);
-                    }
-                    $dispatch = $location['route'];
-                    break;
+        $method = strtolower($this->request->method());
+        if (!isset($this->routesMap[$method])) {
+            throw new RouteNotFoundException("The request method {$method} has no route.", 415);
+        }
+        $path = $this->request->path();
+        if (isset($this->routesMap[$method][$path])) {
+            return $this->routesMap[$method][$path]['route'];
+        }
+        $routes = $this->routesMap[$method];
+        foreach ($routes as $uri => $location) {
+            $uriRegexp = '#^' . $uri . '$#iU';
+            if (preg_match($uriRegexp, $path, $match)) {
+                if (isset($match)) {
+                    array_shift($match);
+                    $this->request->routeParams($match);
                 }
+                return $location['route'];
             }
         }
-        if (is_null($dispatch)) {
-            if (!isset($this->routesMap['none'])) {
-                throw new RouteNotFoundException($this->lang->out('page not found', $this->request->path()), 404);
-            }
-            $this->request->routeParams($this->routesMap['none']['data']);
-            $dispatch = $this->routesMap['none']['route'];
+        if (isset($this->routesMap['none'])) {
+            return $this->routesMap['none']['route'];
         }
-        if ($dispatch instanceof \Closure) {
-            $this->request->controller($dispatch);
-            return $this->dispatchToRoute();
-        }
-        if (is_string($dispatch)) {
-            $dispatch = explode('@', $dispatch, 2);
-            if (!isset($dispatch[1])) {
-                throw new RouteNotFoundException($this->lang->out('no action found'), 404);
-            }
-            [$controller, $action] = $dispatch;
-            $controller = 'App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
-                    return ucfirst($value);
-                }, explode('/', $controller)));
-            $dispatch   = [$controller, $action];
-        }
-        $this->request->controller($dispatch[0]);
-        $this->request->action($dispatch[1]);
-        return $this->dispatchToRoute();
+        throw new RouteNotFoundException($this->lang->out("Page not found: {$path}"), 404);
     }
 
-    public function dispatchToRoute()
+    public function dispatch()
     {
+        $this->callable = $this->matched();
+        if (is_string($this->callable)) {
+            if ('C:' === substr($this->callable, 0, 2)) {
+                $this->callable = \Opis\Closure\unserialize($this->callable);
+            } else {
+                $callable = explode('@', $this->callable, 2);
+                if (!isset($callable[1])) {
+                    throw new RouteNotFoundException($this->lang->out('no action found'), 404);
+                }
+                $this->callable = ['App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
+                        return ucfirst($value);
+                    }, explode('/', $callable[0]))), $callable[1]];
+            }
+        }
         return $this->app->middleware->then(function () {
-            if ($this->request->controller() instanceof \Closure) {
+            if ($this->callable instanceof \Closure) {
                 $request = function () {
-                    return $this->app->invokeFunc($this->request->controller());
+                    return $this->app->invokeFunc($this->callable);
                 };
-            } else if (is_string($this->request->controller())) {
-                $controller = $this->app->make($this->request->controller());
-                $request    = function () use ($controller) {
-                    return $this->app->invokeMethod([$controller, $this->request->action()], $this->request->routeParams());
+            } else if (is_array($this->callable) && 2 === count($this->callable)) {
+                $this->app->make($this->callable[0]);
+                $request = function () {
+                    return $this->app->invokeMethod($this->callable, $this->request->routeParams());
                 };
             } else {
                 throw new \Exception('Cannot resolve request');
@@ -367,54 +350,33 @@ class Route
         })->end();
     }
 
-    private function hasRoute($method, $path)
-    {
-        return isset($this->routesMap[$method][$path]['route']);
-    }
-
-    private function getRoutes($method, $path)
-    {
-        return $this->routesMap[$method][$path]['route'];
-    }
-
-    private function withMethod($method)
-    {
-        if (!isset($this->routesMap[$method])) {
-            throw new RouteNotFoundException('Method Not Allowed: ' . $method, 415);
-        }
-        return (array)$this->routesMap[$method];
-    }
-
     /**
      * 获取路由列表
      * @param null $requestMethod
      * @param null $requestPath
      * @return array|mixed
      */
-    public function getRoute($requestMethod = null, $requestPath = null)
+    public function all($requestMethod = null, $requestPath = null)
     {
         return $requestPath ? $this->routesMap[$requestMethod][$requestPath] : ($requestMethod ? $this->routesMap[$requestMethod] : $this->routesMap);
     }
 
-
     /**
      * 路由注册方法
      * @return $this
+     * @throws \Exception
      */
     public function register()
     {
-        if (false === $this->registered) {
-            $this->registered = true;
-            if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
-                $this->routesMap = unserialize(file_get_contents($routes));
-            } else {
-                $routes = $this->request->isAjax() ? ['api'] : ['web'];
-                array_push($routes, 'both');
-                foreach ($routes as $route) {
-                    $file = env('route_path') . $route . '.php';
-                    if (file_exists($file)) {
-                        include $file;
-                    }
+        if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
+            $this->routesMap = unserialize(file_get_contents($routes));
+        } else {
+            $routes = $this->request->isAjax() ? ['api'] : ['web'];
+            array_push($routes, 'both');
+            foreach ($routes as $route) {
+                $file = env('route_path') . $route . '.php';
+                if (file_exists($file)) {
+                    include $file;
                 }
             }
         }

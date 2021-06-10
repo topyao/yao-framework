@@ -41,12 +41,11 @@ class Console
 
     public function __construct(App $app)
     {
-        $this->app = $app;
-        $app->make(Error::class)->register();
         if (!function_exists('passthru')) {
             exit('环境不支持passthru函数，请取消禁用！');
         }
-
+        $app->make(Error::class)->register();
+        $this->app = $app;
     }
 
     /**
@@ -64,13 +63,14 @@ class Console
     {
         global $argv;
 
-        $this->app['provider']->serve($this->app['config']->get('app.provider.cli', []));
+        $this->app->provider->serve($this->app->config->get('app.provider.cli', []));
+
         $commands = array_merge($this->register, $this->builtIn);
 
         if (!isset($argv[1]) || !isset($commands[$argv[1]])) {
             exit((new Help())->out());
         }
-        
+
         return $this->app
             ->make($commands[$argv[1]], array_slice($argv, 2))
             ->out();

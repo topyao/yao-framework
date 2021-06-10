@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Max\Foundation;
 
 use Max\Exception\ErrorException;
-use Max\Http\{Request, Response};
 
 /**
  * 错误和异常注册类
@@ -21,24 +20,6 @@ class Error
     protected $app;
 
     /**
-     * 请求对象
-     * @var mixed|object|Request
-     */
-    protected $request;
-
-    /**
-     * 响应实例
-     * @var mixed|object|Response
-     */
-    protected $response;
-
-    /**
-     * 日志实例
-     * @var mixed|\Max\Log\Log
-     */
-    protected $log;
-
-    /**
      * 调试模式开关
      * @var bool
      */
@@ -50,7 +31,6 @@ class Error
      */
     protected $exceptionView;
 
-
     /**
      * 初始化实例列表和参数
      * Error constructor.
@@ -59,14 +39,8 @@ class Error
     public function __construct(App $app)
     {
         $this->app           = $app;
-        $this->log           = $app['log'];
-        $this->request       = $app['request'];
-        $this->response      = $app['response'];
         $this->debug         = $app['config']->get('app.debug');
         $this->exceptionView = __DIR__ . '/../Exception/view/exception.php';
-        if (true === file_exists($view = $this->app->config->get('app.exception_view', ''))) {
-            $this->exceptionView = $view;
-        }
     }
 
     /**
@@ -93,8 +67,9 @@ class Error
                 $exception->getMessage(),
                 $exception->getCode() ?? '200'
             ];
-        $this->log->error(
-            "[{$this->request->ip()} '{$this->request->method()}': '{$this->request->url(true)}'] " . $message,
+        $request = $this->app->request;
+        $this->app->log->error(
+            "[{$request->ip()} '{$request->method()}': '{$request->url(true)}'] " . $message,
             [
                 'File: ' => $file,
                 'Line: ' => $line,
@@ -170,7 +145,7 @@ class Error
         } else {
             echo str_replace(['{{code}}', '{{message}}'], [$code, $message], file_get_contents($this->exceptionView));
         }
-        return $this->response
+        return $this->app->response
             ->withStatus($code)
             ->send();
     }

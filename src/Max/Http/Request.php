@@ -161,7 +161,7 @@ class Request implements RequestInterface
         }
 
         $request->header  = array_change_key_case($header, CASE_UPPER);
-        $request->method  = strtolower($request->server['REQUEST_METHOD'] ?? 'cli');
+        $request->method  = $request->server['REQUEST_METHOD'] ?? 'cli';
         $request->get     = &$_GET;
         $request->post    = &$_POST;
         $request->request = &$_REQUEST;
@@ -254,7 +254,7 @@ class Request implements RequestInterface
      */
     public function isMethod(string $method): bool
     {
-        return $this->server('REQUEST_METHOD') === strtoupper($method);
+        return strtoupper($method) === $this->method();
     }
 
     /**

@@ -21,11 +21,9 @@ class Config
     public function __construct(App $app)
     {
         foreach (glob($app['env']->get('config_path') . '*.php') as $config) {
-            $key                = substr($config, strrpos($config, '/') + 1, -4);
-            $this->config[$key] = include $config;
+            $this->load($config);
         }
     }
-
 
     /**
      * 配置获取方法
@@ -42,6 +40,15 @@ class Config
         return Str::parse($this->config, $key, $default);
     }
 
+    /**
+     * 加载配置
+     * @param string $config
+     */
+    public function load(string $config)
+    {
+        $key                = substr($config, strrpos($config, '/') + 1, -4);
+        $this->config[$key] = include $config;
+    }
 
     /**
      * 获取config配置中default对应的配置

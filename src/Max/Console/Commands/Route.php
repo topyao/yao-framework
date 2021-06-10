@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Max\Console\Commands;
 
 use Max\Console\Command;
+use Max\Http\Route\Alias;
 
 class Route extends Command
 {
@@ -40,7 +41,7 @@ class Route extends Command
 请输入选项<1,2,3>：
 EOT;
         fscanf(STDIN, '%d', $options);
-        if (!array_key_exists($options, $this->routeMap)) {
+        if (!isset($this->routeMap[$options])) {
             return $this->out();
         }
         return call_user_func([$this, $this->routeMap[$options]]);
@@ -53,14 +54,14 @@ EOT;
     {
         \Max\Facade\Route::register();
         echo self::SEPARATOR . "|" . $this->_format(' 请求', 6) . " |" . $this->_format('请求地址', 50) . "|" . $this->_format('路由地址', 54) . "|  " . $this->_format('别名', 16) . "|\n" . self::SEPARATOR;
-        foreach (\Max\Facade\Route::getRoute() as $method => $routes) {
+        foreach (\Max\Facade\Route::all() as $method => $routes) {
             foreach ($routes as $route => $locate) {
                 if (is_array($locate['route'])) {
-                    $locate['route'] = implode('->', $locate['route']);
+                    $locate['route'] = implode('@', $locate['route']);
                 } else if ($locate['route'] instanceof \Closure) {
                     $locate['route'] = '\Closure';
                 }
-                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 46) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(\Max\Foundation\App::instance()->make('alias')->getAliasByUri($route), 15) . "|\n";
+                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 46) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(app(Alias::class)->getAliasByUri($route), 15) . "|\n";
             }
         }
         exit(self::SEPARATOR);
@@ -79,7 +80,15 @@ EOT;
             unlink($this->cacheFile);
         }
         \Max\Facade\Route::register();
-        file_put_contents($this->cacheFile, serialize(array_filter(\Max\Facade\Route::getRoute())));
+        $routes = \Max\Facade\Route::all();
+        foreach ($routes as $method => $route) {
+            foreach ($route as $path => $location) {
+                if ($location['route'] instanceof \Closure) {
+                    $routes[$method][$path]['route'] = \Opis\Closure\serialize($location['route']);
+                }
+            }
+        }
+        file_put_contents($this->cacheFile, serialize(array_filter($routes)));
         exit("缓存生成成功\n");
     }
 

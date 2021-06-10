@@ -6,8 +6,8 @@ namespace Max\Contracts;
 use Max\Foundation\App;
 
 /**
- * 服务接口
- * Interface Service
+ * 基础类
+ * class Service
  * @package Max\Contracts
  */
 abstract class Service

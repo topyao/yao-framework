@@ -12,11 +12,11 @@ namespace Max\Facade;
 class File extends Facade
 {
 
-    protected static $singleInstance = false;
+    protected static $renew = true;
 
     protected static function getFacadeClass()
     {
-        return 'file';
+        return \Max\FileSystem\File::class;
     }
 
 }
