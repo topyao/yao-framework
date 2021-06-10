@@ -56,12 +56,13 @@ EOT;
         echo self::SEPARATOR . "|" . $this->_format(' 请求', 6) . " |" . $this->_format('请求地址', 50) . "|" . $this->_format('路由地址', 54) . "|  " . $this->_format('别名', 16) . "|\n" . self::SEPARATOR;
         foreach (\Max\Facade\Route::all() as $method => $routes) {
             foreach ($routes as $route => $locate) {
-                if (is_array($locate['route'])) {
-                    $locate['route'] = implode('@', $locate['route']);
-                } else if ($locate['route'] instanceof \Closure) {
-                    $locate['route'] = '\Closure';
+                $location = $locate['route'];
+                if (is_array($location)) {
+                    $location = implode('@', $location);
+                } else if ($location instanceof \Closure || 'C:' === substr($location, 0, 2)) {
+                    $location = '\Closure';
                 }
-                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 46) . '|' . $this->_format($locate['route'], 50) . '| ' . $this->_format(app(Alias::class)->getAliasByUri($route), 15) . "|\n";
+                echo '|' . $this->_format(strtoupper($method), 6) . '|' . $this->_format($route, 46) . '|' . $this->_format($location, 50) . '| ' . $this->_format(app(Alias::class)->getAliasByUri($route), 15) . "|\n";
             }
         }
         exit(self::SEPARATOR);
@@ -101,7 +102,7 @@ EOT;
             exit("没有缓存文件！\n");
         }
         unlink($this->cacheFile);
-        exit("缓存生成已经清除\n");
+        exit("缓存已经清除\n");
     }
 
 

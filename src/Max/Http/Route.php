@@ -188,7 +188,9 @@ class Route
      */
     public function middleware($middleware)
     {
-        $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
+        foreach ((array)$this->method as $method) {
+            $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
+        }
         //TODO 重复注册
         foreach ((array)$this->method as $method) {
             if ($this->request->isMethod($method) && $this->request->is($this->path)) {
