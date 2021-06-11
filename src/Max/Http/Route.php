@@ -294,11 +294,11 @@ class Route
      */
     public function matched()
     {
-        $method = strtolower($this->request->method());
+        $method = strtolower($this->app->request->method());
         if (!isset($this->routesMap[$method])) {
             throw new RouteNotFoundException("The request method {$method} has no route.", 415);
         }
-        $path = $this->request->path();
+        $path = $this->app->request->path();
         if (isset($this->routesMap[$method][$path])) {
             return $this->routesMap[$method][$path]['route'];
         }
