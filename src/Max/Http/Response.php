@@ -191,9 +191,7 @@ class Response implements ResponseInterface
      */
     public function getBody()
     {
-        $body = ob_get_contents();
-        ob_end_clean();
-        return $body;
+        return ob_get_contents();
     }
 
     public function withBody(StreamInterface $body)
