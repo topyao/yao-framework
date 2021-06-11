@@ -1,10 +1,37 @@
+<?php
+
+
+namespace Max;
+
+
+class Handle
+{
+
+    protected $message = '';
+
+    protected $code = 200;
+
+    /**
+     * Handle constructor.
+     * @param $message
+     * @param $code
+     */
+    public function __construct($message, $code)
+    {
+        $this->message = $message;
+        $this->code    = $code;
+    }
+
+    public function __toString()
+    {
+        return <<<TOR
 <!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{message}}</title>
+    <title>{$this->message}</title>
     <style>
         html,
         body {
@@ -47,13 +74,17 @@
 <body>
 <div class="flex-center position-ref full-height">
     <div class="code">
-        {{code}}
+        {$this->code}
     </div>
 
     <div class="message" style="padding: 10px;">
-        {{message}}
+        {$this->message}
     </div>
 </div>
 </body>
 
 </html>
+TOR;
+
+    }
+}

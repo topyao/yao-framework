@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Max\Foundation;
 
 use Max\Exception\ErrorException;
+use Max\Handle;
 
 /**
  * 错误和异常注册类
@@ -26,12 +27,6 @@ class Error
     protected $debug;
 
     /**
-     * 异常视图模板文件
-     * @var array|mixed|string
-     */
-    protected $exceptionView;
-
-    /**
      * 初始化实例列表和参数
      * Error constructor.
      * @param App $app
@@ -40,7 +35,6 @@ class Error
     {
         $this->app           = $app;
         $this->debug         = $app['config']->get('app.debug');
-        $this->exceptionView = __DIR__ . '/../Exception/view/exception.php';
     }
 
     /**
@@ -143,7 +137,8 @@ class Error
             $memoryUsage = (memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024;
             echo '</pre><div class="title" style="display: flex;justify-content: space-between"><div id="status">运行时间：' . round($timeCost, 3) . 'S 内存消耗：' . round($memoryUsage, 3) . 'MB QPS: ' . round(1 / $timeCost, 3) . ' REQ/S </div><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
         } else {
-            echo str_replace(['{{code}}', '{{message}}'], [$code, $message], file_get_contents($this->exceptionView));
+            $handle = $this->app->config->get('app.exception_handle', Handle::class);
+            echo new $handle($message, $code);
         }
         return $this->app->response
             ->withStatus($code)
