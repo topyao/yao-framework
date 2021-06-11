@@ -7,16 +7,15 @@ use Max\Exception\RouteNotFoundException;
 use Max\Foundation\{App, Config};
 use Max\Http\Route\{Alias, Cors};
 
-use Max\Lang\Lang;
-
 /**
- * @method $this get(string $path, mixed $location)
- * @method $this post(string $path, mixed $location)
- * @method $this delete(string $path, mixed $location)
- * @method $this put(string $path, mixed $location)
- * @method $this patch(string $path, mixed $location)
+ * @method $this get(string $path, string|arrray|\Closure $location) GET方式请求的路由
+ * @method $this post(string $path, string|arrray|\Closure $location) POST方式请求的路由
+ * @method $this delete(string $path, string|arrray|\Closure $location) DELETE方式请求的路由
+ * @method $this put(string $path, string|arrray|\Closure $location) PUT方式请求的路由
+ * @method $this patch(string $path, string|arrray|\Closure $location) PATCH方式请求的路由
  * 路由操作类
  * Class Route
+ * @author chengyao
  * @package Max
  */
 class Route
@@ -45,12 +44,6 @@ class Route
      * @var Response
      */
     protected $response;
-
-    /**
-     * 多语言
-     * @var Lang
-     */
-    protected $lang;
 
     /**
      * 路由注册树
@@ -96,7 +89,6 @@ class Route
         $this->app     = $app;
         $this->request = $app['request'];
         $this->config  = $app['config'];
-        $this->lang    = $app['lang'];
     }
 
     /**
@@ -316,7 +308,7 @@ class Route
         if (isset($this->routesMap['none'])) {
             return $this->routesMap['none']['route'];
         }
-        throw new RouteNotFoundException($this->lang->out("Page not found: {$path}"), 404);
+        throw new RouteNotFoundException("Page not found: {$path}", 404);
     }
 
     public function dispatch()
@@ -328,7 +320,7 @@ class Route
             } else {
                 $callable = explode('@', $this->callable, 2);
                 if (!isset($callable[1])) {
-                    throw new RouteNotFoundException($this->lang->out('no action found'), 404);
+                    throw new RouteNotFoundException('No action found.', 404);
                 }
                 $this->callable = ['App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
                         return ucfirst($value);

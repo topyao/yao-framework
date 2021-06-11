@@ -21,7 +21,6 @@ class Http
 
     public function response()
     {
-        ob_start();
         $config = $this->app['config']->get('app');
         $this->app['error']->register();
         $this->app['lang']->import($config['language']);
@@ -36,6 +35,7 @@ class Http
 
     public function end($response)
     {
+        ob_start();
         return $this->app->response
             ->body($response)
             ->send();

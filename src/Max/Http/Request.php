@@ -179,32 +179,6 @@ class Request implements RequestInterface
     }
 
     /**
-     * 当前请求的控制器，设置和获取
-     * @param null $controller
-     * @return string|null
-     */
-    public function controller($controller = null)
-    {
-        if (!isset($controller)) {
-            return $this->controller;
-        }
-        $this->controller = $controller;
-    }
-
-    /**
-     * 当前请求的方法，设置和获取,高版本可以在类型前添加？表示可以为null
-     * @param ?string|null $action
-     * @return string
-     */
-    public function action($action = null)
-    {
-        if (!isset($action)) {
-            return $this->action;
-        }
-        $this->action = $action;
-    }
-
-    /**
      * 路由参数
      * @param null $params
      * @return mixed
