@@ -288,7 +288,7 @@ class Route
     {
         $method = strtolower($this->app->request->method());
         if (!isset($this->routesMap[$method])) {
-            throw new RouteNotFoundException("The request method {$method} has no route.", 415);
+            throw new RouteNotFoundException();
         }
         $path = $this->app->request->path();
         if (isset($this->routesMap[$method][$path])) {
@@ -308,7 +308,7 @@ class Route
         if (isset($this->routesMap['none'])) {
             return $this->routesMap['none']['route'];
         }
-        throw new RouteNotFoundException("Page not found: {$path}", 404);
+        throw new RouteNotFoundException();
     }
 
     public function dispatch()

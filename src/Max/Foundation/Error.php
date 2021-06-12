@@ -140,9 +140,10 @@ class Error
             $handle = $this->app->config->get('app.exception_handle', Handle::class);
             echo new $handle($message, $code);
         }
+        $status = ($exception instanceof \Max\Exception\HttpException)? $exception->getCode(): 500; 
         return $this->app->response
-            ->withStatus($code)
-            ->send();
+        ->withStatus($exception->getCode())
+        ->send();
     }
 
     /**
