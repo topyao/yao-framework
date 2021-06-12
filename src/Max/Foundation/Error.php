@@ -142,7 +142,7 @@ class Error
         }
         $status = ($exception instanceof \Max\Exception\HttpException)? $exception->getCode(): 500; 
         return $this->app->response
-        ->withStatus($exception->getCode())
+        ->withStatus($status)
         ->send();
     }
 
