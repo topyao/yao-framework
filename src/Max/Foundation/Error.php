@@ -111,7 +111,7 @@ class Error
 
 <body>
 <div class="content">
-<div class="title">Message: ', $message, '</div>
+<div class="title">', get_class($exception) ,': ', $message, '</div>
 <pre>
 <p><b>File: </b>', $file, ' +', $line, '</p><p><b>Code: </b>', $code, '</p>';
             $trace = $exception->getTrace();
