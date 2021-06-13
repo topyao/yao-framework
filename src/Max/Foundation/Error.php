@@ -21,12 +21,6 @@ class Error
     protected $app;
 
     /**
-     * 调试模式开关
-     * @var bool
-     */
-    protected $debug;
-
-    /**
      * 初始化实例列表和参数
      * Error constructor.
      * @param App $app
@@ -34,7 +28,6 @@ class Error
     public function __construct(App $app)
     {
         $this->app           = $app;
-        $this->debug         = $app['config']->get('app.debug');
     }
 
     /**
@@ -70,7 +63,7 @@ class Error
                 'Code: ' => $code
             ]
         );
-        if ($this->debug) {
+        if ($this->app->config->get('app.debug')) {
             echo '<title> ', $message, '</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 <style>
