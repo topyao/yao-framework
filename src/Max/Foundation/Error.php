@@ -21,12 +21,6 @@ class Error
     protected $app;
 
     /**
-     * 调试模式开关
-     * @var bool
-     */
-    protected $debug;
-
-    /**
      * 初始化实例列表和参数
      * Error constructor.
      * @param App $app
@@ -34,7 +28,6 @@ class Error
     public function __construct(App $app)
     {
         $this->app           = $app;
-        $this->debug         = $app['config']->get('app.debug');
     }
 
     /**
@@ -70,7 +63,7 @@ class Error
                 'Code: ' => $code
             ]
         );
-        if ($this->debug) {
+        if ($this->app->config->get('app.debug')) {
             echo '<title> ', $message, '</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 <style>
@@ -111,7 +104,7 @@ class Error
 
 <body>
 <div class="content">
-<div class="title">Message: ', $message, '</div>
+<div class="title">', get_class($exception) ,': ', $message, '</div>
 <pre>
 <p><b>File: </b>', $file, ' +', $line, '</p><p><b>Code: </b>', $code, '</p>';
             $trace = $exception->getTrace();
@@ -140,9 +133,10 @@ class Error
             $handle = $this->app->config->get('app.exception_handle', Handle::class);
             echo new $handle($message, $code);
         }
+        $status = ($exception instanceof \Max\Exception\HttpException)? $exception->getCode(): 500; 
         return $this->app->response
-            ->withStatus($code)
-            ->send();
+        ->withStatus($status)
+        ->send();
     }
 
     /**

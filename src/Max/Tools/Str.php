@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
 namespace Max\Tools;
-
 
 class Str
 {
@@ -11,7 +9,13 @@ class Str
     {
         $field = explode('.', $string);
         foreach ($field as $v) {
-            $value = $value[$v] ?? $default;
+            if(!isset($value[$v])) {
+                $value = $default;
+            } else if(!is_bool($value[$v]) && empty($value[$v]) && isset($default)) {
+                $value = $default;
+            } else {
+                $value = $value[$v];
+            }
         }
         return $value;
     }

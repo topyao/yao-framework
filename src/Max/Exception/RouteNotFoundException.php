@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace Max\Exception;
 
-use Throwable;
-
-class RouteNotFoundException extends \RuntimeException
+class RouteNotFoundException extends HttpException
 {
 
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct()
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct('Page no found.', 404);
     }
 
 }
