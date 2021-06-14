@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Max\Foundation;
 
 use Max\Exception\ErrorException;
-use Max\Handle;
+use Max\Exception\Handler;
 
 /**
  * 错误和异常注册类
@@ -27,7 +27,7 @@ class Error
      */
     public function __construct(App $app)
     {
-        $this->app           = $app;
+        $this->app = $app;
     }
 
     /**
@@ -104,7 +104,7 @@ class Error
 
 <body>
 <div class="content">
-<div class="title">', get_class($exception) ,': ', $message, '</div>
+<div class="title">', get_class($exception), ': ', $message, '</div>
 <pre>
 <p><b>File: </b>', $file, ' +', $line, '</p><p><b>Code: </b>', $code, '</p>';
             $trace = $exception->getTrace();
@@ -130,13 +130,13 @@ class Error
             $memoryUsage = (memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024;
             echo '</pre><div class="title" style="display: flex;justify-content: space-between"><div id="status">运行时间：' . round($timeCost, 3) . 'S 内存消耗：' . round($memoryUsage, 3) . 'MB QPS: ' . round(1 / $timeCost, 3) . ' REQ/S </div><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
         } else {
-            $handle = $this->app->config->get('app.exception_handle', Handle::class);
-            echo new $handle($message, $code);
+            $handle = $this->app->config->get('app.exception_handler', Handler::class);
+            echo new $handle($exception);
         }
-        $status = ($exception instanceof \Max\Exception\HttpException)? $exception->getCode(): 500; 
+        $status = ($exception instanceof \Max\Exception\HttpException) ? $exception->getCode() : 500;
         return $this->app->response
-        ->withStatus($status)
-        ->send();
+            ->withStatus($status)
+            ->send();
     }
 
     /**

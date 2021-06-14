@@ -1,25 +1,25 @@
 <?php
 
+namespace Max\Exception;
 
-namespace Max;
+use Throwable;
 
-
-class Handle
+class Handler
 {
 
-    protected $message = '';
-
-    protected $code = 200;
+    /**
+     * 异常实例
+     * @var Throwable
+     */
+    protected $exception;
 
     /**
      * Handle constructor.
-     * @param $message
-     * @param $code
+     * @param Throwable $e
      */
-    public function __construct($message, $code)
+    public function __construct(Throwable $e)
     {
-        $this->message = $message;
-        $this->code    = $code;
+        $this->exception = $e;
     }
 
     public function __toString()
@@ -31,7 +31,7 @@ class Handle
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$this->message}</title>
+    <title>{$this->exception->getMessage()}</title>
     <style>
         html,
         body {
@@ -74,17 +74,17 @@ class Handle
 <body>
 <div class="flex-center position-ref full-height">
     <div class="code">
-        {$this->code}
+        {$this->exception->getCode()}
     </div>
 
     <div class="message" style="padding: 10px;">
-        {$this->message}
+        {$this->exception->getMessage()}
     </div>
 </div>
 </body>
 
 </html>
 TOR;
-
     }
+
 }
