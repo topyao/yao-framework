@@ -6,11 +6,11 @@ namespace Max\Facade;
 use Max\Http\Route as HttpRoute;
 
 /**
- * @method static HttpRoute get(string $uri, string|arrray|\Closure $location) GET方式请求的路由
- * @method static HttpRoute post(string $uri, string|arrray|\Closure $location)
- * @method static HttpRoute put(string $uri, string|arrray|\Closure $location)
- * @method static HttpRoute delete(string $uri, string|arrray|\Closure $location)
- * @method static HttpRoute patch(string $uri, string|arrray|\Closure $location)
+ * @method static HttpRoute get(string $uri, mixed $location) GET方式请求的路由
+ * @method static HttpRoute post(string $uri, mixed $location)
+ * @method static HttpRoute put(string $uri, mixed $location)
+ * @method static HttpRoute delete(string $uri, mixed $location)
+ * @method static HttpRoute patch(string $uri, mixed $location)
  * @method static group(array $args, \Closure $group)
  * @method static HttpRoute view(string $uri, mixed $location, array $arguments = [], $requestMethod = ['get'])
  * @method static HttpRoute none(\Closure $closure, $data = []) 闭包处理位找到的路由
