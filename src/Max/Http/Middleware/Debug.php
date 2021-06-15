@@ -16,7 +16,8 @@ class Debug implements Middleware
         if (app('config')->get('app.debug')) {
             $SQL = '';
             foreach (app('db')->getHistory() as $query) {
-                $SQL .= "<p style='margin: 0 auto;'>{$query[0]}: {$query[1]}ms </p>";
+                [$sql, $time] = [htmlspecialchars($query[0]), $query[1]];
+                $SQL .= "<p style='margin: 0 auto;'>{$sql}: {$time}ms </p>";
             }
             $timeCost    = round(microtime(true) - APP_START_TIME, 3);
             $memoryUsage = round((memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024, 3);
