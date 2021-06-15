@@ -34,6 +34,8 @@ class Response implements ResponseInterface
 
     protected $withoutHeader = [];
 
+    protected $responseSent = false;
+
     /**
      * 响应体
      * @var
@@ -141,6 +143,11 @@ class Response implements ResponseInterface
         // TODO: Implement withProtocolVersion() method.
     }
 
+    public function responseSent()
+    {
+        return $this->responseSent;
+    }
+
     /**
      * 添加响应头
      * @param string $name
@@ -231,17 +238,20 @@ class Response implements ResponseInterface
      */
     public function send()
     {
-        http_response_code((int)$this->code);
-        $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
-        foreach ($this->header as $name => $value) {
-            header("{$name}: {$value}");
-        }
-        foreach ($this->withoutHeader as $value) {
-            header_remove($value);
-        }
-        ob_end_flush();
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
+        if (!$this->responseSent) {
+            $this->responseSent = true;
+            http_response_code((int)$this->code);
+            $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
+            foreach ($this->header as $name => $value) {
+                header("{$name}: {$value}");
+            }
+            foreach ($this->withoutHeader as $value) {
+                header_remove($value);
+            }
+            ob_end_flush();
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
         }
     }
 

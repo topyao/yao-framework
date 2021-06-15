@@ -494,18 +494,14 @@ class Request implements RequestInterface
         }
         if (is_array($key)) {
             $return = $default = [];
-            if (Arr::isAssoc($key)) {
-                $key = Arr::getAssoc($key);
-                [$default, $key] = [array_values($key), array_keys($key)];
-            }
-//            TODO 数字索引的时候有bug,这里仍然有bug，当为空字符串的时候
+            $key    = Arr::getAssoc($key);
+            [$default, $key] = [array_values($key), array_keys($key)];
             foreach ($key as $k => $value) {
-                if (isset($params[$value]) && !empty($params[$value])) {
-                    $return[$value] = $this->filter($params[$value]);
+                if (isset($params[$value])) {
+                    $v              = $params[$value];
+                    $return[$value] = empty($v) ? $v : $this->filter($v);
                 } else {
-                    if (isset($default[$k])) {
-                        $return[$value] = $default[$k];
-                    }
+                    $return[$value] = $default[$k] ?? null;
                 }
             }
             return $return;

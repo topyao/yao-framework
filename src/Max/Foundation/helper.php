@@ -12,7 +12,7 @@ if (false === function_exists('app')) {
      * @param string|null $id
      * @param array $arguments
      * @param bool $renew
-     * @return App|mixed|object
+     * @return mixed|object
      */
     function app(string $id = null, array $arguments = [], bool $renew = false)
     {
@@ -131,11 +131,6 @@ if (false === function_exists('halt')) {
         echo '<title>调试信息</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 <style>
-    .content{
-        border:1px solid #d5d1d1;
-        width:70vw;
-        margin: .5em auto
-    }
 
     .title{
         background-color: #1E90FF;
@@ -163,17 +158,14 @@ if (false === function_exists('halt')) {
 </style>
 
 <body>
-<div class="content">
+<div style="border:1px solid #d5d1d1;width:70vw;margin: .5em auto">
 <div class="title">调试信息</div>
 <pre style="padding-top: 1em">';
         var_dump(...$arguments);
-        $timeCost    = microtime(true) - APP_START_TIME;
-        $memoryUsage = (memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024;
-        echo '</pre><div class="title" style="display: flex;justify-content: space-between"><div id="status">运行时间：' . round($timeCost, 3) . 'S 内存消耗：' . round($memoryUsage, 3) . 'MB QPS: ' . round(1 / $timeCost, 3) . ' REQ/S </div><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
-        exit(app('response')->send());
+        echo '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
+        return app('response')->send();
     }
 }
-
 
 if (false === function_exists('response')) {
     /**
