@@ -19,6 +19,10 @@ abstract class Service
      */
     protected $app;
 
+    /**
+     * Service constructor.
+     * @param App $app
+     */
     final public function __construct(App $app)
     {
         $this->app = $app;

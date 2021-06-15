@@ -17,6 +17,10 @@ class Provider
      */
     protected $app;
 
+    /**
+     * Provider constructor.
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
