@@ -334,6 +334,7 @@ class Route
                 };
             } else if (is_array($this->callable) && 2 === count($this->callable)) {
                 $this->app->make($this->callable[0]);
+                $this->request->setAction($this->callable[1]);
                 $request = function () {
                     return $this->app->invokeMethod($this->callable, $this->request->routeParams());
                 };

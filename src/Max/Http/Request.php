@@ -298,6 +298,24 @@ class Request implements RequestInterface
     }
 
     /**
+     * 设置当前请求的方法
+     * @param string $action
+     */
+    public function setAction(string $action)
+    {
+        $this->action = $action;
+    }
+
+    /**
+     * 当前请求的方法
+     * @return string
+     */
+    public function action(): string
+    {
+        return $this->action;
+    }
+
+    /**
      * 当前请求的session
      * @return array
      */
