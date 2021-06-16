@@ -366,13 +366,8 @@ class Route
         if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
             $this->routesMap = unserialize(file_get_contents($routes));
         } else {
-            $routes = $this->request->isAjax() ? ['api'] : ['web'];
-            array_push($routes, 'both');
-            foreach ($routes as $route) {
-                $file = env('route_path') . $route . '.php';
-                if (file_exists($file)) {
-                    include $file;
-                }
+            foreach (glob(env('route_path') . '*.php') as $route) {
+                include $route;
             }
         }
         return $this;
