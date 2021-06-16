@@ -8,10 +8,10 @@ class Debug implements Middleware
 {
     public function handle($request, \Closure $next)
     {
-        //框架启动时间常量
-        define('APP_START_TIME', microtime(true));
-        //框架运行初始内存常量
-        define('APP_START_MEMORY_USAGE', memory_get_usage());
+        //框架启动时间
+        $startTime = microtime(true);
+        //框架运行初始内存
+        $startMemoryUsage = memory_get_usage();
         $response = $next($request);
         if (app('config')->get('app.debug')) {
             $SQL = '';
@@ -19,8 +19,8 @@ class Debug implements Middleware
                 [$sql, $time] = [htmlspecialchars($query[0]), $query[1]];
                 $SQL .= "<p style='margin: 0 auto;'>{$sql}: {$time}ms </p>";
             }
-            $timeCost    = round(microtime(true) - APP_START_TIME, 3);
-            $memoryUsage = round((memory_get_usage() - APP_START_MEMORY_USAGE) / 1024 / 1024, 3);
+            $timeCost    = round(microtime(true) - $startTime, 3);
+            $memoryUsage = round((memory_get_usage() - $startMemoryUsage) / 1024 / 1024, 3);
             echo <<<EOT
 <div style="cursor: pointer; font-size: 15px;text-align:center; font-weight:bolder;line-height: 40px;background-color: dodgerblue;color:white; width: 40px;height: 40px; position: fixed; bottom:0; right: 0" id = "btn">
        Max
