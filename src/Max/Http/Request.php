@@ -294,7 +294,7 @@ class Request implements RequestInterface
             }
         }
         // 客户端IP 或 (最后一个)代理服务器 IP
-        return ($ip ? $ip : $this->server['REMOTE_ADDR']);
+        return ($ip ? $ip : $this->server['REMOTE_ADDR'] ?? 'Unknown');
     }
 
     /**

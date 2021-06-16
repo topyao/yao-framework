@@ -47,6 +47,16 @@ class Error
      */
     public function exception(\Throwable $exception)
     {
+        $errorMsg = $this->getErrorMessage($exception);
+        $status   = ($exception instanceof \Max\Exception\HttpException) ? $exception->getCode() : 500;
+        return $this->app->response
+            ->body($errorMsg)
+            ->withStatus($status)
+            ->send();
+    }
+
+    public function getErrorMessage(\Throwable $exception)
+    {
         [$file, $line, $message, $code] =
             [
                 $exception->getFile(),
@@ -64,7 +74,9 @@ class Error
             ]
         );
         if ($this->app->config->get('app.debug')) {
-            echo '<title> ', $message, '</title>
+            $class    = get_class($exception);
+            $errorMsg = <<<EOT
+<title>{$message}</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 <style>
 
@@ -73,7 +85,7 @@ class Error
         width:70vw;
         margin: .5em auto
     }
-    
+        
     .title{
         background-color: #1E90FF;
         line-height:3em;
@@ -104,10 +116,11 @@ class Error
 
 <body>
 <div class="content">
-<div class="title">', get_class($exception), ': ', $message, '</div>
+<div class="title">{$class}: {$message}</div>
 <pre>
-<p><b>File: </b>', $file, ' +', $line, '</p><p><b>Code: </b>', $code, '</p>';
-            $trace = $exception->getTrace();
+<p><b>File: </b>{$file} +{$line}</p><p><b>Code: </b>{$code}</p>
+EOT;
+            $trace    = $exception->getTrace();
             for ($key = 0; $key <= count($trace) - 2; $key++) {
                 if (false === isset($trace[$key]['file'])) {
                     continue;
@@ -116,25 +129,22 @@ class Error
                 $file      = file($trace[$key]['file']);
                 $line      = $trace[$key]['line'];
                 $function  = $trace[$key]['function'];
-                echo '<p style="background-color: #65adf3;color: white">', $errorFile, ' +', $line, '</p>';
+                $errorMsg  .= "<p style=\"background-color: #65adf3;color: white\">$errorFile} +{$line}</p>";
                 for ($i = $line - 4; $i < $line + 3 && $i < count($file); $i++) {
-                    $code = htmlspecialchars($file[$i]);
-                    echo '<span style="background-color: #EEEEEE;color: grey">', str_pad((string)($i + 1), 3, ' ', STR_PAD_BOTH), '</span>';
+                    $code     = htmlspecialchars($file[$i]);
+                    $errorMsg .= '<span style="background-color: #EEEEEE;color: grey">' . str_pad((string)($i + 1), 3, ' ', STR_PAD_BOTH) . '</span>';
                     if ($i + 1 == $line) {
                         $code = '<text style="width:100%;background-color: #eeeeee">' . str_replace($function, '<span style="color: red">' . $function . '</span>', htmlspecialchars($file[$i])) . '</text>';
                     }
-                    echo $code;
+                    $errorMsg .= $code;
                 }
             }
-            echo '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
+            $errorMsg .= '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
         } else {
-            $handle = $this->app->config->get('app.exception_handler', Handler::class);
-            echo new $handle($exception);
+            $handle   = $this->app->config->get('app.exception_handler', Handler::class);
+            $errorMsg = (new $handle($exception))->__toString();
         }
-        $status = ($exception instanceof \Max\Exception\HttpException) ? $exception->getCode() : 500;
-        return $this->app->response
-            ->withStatus($status)
-            ->send();
+        return $errorMsg;
     }
 
     /**
