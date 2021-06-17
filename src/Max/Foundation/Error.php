@@ -129,7 +129,7 @@ EOT;
                 $file      = file($trace[$key]['file']);
                 $line      = $trace[$key]['line'];
                 $function  = $trace[$key]['function'];
-                $errorMsg  .= "<p style=\"background-color: #65adf3;color: white\">$errorFile} +{$line}</p>";
+                $errorMsg  .= "<p style=\"background-color: #65adf3;color: white\">{$errorFile} +{$line}</p>";
                 for ($i = $line - 4; $i < $line + 3 && $i < count($file); $i++) {
                     $code     = htmlspecialchars($file[$i]);
                     $errorMsg .= '<span style="background-color: #EEEEEE;color: grey">' . str_pad((string)($i + 1), 3, ' ', STR_PAD_BOTH) . '</span>';
