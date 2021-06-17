@@ -35,7 +35,7 @@ class Http
 
     public function end($response)
     {
-        ob_start();
+//        ob_start();
         return $this->app->response
             ->body($response)
             ->send();

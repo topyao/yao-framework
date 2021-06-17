@@ -248,7 +248,7 @@ class Response implements ResponseInterface
             foreach ($this->withoutHeader as $value) {
                 header_remove($value);
             }
-            ob_end_flush();
+//            ob_end_flush();
             if (function_exists('fastcgi_finish_request')) {
                 fastcgi_finish_request();
             }
