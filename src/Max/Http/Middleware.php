@@ -46,7 +46,7 @@ class Middleware
     }
 
     /**
-     * 不完整的中间件
+     * 寻求有缘人帮忙重写中间件
      * @param $request
      * @return $this
      */
