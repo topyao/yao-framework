@@ -5,6 +5,7 @@ namespace Max;
 
 use Max\Exception\ErrorException;
 use Max\Exception\Handler;
+use Throwable;
 
 /**
  * 错误和异常注册类
@@ -43,26 +44,31 @@ class Error
 
     /**
      * 异常回调
-     * @param \Throwable $exception
+     * @param Throwable $e
      */
-    public function exception(\Throwable $exception)
+    public function exception(Throwable $e)
     {
-        $errorMsg = $this->getErrorMessage($exception);
-        $status   = ($exception instanceof \Max\Exception\HttpException) ? $exception->getCode() : 500;
+        $errorMsg = $this->getMessage($e);
+        $status   = $this->getCode($e);
         return $this->app->response
             ->body($errorMsg)
             ->withStatus($status)
             ->send();
     }
 
-    public function getErrorMessage(\Throwable $exception)
+    public function getCode($e)
+    {
+        return ($e instanceof \Max\Exception\HttpException) ? $e->getCode() : 500;
+    }
+
+    public function getMessage(\Throwable $e)
     {
         [$file, $line, $message, $code] =
             [
-                $exception->getFile(),
-                $exception->getLine(),
-                $exception->getMessage(),
-                $exception->getCode() ?? '200'
+                $e->getFile(),
+                $e->getLine(),
+                $e->getMessage(),
+                $e->getCode() ?? '200'
             ];
         $request = $this->app->request;
         $this->app->log->error(
@@ -74,7 +80,7 @@ class Error
             ]
         );
         if ($this->app->config->get('app.debug')) {
-            $class    = get_class($exception);
+            $class    = get_class($e);
             $errorMsg = <<<EOT
 <title>{$message}</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
@@ -120,7 +126,7 @@ class Error
 <pre>
 <p><b>File: </b>{$file} +{$line}</p><p><b>Code: </b>{$code}</p>
 EOT;
-            $trace    = $exception->getTrace();
+            $trace    = $e->getTrace();
             for ($key = 0; $key <= count($trace) - 2; $key++) {
                 if (false === isset($trace[$key]['file'])) {
                     continue;
@@ -142,7 +148,7 @@ EOT;
             $errorMsg .= '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
         } else {
             $handle   = $this->app->config->get('app.exception_handler', Handler::class);
-            $errorMsg = (new $handle($exception))->__toString();
+            $errorMsg = (new $handle($e))->__toString();
         }
         return $errorMsg;
     }
