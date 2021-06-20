@@ -23,7 +23,7 @@ use Max\Log\Log;
  * @version 1.0.0
  * @package Max
  */
-class App extends \Max\Container
+class App extends Container
 {
 
     /**
@@ -34,7 +34,7 @@ class App extends \Max\Container
         'http'       => Http::class,
         'request'    => Request::class,
         'env'        => Env::class,
-        'config'     => \Max\Config::class,
+        'config'     => Config::class,
         'route'      => Route::class,
         'error'      => Error::class,
         'response'   => Response::class,

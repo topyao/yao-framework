@@ -11,22 +11,27 @@ class Http
      */
     protected $app;
 
+    /**
+     * @var array
+     */
+    protected $config;
+
     public function __construct(App $app)
     {
+        $this->config = $app->config->get('app');
+        $app->error->register();
         $this->app = $app;
     }
 
     public function response()
     {
-        $config = $this->app['config']->get('app');
-        $this->app['error']->register();
-        $this->app['lang']->import($config['language']);
-        $this->app['provider']->serve($config['provider']['http'] ?? []);
-        date_default_timezone_set($config['default_timezone']);
+        $this->app['lang']->import($this->config['language']);
+        $this->app['provider']->serve($this->config['provider'] ?? []);
+        date_default_timezone_set($this->config['default_timezone']);
         return $this->app->middleware
-            ->through($config['middleware'])
+            ->through($this->config['middleware'])
             ->then(function () {
-                return $this->app['route']->register()->dispatch();
+                return $this->app->route->register()->dispatch();
             })->end();
     }
 
