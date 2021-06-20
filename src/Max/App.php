@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace Max\Foundation;
+namespace Max;
 
 use App\Console\Console;
 use Max\Http;
@@ -12,7 +12,7 @@ use Max\Log\Log;
 /**
  * @property Request $request    请求实例
  * @property Env $env            环境变量实例
- * @property Config $config      配置类实例
+ * @property \Max\Config $config      配置类实例
  * @property Response $response  响应实例
  * @property Session $session    Session实例
  * @property Log $log            日志类实例
@@ -23,7 +23,7 @@ use Max\Log\Log;
  * @version 1.0.0
  * @package Max
  */
-class App extends Container
+class App extends \Max\Container
 {
 
     /**
@@ -34,7 +34,7 @@ class App extends Container
         'http'       => Http::class,
         'request'    => Request::class,
         'env'        => Env::class,
-        'config'     => Config::class,
+        'config'     => \Max\Config::class,
         'route'      => Route::class,
         'error'      => Error::class,
         'response'   => Response::class,

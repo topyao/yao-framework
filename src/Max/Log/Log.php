@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Log;
 
-use Max\Foundation\Config;
+use Max\Config;
 
 class Log extends \Psr\Log\AbstractLogger
 {

@@ -4,7 +4,7 @@ declare (strict_types=1);
 namespace Max\Http;
 
 use Max\Exception\RouteNotFoundException;
-use Max\Foundation\{App, Config};
+use Max\{App, Config};
 use Max\Http\Route\{Alias, Cors};
 
 /**
@@ -53,7 +53,7 @@ class Route
 
     /**
      * 注册路由的方法
-     * @var string|array
+     * @var array
      */
     protected $method;
 
@@ -68,6 +68,12 @@ class Route
     protected $namespace;
 
     protected $callable;
+
+    protected $options = [
+        'middleware' => [],
+        'route'      => '',
+        'cache'      => 0,
+    ];
 
     /**
      * 路由注册的地址
@@ -99,7 +105,7 @@ class Route
      */
     public function __call($method, $arguments)
     {
-        $this->setRoute($method, ...$arguments);
+        $this->setRoute((array)$method, ...$arguments);
         return $this;
     }
 
@@ -180,15 +186,7 @@ class Route
      */
     public function middleware($middleware)
     {
-        foreach ((array)$this->method as $method) {
-            $this->routesMap[$this->method][$this->path]['middleware'] = $middleware;
-        }
-        //TODO 重复注册
-        foreach ((array)$this->method as $method) {
-            if ($this->request->isMethod($method) && $this->request->is($this->path)) {
-                $this->app['middleware']->through($middleware);
-            }
-        }
+        $this->setOption('middleware', $middleware);
         return $this;
     }
 
@@ -199,9 +197,11 @@ class Route
      */
     public function ext(string $ext)
     {
-        foreach ((array)$this->method as $method) {
-            $this->routesMap[$method][$this->path]['ext'] = $ext;
+        foreach ($this->method as $method) {
+            $this->routesMap[$method][$this->path . $ext] = $this->routesMap[$method][$this->path];
+            unset($this->routesMap[$method][$this->path]);
         }
+        $this->path .= $ext;
         return $this;
     }
 
@@ -255,21 +255,31 @@ class Route
     }
 
     /**
-     * 缓存时间/秒
+     * 请求缓存
      * @param int $expire
+     * 缓存时间/秒
      */
     public function cache(int $expire)
     {
-        if ($this->request->is($this->path)) {
-            $this->app->response->cache($expire);
-        }
+        $this->setOption('cache', $expire);
         return $this;
     }
 
-    private function setRoute($method, $uri, $location)
+    /***
+     * @param string $key
+     * @param $value
+     */
+    protected function setOption(string $key, $value)
+    {
+        foreach ($this->method as $method) {
+            $this->routesMap[$method][$this->path][$key] = $value;
+        }
+    }
+
+    protected function setRoute(array $method, $uri, $location)
     {
         [$this->method, $this->path] = [$method, '/' . trim($uri, '/')];
-        foreach ((array)$this->method as $method) {
+        foreach ($this->method as $method) {
             $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
                 'route'      => $location,
                 'middleware' => $this->middleware,
@@ -292,7 +302,7 @@ class Route
         }
         $path = $this->app->request->path();
         if (isset($this->routesMap[$method][$path])) {
-            return $this->routesMap[$method][$path]['route'];
+            return $this->routesMap[$method][$path];
         }
         $routes = $this->routesMap[$method];
         foreach ($routes as $uri => $location) {
@@ -302,47 +312,54 @@ class Route
                     array_shift($match);
                     $this->request->routeParams($match);
                 }
-                return $location['route'];
+                return $location;
             }
         }
         if (isset($this->routesMap['none'])) {
-            return $this->routesMap['none']['route'];
+            return $this->routesMap['none'];
         }
         throw new RouteNotFoundException();
     }
 
     public function dispatch()
     {
-        $this->callable = $this->matched();
+        $router         = $this->matched();
+        $cache          = $router['cache'] ?? '';
+        $this->callable = $router['route'] ?? '';
         if (is_string($this->callable)) {
             if ('C:' === substr($this->callable, 0, 2)) {
                 $this->callable = \Opis\Closure\unserialize($this->callable);
             } else {
                 $callable = explode('@', $this->callable, 2);
                 if (!isset($callable[1])) {
-                    throw new RouteNotFoundException('No action found.', 404);
+                    throw new RouteNotFoundException();
                 }
                 $this->callable = ['App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
                         return ucfirst($value);
                     }, explode('/', $callable[0]))), $callable[1]];
             }
         }
-        return $this->app->middleware->then(function () {
-            if ($this->callable instanceof \Closure) {
-                $request = function () {
-                    return $this->app->invokeFunc($this->callable);
-                };
-            } else if (is_array($this->callable) && 2 === count($this->callable)) {
-                $this->request->setAction($this->callable[1]);
-                $this->app->make($this->callable[0]);
-                $request = function () {
-                    return $this->app->invokeMethod($this->callable, $this->request->routeParams());
-                };
-            } else {
-                throw new \Exception('Cannot resolve request');
-            }
-            return $this->app->middleware->then($request)->end();
-        })->end();
+        if (!empty($cache)) {
+            $this->app->response->cache($cache);
+        }
+        return $this->app->middleware
+            ->through($router['middleware'] ?: [])
+            ->then(function () {
+                if ($this->callable instanceof \Closure) {
+                    $request = function () {
+                        return $this->app->invokeFunc($this->callable);
+                    };
+                } else if (is_array($this->callable) && 2 === count($this->callable)) {
+                    $this->request->setAction($this->callable[1]);
+                    $this->app->make($this->callable[0]);
+                    $request = function () {
+                        return $this->app->invokeMethod($this->callable, $this->request->routeParams());
+                    };
+                } else {
+                    throw new \Exception('Cannot resolve request');
+                }
+                return $this->app->middleware->then($request)->end();
+            })->end();
     }
 
     /**

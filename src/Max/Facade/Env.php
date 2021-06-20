@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Max\Facade;
 
+use Max\Facade;
+
 /**
  * @method static set(string $env, mixed $value)
  * @method static string get(string $key = null, $default = null)

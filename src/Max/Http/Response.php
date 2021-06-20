@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Http;
 
-use Max\Foundation\App;
+use Max\App;
 use Psr\Http\Message\{ResponseInterface, StreamInterface};
 
 /**

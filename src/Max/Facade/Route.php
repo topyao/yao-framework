@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Max\Facade;
 
+use Max\Facade;
+
 use Max\Http\Route as HttpRoute;
 
 /**

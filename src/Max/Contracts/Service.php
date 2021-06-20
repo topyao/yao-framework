@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Contracts;
 
-use Max\Foundation\App;
+use Max\App;
 
 /**
  * 基础类

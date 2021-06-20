@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Http\Route;
 
-use Max\Foundation\App;
+use Max\App;
 use Max\Http\Request;
 use Max\Http\Response;
 

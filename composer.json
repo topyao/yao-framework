@@ -17,7 +17,7 @@
   ],
   "autoload": {
     "files": [
-      "src/Max/Foundation/helper.php"
+      "src/Max/helper.php"
     ],
     "psr-4": {
       "Max\\": "src/Max/"

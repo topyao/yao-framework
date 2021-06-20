@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Max\Facade;
 
+use Max\Facade;
+
 /**
  * @method static \Max\Http\Response body(int|array|string|\Closure|\Max\Http\Response $body)
  * @method static \Max\Http\Response code(int $code)

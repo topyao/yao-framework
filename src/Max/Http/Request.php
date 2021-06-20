@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Max\Http;
 
 use Max\Tools\Arr;
-use Max\Foundation\{App, Config};
+use Max\{App, Config};
 use Psr\Http\Message\{RequestInterface, StreamInterface, UriInterface};
 
 /**

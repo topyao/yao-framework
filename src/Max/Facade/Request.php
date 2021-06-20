@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Max\Facade;
 
+use Max\Facade;
+
 /**
  * @method static bool isMethod(string $method) 请求方式判断
  * @method static string method() 当前的请求方式

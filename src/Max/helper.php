@@ -4,7 +4,7 @@
  * 内置函数
  */
 
-use Max\Foundation\App;
+use Max\App;
 
 if (false === function_exists('app')) {
     /**

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Max\Foundation;
+namespace Max;
 
 use Max\Exception\ErrorException;
 use Max\Exception\Handler;

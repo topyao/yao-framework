@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Max\Foundation;
+namespace Max;
 
 use Psr\Container\ContainerInterface;
 use Max\Exception\ContainerException;
@@ -9,7 +9,7 @@ use ArrayAccess;
 
 /**
  * Class Container
- * @package Max\Foundation
+ * @package Max
  * @author chengyao
  */
 class Container implements ContainerInterface, ArrayAccess

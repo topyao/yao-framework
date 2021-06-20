@@ -3,9 +3,6 @@
 
 namespace Max;
 
-
-use Max\Foundation\App;
-
 class Http
 {
 

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Max\Facade;
+namespace Max;
 
-use Max\Foundation\App;
+use Max\App;
 
 /**
  * 门面实现基类
