@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Max\Log;
-
-use Max\Config;
+namespace Max;
 
 class Log extends \Psr\Log\AbstractLogger
 {

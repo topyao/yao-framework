@@ -4,15 +4,13 @@ declare (strict_types=1);
 namespace Max;
 
 use App\Console\Console;
-use Max\Http;
 use Max\Http\{Middleware, Request, Response, Route, Session};
 use Max\Lang\Lang;
-use Max\Log\Log;
 
 /**
  * @property Request $request    请求实例
  * @property Env $env            环境变量实例
- * @property \Max\Config $config      配置类实例
+ * @property Config $config      配置类实例
  * @property Response $response  响应实例
  * @property Session $session    Session实例
  * @property Log $log            日志类实例

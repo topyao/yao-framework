@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Max\Event;
+namespace Max;
 
 use Max\Facade\Config;
 
