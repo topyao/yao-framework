@@ -46,10 +46,10 @@ class App extends Container
 
     public function __construct()
     {
-        $class                   = static::class;
-        $this->bind['app']       = $class;
-        self::$instances[$class] = $this;
-        $this->bind              = array_merge($this->config->get('app.alias'), $this->bind);
+        $class                     = static::class;
+        $this->bind['app']         = $class;
+        static::$instances[$class] = $this;
+        $this->bind                = array_merge($this->config->get('app.alias'), $this->bind);
     }
 
     public function rootPath()
