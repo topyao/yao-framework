@@ -1,6 +1,6 @@
 {
   "name": "max/framework",
-  "description": "MaxPHP核心！",
+  "description": "MaxPHP Core Library!",
   "keywords": [
     "轻量",
     "PHP框架",
@@ -25,9 +25,9 @@
   },
   "require": {
     "php": ">=7.2.0",
-    "psr/http-message": "^1.0",
-    "ext-mbstring": "*",
     "ext-json": "*",
+    "ext-mbstring": "*",
+    "psr/http-message": "^1.0",
     "psr/container": "^1.0",
     "psr/log": "^1.1.3",
     "opis/closure": "^3.6"
