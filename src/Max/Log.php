@@ -14,14 +14,15 @@ class Log extends \Psr\Log\AbstractLogger
 
     protected $logs = [];
 
-    public function __construct(Config $config)
-    {
-        $this->config = $config;
-    }
 
-    public function write($level, $message, array $context = [])
+    public function write()
     {
-        $this->log($level, $message, $context);
+        if (true == config('app.log') && !empty($this->logs)) {
+            foreach ($this->logs as $level => $log) {
+                file_put_contents($this->getPath($level) . date('d') . '.log', $log, FILE_APPEND);
+                unset($this->logs[$level]);
+            }
+        }
     }
 
     public function log($level, $message, array $context = array())
@@ -47,11 +48,7 @@ class Log extends \Psr\Log\AbstractLogger
 
     public function __destruct()
     {
-        if (true == $this->config->get('app.log') && !empty($this->logs)) {
-            foreach ($this->logs as $level => $log) {
-                file_put_contents($this->getPath($level) . date('d') . '.log', $log, FILE_APPEND);
-            }
-        }
+        $this->write();
     }
 
 }

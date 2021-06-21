@@ -63,7 +63,8 @@ class App extends Container
             if (!class_exists($service)) {
                 throw new \Exception("服务不存在: {$service}");
             }
-            $service = $this->make($service, [], false);
+            $service = $this->make($service, [], true);
+
             call_user_func([$service, 'register']);
             call_user_func([$service, 'boot']);
         }

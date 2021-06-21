@@ -18,18 +18,19 @@ class Http
 
     public function __construct(App $app)
     {
+        ini_set('memory_limit', '64M');
         $this->config = $app->config->get('app');
         $app->error->register();
-	$app->serve($this->config['provider'] ?? []);
+        $app->serve($this->config['provider'] ?? []);
+        $app->lang->import($this->config['language']);
+        date_default_timezone_set($this->config['default_timezone']);
         $this->app = $app;
     }
 
     public function response()
     {
-        $this->app['lang']->import($this->config['language']);
-        date_default_timezone_set($this->config['default_timezone']);
         return $this->app->middleware
-            ->through($this->config['middleware'])
+            ->through($this->app->config->get('app.middleware'))
             ->then(function () {
                 return $this->app->route->register()->dispatch();
             })->end();
@@ -37,7 +38,6 @@ class Http
 
     public function end($response)
     {
-        ob_start();
         return $this->app->response
             ->body($response)
             ->send();
