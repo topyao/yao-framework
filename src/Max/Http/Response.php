@@ -32,9 +32,17 @@ class Response implements ResponseInterface
      */
     protected $code = 200;
 
+    /**
+     * 排除Header
+     * @var array
+     */
     protected $withoutHeader = [];
 
-    protected $responseSent = false;
+    /**
+     *
+     * @var bool
+     */
+    protected $responded = false;
 
     /**
      * 响应体
@@ -143,9 +151,9 @@ class Response implements ResponseInterface
         // TODO: Implement withProtocolVersion() method.
     }
 
-    public function responseSent()
+    public function responded()
     {
-        return $this->responseSent;
+        return $this->responded;
     }
 
     /**
@@ -198,12 +206,18 @@ class Response implements ResponseInterface
      */
     public function getBody()
     {
-        return ob_get_contents();
+        ob_start();
+        $this->app->middleware
+            ->through($this->app->config->get('app.middleware'))
+            ->then(function () {
+                return $this->app->route->register()->dispatch();
+            })->end();
+        return ob_get_clean();
     }
 
     public function withBody(StreamInterface $body)
     {
-        $this->body = $body;
+        echo $body;
         return $this;
     }
 
@@ -238,8 +252,8 @@ class Response implements ResponseInterface
      */
     public function send()
     {
-        if (!$this->responseSent) {
-            $this->responseSent = true;
+        if (!$this->responded) {
+            $this->responded = true;
             http_response_code((int)$this->code);
             $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
             foreach ($this->header as $name => $value) {

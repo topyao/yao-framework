@@ -48,11 +48,9 @@ class Error
      */
     public function exception(Throwable $e)
     {
-        $errorMsg = $this->getMessage($e);
-        $status   = $this->getCode($e);
         return $this->app->response
-            ->body($errorMsg)
-            ->withStatus($status)
+            ->body($this->getMessage($e))
+            ->withStatus($this->getCode($e))
             ->send();
     }
 
