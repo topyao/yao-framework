@@ -39,9 +39,8 @@ class App extends Container
         'session'    => Session::class,
         'log'        => Log::class,
         'middleware' => Middleware::class,
-        'provider'   => Provider::class,
         'lang'       => Lang::class,
-        'console'    => Console::class
+        'console'    => Console::class,
     ];
 
     public function __construct()
