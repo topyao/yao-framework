@@ -20,13 +20,13 @@ class Http
     {
         $this->config = $app->config->get('app');
         $app->error->register();
+	$app->serve($this->config['provider'] ?? []);
         $this->app = $app;
     }
 
     public function response()
     {
         $this->app['lang']->import($this->config['language']);
-        $this->app['provider']->serve($this->config['provider'] ?? []);
         date_default_timezone_set($this->config['default_timezone']);
         return $this->app->middleware
             ->through($this->config['middleware'])

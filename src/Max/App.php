@@ -52,6 +52,24 @@ class App extends Container
         $this->bind                = array_merge($this->config->get('app.alias'), $this->bind);
     }
 
+    /**
+     * 服务提供者
+     * @param array $services
+     * @throws \Exception
+     */
+    public function serve(array $services)
+    {
+        //php7.4新语法[...$arr1, ...$arr2]
+        foreach ($services as $service) {
+            if (!class_exists($service)) {
+                throw new \Exception("服务不存在: {$service}");
+            }
+            $service = $this->make($service, [], false);
+            call_user_func([$service, 'register']);
+            call_user_func([$service, 'boot']);
+        }
+    }
+
     public function rootPath()
     {
         return ('cli' === PHP_SAPI ? getcwd() : dirname($_SERVER['DOCUMENT_ROOT'])) . '/';
