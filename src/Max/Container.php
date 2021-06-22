@@ -40,10 +40,11 @@ class Container implements ContainerInterface, ArrayAccess
      */
     public static function instance()
     {
-        if (!isset(static::$instances[static::class])) {
-            static::$instances[static::class] = new static();
+        $class = static::class;
+        if (!isset(static::$instances[$class])) {
+            static::$instances[$class] = new static();
         }
-        return static::$instances[static::class];
+        return static::$instances[$class];
     }
 
     /**
@@ -51,7 +52,7 @@ class Container implements ContainerInterface, ArrayAccess
      * @param string $abstract
      * 类名
      * @param object $instance
-     * 实例话后的对象
+     * 实例
      */
     public function set(string $abstract, $instance)
     {
@@ -114,7 +115,7 @@ class Container implements ContainerInterface, ArrayAccess
      * @param array $arguments
      * 索引数组的参数列表
      * @param bool $renew
-     * 是否单例，true为单例，false为非单例
+     * true 移除已经存在的实例重新实例化直接返回
      * @return mixed
      */
     public function make(string $abstract, array $arguments = [], bool $renew = false)
