@@ -270,9 +270,9 @@ class Container implements ContainerInterface, ArrayAccess
      */
     protected function bindParams(\ReflectionFunctionAbstract $reflectionMethod, array $arguments): array
     {
-        $dependences = $reflectionMethod->getParameters();
-        $injection   = [];
-        foreach ($dependences as $dependence) {
+        $dependencies = $reflectionMethod->getParameters();
+        $injection    = [];
+        foreach ($dependencies as $dependence) {
             $type = $dependence->getType();
             // TODO Closure的处理，之前做了，但是忘记在哪里会有问题
             if (is_null($type) || $type->isBuiltin()) {
@@ -304,7 +304,7 @@ class Container implements ContainerInterface, ArrayAccess
 
     public function offsetUnset($offset)
     {
-        return $this->get($offset);
+        return $this->remove($offset);
     }
 
     public function __get($abstract)
