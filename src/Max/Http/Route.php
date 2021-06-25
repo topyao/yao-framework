@@ -392,7 +392,6 @@ class Route
                 include $route;
             }
         }
-        var_dump($this->routesMap);
         return $this;
     }
 
