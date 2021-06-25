@@ -242,15 +242,13 @@ class Route
      */
     public function cors($allowOrigin = '*', string $allowCredentials = 'true', string $allowHeaders = '*', int $maxAge = 600): Route
     {
-        if ($this->request->is($this->path)) {
-            $this->app[Cors::class]
-                ->setAllowOrigin($allowOrigin)
-                ->setAllowHeaders($allowHeaders)
-                ->setCredentials($allowCredentials)
-                ->setMaxAge($maxAge)
-                ->setAllowMethod($this->request->method())
-                ->allow();
-        }
+        $this->setOption('cors', [
+             'setAllowOrigin' => $allowOrigin,
+             'setAllowHeaders' => $allowHeaders,
+             'setCredentials' => $allowCredentials,
+             'setMaxAge' => $maxAge,
+             'setAllowMethod' => $this->request->method(),
+        ]);
         return $this;
     }
 
@@ -325,6 +323,7 @@ class Route
     {
         $router         = $this->matched();
         $cache          = $router['cache'] ?? '';
+        $cors           = $router['cors'] ?? [];
         $this->callable = $router['route'] ?? '';
         if (is_string($this->callable)) {
             if ('C:' === substr($this->callable, 0, 2)) {
@@ -342,8 +341,14 @@ class Route
         if (!empty($cache)) {
             $this->app->response->cache($cache);
         }
+        if(!empty($cors)){
+            $corsConcrete = $this->app->make(Cors::class);
+            foreach($cors as $method => $content) {
+                $corsConcrete->{$method}($content);
+            }
+        }
         return $this->app->middleware
-            ->through($router['middleware'] ?: [])
+            ->through($router['middleware'] ?? [])
             ->then(function () {
                 if ($this->callable instanceof \Closure) {
                     $request = function () {
@@ -380,13 +385,14 @@ class Route
      */
     public function register()
     {
-        if (file_exists($routes = env('storage_path') . 'cache' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'routes.php')) {
+        if (file_exists($routes = env('storage_path') . 'cache/app/routes.php')) {
             $this->routesMap = unserialize(file_get_contents($routes));
         } else {
             foreach (glob(env('route_path') . '*.php') as $route) {
                 include $route;
             }
         }
+        var_dump($this->routesMap);
         return $this;
     }
 
