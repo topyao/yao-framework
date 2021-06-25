@@ -75,8 +75,7 @@ class Cors
      */
     public function setAllowHeaders($allowHeaders)
     {
-        $this->response->withHeader('Access-Control-Allow-Headers', $allowHeaders);
-        return $this;
+        return $this->setHeader('Access-Control-Allow-Headers', $allowHeaders);
     }
 
     /**
@@ -86,8 +85,7 @@ class Cors
      */
     public function setCredentials($allowCredentials)
     {
-        $this->response->withHeader('Access-Control-Allow-Credentials', $allowCredentials);
-        return $this;
+        return $this->setHeader('Access-Control-Allow-Credentials', $allowCredentials);
     }
 
     /**
@@ -97,8 +95,7 @@ class Cors
      */
     public function setAllowMethod(string $method)
     {
-        $this->response->withHeader('Access-Control-Allow-Methods', strtoupper($method));
-        return $this;
+        return $this->setHeader('Access-Control-Allow-Methods', strtoupper($method));
     }
 
     /**
@@ -108,8 +105,15 @@ class Cors
      */
     public function setMaxAge(int $maxAge)
     {
-        $this->response->withHeader('Access-Control-Max-Age:', $maxAge);
+        return $this->setHeader('Access-Control-Max-Age:', $maxAge);
+    }
+
+    public function setHeader(string $name, $content) {
+        if($this->response->hasHeader('Access-Control-Allow-Origin')) {
+             $this->response->withHeader($name, $content);
+        }
         return $this;
     }
+
 
 }
