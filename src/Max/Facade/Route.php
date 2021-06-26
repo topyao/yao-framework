@@ -13,13 +13,12 @@ use Max\Http\Route as HttpRoute;
  * @method static HttpRoute put(string $uri, mixed $location)
  * @method static HttpRoute delete(string $uri, mixed $location)
  * @method static HttpRoute patch(string $uri, mixed $location)
- * @method static group(array $args, \Closure $group)
+ * @method static group(array $args, \Closure $group) 分组路由
  * @method static HttpRoute view(string $uri, mixed $location, array $arguments = [], $requestMethod = ['get'])
  * @method static HttpRoute none(\Closure $closure, $data = []) 闭包处理位找到的路由
  * @method static HttpRoute redirect(string $path, string $url, int $code = 302, array $requestMethod = ['get']) 路由重定向
  * @method static HttpRoute rule(string $uri, mixed $location, array $type = ['get', 'post'])
  * @method static HttpRoute source(string $uri, mixed $location)
- * @method static all(string $requestMethod = null, string $requestPath = null)
  * Class Route
  * @package \Max\Facade
  */
