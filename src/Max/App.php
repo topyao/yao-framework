@@ -40,7 +40,6 @@ class App extends Container
         'log'        => Log::class,
         'middleware' => Middleware::class,
         'lang'       => Lang::class,
-        'console'    => Console::class,
     ];
 
     public function __construct()
