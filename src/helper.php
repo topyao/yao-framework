@@ -183,7 +183,8 @@ namespace Max {
      */
     function redirect(string $url, int $code = 302)
     {
-        return app('response')->redirect($url, $code);
+        app('response')->redirect($url, $code);
+        exit;
     }
 
     /**

@@ -7,11 +7,6 @@ use Max\{App, Config, Http\Route\Alias};
 use Max\Exception\RouteNotFoundException;
 
 /**
- * @method $this get(string $path, string|arrray|\Closure $location) GET方式请求的路由
- * @method $this post(string $path, string|arrray|\Closure $location) POST方式请求的路由
- * @method $this delete(string $path, string|arrray|\Closure $location) DELETE方式请求的路由
- * @method $this put(string $path, string|arrray|\Closure $location) PUT方式请求的路由
- * @method $this patch(string $path, string|arrray|\Closure $location) PATCH方式请求的路由
  * 路由操作类
  * Class Route
  * @author chengyao
@@ -31,12 +26,6 @@ class Route
      * @var Request
      */
     protected $request;
-
-    /**
-     * Config配置实例
-     * @var Config
-     */
-    protected $config;
 
     /**
      * 响应实例
@@ -70,8 +59,9 @@ class Route
 
     protected $options = [
         'middleware' => [],
-        'route'      => '',
+        'location'   => '',
         'cache'      => 0,
+        'cors'       => ''
     ];
 
     /**
@@ -91,74 +81,113 @@ class Route
      */
     public function __construct(App $app)
     {
-        $this->app     = $app;
-        $this->config  = $app['config'];
+        $this->app = $app;
     }
 
     /**
-     * 路由注册
-     * @param $method
-     * @param $arguments
+     * @param string $path
+     * @param $location
      * @return $this
      */
-    public function __call($method, $arguments)
+    public function patch(string $path, $location)
     {
-        $this->setRoute((array)$method, ...$arguments);
+        return $this->rule($path, $location, ['PATCH']);
+    }
+
+    /**
+     * @param string $path
+     * @param $location
+     * @return $this
+     */
+    public function put(string $path, $location)
+    {
+        return $this->rule($path, $location, ['PUT']);
+    }
+
+    /**
+     * @param string $path
+     * @param $location
+     * @return $this
+     */
+    public function delete(string $path, $location)
+    {
+        return $this->rule($path, $location, ['DELETE']);
+    }
+
+    /**
+     * POST方式请求的路由
+     * @param string $path
+     * @param $location
+     * @return $this
+     */
+    public function post(string $path, $location)
+    {
+        return $this->rule($path, $location, ['POST']);
+    }
+
+    /**
+     * GET方式请求的路由
+     * @param string $path
+     * @param $location
+     * @return $this
+     */
+    public function get(string $path, $location)
+    {
+        return $this->rule($path, $location, ['GET']);
+    }
+
+    /**
+     * @param string $path
+     * 请求路径
+     * @param $location
+     * 目标位置
+     * @param string[] $method
+     * 请求方式
+     */
+    public function rule(string $path, $location, $methods = ['GET', 'POST'])
+    {
+        [$this->method, $this->path] = [$methods, '/' . trim($path, '/')];
+        foreach ($methods as $method) {
+            $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
+                'route'      => $location,
+                'middleware' => $this->middleware,
+                'ext'        => $this->ext,
+                'controller' => $this->controller,
+                'namespace'  => $this->namespace,
+            ];
+        }
         return $this;
     }
 
     /**
      * 重定向路由
-     * @param string $uri
+     * @param string $path
      * @param string $location
      * @param int $code
      * @param array|string[] $methods
      * @return $this
      */
-    public function redirect(string $uri, string $location, int $code = 302, array $methods = ['get'])
+    public function redirect(string $path, string $location, int $code = 302, array $methods = ['GET'])
     {
-        //可以让路由传递参数给闭包
-        $this->setRoute($methods, $uri, function () use ($code, $location) {
-            return redirect($location, $code);
-        });
-        return $this;
+        return $this->rule($path, function () use ($code, $location) {
+            \Max\redirect($location, $code);
+            exit;
+        }, $methods);
     }
 
     /**
      * 视图路由
-     * @param string $uri
+     * @param string $path
      * @param string $view
      * @param array $data
      * @param array|string[] $methods
      * @return $this
      */
-    public function view(string $uri, string $view, array $data = [], array $methods = ['get'])
+    public function view(string $path, string $view, array $data = [], array $methods = ['GET'])
     {
-        $this->setRoute($methods, $uri, function () use ($view, $data) {
-            return view($view, $data);
-        });
-        return $this;
-    }
-
-    /**
-     * @param string $uri
-     * @param $location
-     * @param array|string[] $requestMethods
-     * @return $this
-     */
-    public function rule(string $uri, $location, array $requestMethods = ['get', 'post']): Route
-    {
-        $this->setRoute($requestMethods, $uri, $location);
-        return $this;
-    }
-
-    /**
-     * 返回已注册标识
-     * @return bool
-     */
-    public function isRegistered(): bool
-    {
-        return $this->registered;
+        return $this->rule($path, function () use ($view, $data) {
+            return \Max\view($view, $data);
+        }, $methods);
     }
 
     /**
@@ -167,12 +196,9 @@ class Route
      * @param array $data
      * @return $this
      */
-    public function none(\Closure $closure, $data = [])
+    public function miss(\Closure $closure)
     {
-        $this->routesMap['none'] = [
-            'route' => $closure,
-            'data'  => $data,
-        ];
+        $this->routesMap['miss'] = $closure;
         return $this;
     }
 
@@ -266,27 +292,13 @@ class Route
         }
     }
 
-    protected function setRoute(array $method, $uri, $location)
-    {
-        [$this->method, $this->path] = [$method, '/' . trim($uri, '/')];
-        foreach ($this->method as $method) {
-            $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
-                'route'      => $location,
-                'middleware' => $this->middleware,
-                'ext'        => $this->ext,
-                'controller' => $this->controller,
-                'namespace'  => $this->namespace,
-            ];
-        }
-    }
-
     /**
      * 路由匹配
      * @return mixed
      */
     public function matched()
     {
-        $method = strtolower($this->app->request->method());
+        $method = $this->app->request->method();
         if (!isset($this->routesMap[$method])) {
             throw new RouteNotFoundException();
         }
@@ -305,14 +317,15 @@ class Route
                 return $location;
             }
         }
-        if (isset($this->routesMap['none'])) {
-            return $this->routesMap['none'];
+        if (isset($this->routesMap['miss'])) {
+            return $this->routesMap['miss'];
         }
         throw new RouteNotFoundException();
     }
 
     public function dispatch()
     {
+        //TODO miss路由bug
         $router         = $this->matched();
         $cache          = $router['cache'] ?? '';
         $cors           = $router['cors'] ?? [];

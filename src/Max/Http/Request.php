@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Max\Http;
 
-use Max\Tools\Arr;
-use Max\{App, Config};
+use Max\{App, Config, Tools\Arr};
 use Psr\Http\Message\{RequestInterface, StreamInterface, UriInterface};
 
 /**
@@ -16,17 +15,10 @@ class Request implements RequestInterface
 {
 
     /**
-     * App类对象，用来获取容器内的实例
-     * php7.4可以使用protected App $app;
+     * App
      * @var App
      */
     protected $app;
-
-    /**
-     * Config类实例
-     * @var mixed|object|Config
-     */
-    protected $config;
 
     /**
      * 请求参数过滤函数
@@ -93,6 +85,7 @@ class Request implements RequestInterface
      * @var array
      */
     protected $get = [];
+    
     /**
      * $_POST
      * @var array
