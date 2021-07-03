@@ -22,7 +22,6 @@ class Http
         $this->config = $app->config->get('app');
         $app->error->register();
         $app->serve($this->config['provider'] ?? []);
-        $app->lang->import($this->config['language']);
         date_default_timezone_set($this->config['default_timezone']);
         $this->app = $app;
     }

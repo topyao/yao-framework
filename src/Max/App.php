@@ -3,9 +3,7 @@ declare (strict_types=1);
 
 namespace Max;
 
-use App\Console\Console;
 use Max\Http\{Middleware, Request, Response, Route, Session};
-use Max\Lang\Lang;
 
 /**
  * @property Request $request    请求实例
@@ -15,7 +13,6 @@ use Max\Lang\Lang;
  * @property Session $session    Session实例
  * @property Log $log            日志类实例
  * @property Route $route        路由实例
- * @property Lang $lang          多语言
  * Class App
  * @author chengyao
  * @version 1.0.0
@@ -39,7 +36,6 @@ class App extends Container
         'session'    => Session::class,
         'log'        => Log::class,
         'middleware' => Middleware::class,
-        'lang'       => Lang::class,
     ];
 
     public function __construct()
@@ -57,13 +53,11 @@ class App extends Container
      */
     public function serve(array $services)
     {
-        //php7.4新语法[...$arr1, ...$arr2]
         foreach ($services as $service) {
             if (!class_exists($service)) {
                 throw new \Exception("服务不存在: {$service}");
             }
             $service = $this->make($service, [], true);
-
             call_user_func([$service, 'register']);
             call_user_func([$service, 'boot']);
         }

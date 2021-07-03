@@ -8,7 +8,7 @@ namespace Max;
  * class Service
  * @package Max
  */
-abstract class Service implements \Max\Contracts\Service
+abstract class Service
 {
 
     /**
