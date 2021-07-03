@@ -385,10 +385,10 @@ class Route
      */
     public function register()
     {
-        if (file_exists($routes = env('storage_path') . 'cache/app/routes.php')) {
+        if (file_exists($routes = \Max\env('storage_path') . 'cache/app/routes.php')) {
             $this->routesMap = unserialize(file_get_contents($routes));
         } else {
-            foreach (glob(env('route_path') . '*.php') as $route) {
+            foreach (glob(\Max\env('route_path') . '*.php') as $route) {
                 include $route;
             }
         }

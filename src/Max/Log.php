@@ -41,7 +41,7 @@ class Log extends \Psr\Log\AbstractLogger
 
     public function getPath($level)
     {
-        $path = env('storage_path') . 'logs' . DIRECTORY_SEPARATOR . $level . DIRECTORY_SEPARATOR . date('Ym') . DIRECTORY_SEPARATOR;
+        $path = \Max\env('storage_path') . 'logs' . DIRECTORY_SEPARATOR . $level . DIRECTORY_SEPARATOR . date('Ym') . DIRECTORY_SEPARATOR;
         \Max\Tools\File::mkdir($path);
         return $path;
     }

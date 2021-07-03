@@ -14,7 +14,7 @@ class Lang
 
     public function import($language = 'zh')
     {
-        $this->language = include env('root_path') . '/vendor/max/framework/src/Max/Lang/packages/' . strtolower($language) . '.php';
+        $this->language = include \Max\env('root_path') . '/vendor/max/framework/src/Max/Lang/packages/' . strtolower($language) . '.php';
     }
 
     public function out(string $keyword, ...$vars)
