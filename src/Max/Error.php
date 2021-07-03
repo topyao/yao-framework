@@ -78,7 +78,7 @@ class Error
             ]
         );
         if ($this->app->config->get('app.debug')) {
-            $class    = ltrim(strrchr(get_class($e), '\\'), '\\');
+            $class = get_class($e);
             $errorMsg = <<<EOT
 <title>{$message}</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
