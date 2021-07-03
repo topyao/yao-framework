@@ -3,9 +3,8 @@ declare (strict_types=1);
 
 namespace Max\Http;
 
+use Max\{App, Config, Http\Route\Alias};
 use Max\Exception\RouteNotFoundException;
-use Max\{App, Config};
-use Max\Http\Route\{Alias, Cors};
 
 /**
  * @method $this get(string $path, string|arrray|\Closure $location) GET方式请求的路由
@@ -93,7 +92,6 @@ class Route
     public function __construct(App $app)
     {
         $this->app     = $app;
-        $this->request = $app['request'];
         $this->config  = $app['config'];
     }
 
@@ -240,15 +238,9 @@ class Route
      * 缓存预检时间
      * @return $this
      */
-    public function cors($allowOrigin = '*', string $allowCredentials = 'true', string $allowHeaders = '*', int $maxAge = 600): Route
+    public function cors($allowOrigin = '*')
     {
-        $this->setOption('cors', [
-             'setAllowOrigin' => $allowOrigin,
-             'setAllowHeaders' => $allowHeaders,
-             'setCredentials' => $allowCredentials,
-             'setMaxAge' => $maxAge,
-             'setAllowMethod' => $this->request->method(),
-        ]);
+        $this->setOption('cors', $allowOrigin);
         return $this;
     }
 
@@ -308,7 +300,7 @@ class Route
             if (preg_match($uriRegexp, $path, $match)) {
                 if (isset($match)) {
                     array_shift($match);
-                    $this->request->routeParams($match);
+                    $this->app->request->routeParams($match);
                 }
                 return $location;
             }
@@ -341,10 +333,9 @@ class Route
         if (!empty($cache)) {
             $this->app->response->cache($cache);
         }
-        if(!empty($cors)){
-            $corsConcrete = $this->app->make(Cors::class);
-            foreach($cors as $method => $content) {
-                $corsConcrete->{$method}($content);
+        if (!empty($cors)) {
+            if ($this->app->request->header('origin')) {
+                //TODO 跨域
             }
         }
         return $this->app->middleware
@@ -355,10 +346,10 @@ class Route
                         return $this->app->invokeFunc($this->callable);
                     };
                 } else if (is_array($this->callable) && 2 === count($this->callable)) {
-                    $this->request->setAction($this->callable[1]);
+                    $this->app->request->setAction($this->callable[1]);
                     $this->app->make($this->callable[0]);
                     $request = function () {
-                        return $this->app->invokeMethod($this->callable, $this->request->routeParams());
+                        return $this->app->invokeMethod($this->callable, $this->app->request->routeParams());
                     };
                 } else {
                     throw new \Exception('Cannot resolve request');

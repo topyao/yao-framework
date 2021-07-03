@@ -238,7 +238,7 @@ class Container implements ContainerInterface, ArrayAccess
      */
     public function push(string $id, $concrete): bool
     {
-        if (isset(static::$instances[$this->bound($id)])) {
+        if ($this->has($id)) {
             return false;
         }
         array_push(static::$instances, $concrete);
