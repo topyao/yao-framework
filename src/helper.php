@@ -1,119 +1,120 @@
 <?php
 
-namespace Max;
+namespace Max {
 
-use Max\App;
+    use Exception;
+    use Closure;
 
-/**
- * 容器实例化和获取实例
- * @param string|null $id
- * @param array $arguments
- * @param bool $renew
- * @return mixed|object
- */
-function app(string $id = null, array $arguments = [], bool $renew = false)
-{
-    if (is_null($id)) {
-        return App::instance();
-    }
-    return App::instance()->make($id, $arguments, $renew);
-}
-
-/**
- * 容器调用方法
- * @param array|Closure $callable
- * 数组或者闭包
- * @param array $arguments
- * 给方法传递的参数列表
- * @param bool $renew
- * 重新实例化，仅$callable为数组时候生效
- * @param array $constructorParameters
- * 构造函数参数数组，仅$callable为数组时候生效
- * @return mixed
- * @throws Exception
- */
-function invoke($callable, array $arguments = [], bool $renew = false, array $constructorParameters = [])
-{
-    if (is_array($callable)) {
-        return app()->invokeMethod($callable, $arguments, $renew, $constructorParameters);
-    }
-    if ($callable instanceof Closure) {
-        return app()->invokeFunc($callable, $arguments);
-    }
-    throw new Exception('Cannot invoke method.');
-}
-
-/**
- * 数组转json
- * @param array $array
- * @return string
- * @throws Exception
- */
-function json(array $array): string
-{
-    try {
-        // 返回JSON数据格式到客户端 包含状态信息
-        $json = json_encode($array, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        if (false === $json) {
-            throw new \Exception(json_last_error_msg());
+    /**
+     * 容器实例化和获取实例
+     * @param string|null $id
+     * @param array $arguments
+     * @param bool $renew
+     * @return mixed|object
+     */
+    function app(string $id = null, array $arguments = [], bool $renew = false)
+    {
+        if (is_null($id)) {
+            return App::instance();
         }
-    } catch (\Exception $e) {
-        if ($e->getPrevious()) {
-            throw $e->getPrevious();
+        return App::instance()->make($id, $arguments, $renew);
+    }
+
+    /**
+     * 容器调用方法
+     * @param array|Closure $callable
+     * 数组或者闭包
+     * @param array $arguments
+     * 给方法传递的参数列表
+     * @param bool $renew
+     * 重新实例化，仅$callable为数组时候生效
+     * @param array $constructorParameters
+     * 构造函数参数数组，仅$callable为数组时候生效
+     * @return mixed
+     * @throws Exception
+     */
+    function invoke($callable, array $arguments = [], bool $renew = false, array $constructorParameters = [])
+    {
+        if (is_array($callable)) {
+            return app()->invokeMethod($callable, $arguments, $renew, $constructorParameters);
         }
-        throw $e;
+        if ($callable instanceof Closure) {
+            return app()->invokeFunc($callable, $arguments);
+        }
+        throw new Exception('Cannot invoke method.');
     }
-    return $json;
-}
 
-
-/**
- * @param string|array $message
- * 抛出异常的信息,支持数组，会以json形式抛出
- * @param int $code
- * @param string $class
- * @param null $options
- */
-function abort($message, $code = 0, $class = \Exception::class, $options = null)
-{
-    if (is_array($message)) {
-        $message = json($message);
+    /**
+     * 数组转json
+     * @param array $array
+     * @return string
+     * @throws \Exception
+     */
+    function json(array $array): string
+    {
+        try {
+            // 返回JSON数据格式到客户端 包含状态信息
+            $json = json_encode($array, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if (false === $json) {
+                throw new Exception(json_last_error_msg());
+            }
+        } catch (\Exception $e) {
+            if ($e->getPrevious()) {
+                throw $e->getPrevious();
+            }
+            throw $e;
+        }
+        return $json;
     }
-    throw new $class($message, $code, $options);
-}
 
-/**
- *配置文件获取辅助函数
- * @param $key
- * 配置文件名
- * @return mixed
- */
-function config(string $key = null, $default = null)
-{
-    return app('config')->get($key, $default);
-}
 
-/**
- * env获取
- * @param string|null $key
- * @param null $default
- * @return mixed
- * @throws Exception
- */
-function env(string $key = null, $default = null)
-{
-    return app('env')->get($key, $default);
-}
+    /**
+     * @param string|array $message
+     * 抛出异常的信息,支持数组，会以json形式抛出
+     * @param int $code
+     * @param string $class
+     * @param null $options
+     */
+    function abort($message, $code = 0, $class = \Exception::class, $options = null)
+    {
+        if (is_array($message)) {
+            $message = json($message);
+        }
+        throw new $class($message, $code, $options);
+    }
 
-/**
- * 中断调试
- * @param mixed ...$arguments
- * 多个参数
- * @return mixed
- */
-function halt(...$arguments)
-{
-    echo '<title>调试信息</title>
+    /**
+     *配置文件获取辅助函数
+     * @param $key
+     * 配置文件名
+     * @return mixed
+     */
+    function config(string $key = null, $default = null)
+    {
+        return app('config')->get($key, $default);
+    }
+
+    /**
+     * env获取
+     * @param string|null $key
+     * @param null $default
+     * @return mixed
+     * @throws Exception
+     */
+    function env(string $key = null, $default = null)
+    {
+        return app('env')->get($key, $default);
+    }
+
+    /**
+     * 中断调试
+     * @param mixed ...$arguments
+     * 多个参数
+     * @return mixed
+     */
+    function halt(...$arguments)
+    {
+        echo '<title>调试信息</title>
 <meta name="viewport"  content="width=device-width, initial-scale=1.0">
 <style>
 
@@ -146,74 +147,76 @@ function halt(...$arguments)
 <div style="border:1px solid #d5d1d1;width:70vw;margin: .5em auto">
 <div class="title">调试信息</div>
 <pre style="padding-top: 1em">';
-    var_dump(...$arguments);
-    echo '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
-    return app('response')->send();
-}
-
-/**
- * 响应
- * @return \Max\Http\Response
- */
-function response()
-{
-    return app('response');
-}
-
-
-/**
- * @param $field
- * @param null $value
- * @return mixed
- */
-function session($field, $value = null)
-{
-    $session = app('session');
-    if (!isset($value)) {
-        return $session->get($field);
+        var_dump(...$arguments);
+        echo '</pre><div class="title" style="display: flex;justify-content: flex-end"><div>Max&nbsp;&nbsp;<a href="https://github.com/topyao/max">Github</a>&nbsp;&nbsp<a href="https://packagist.org/packages/max/max">Packagist</a></div></div></div></body>';
+        return app('response')->send();
     }
-    $session->set($field, $value);
+
+    /**
+     * 响应
+     * @return \Max\Http\Response
+     */
+    function response()
+    {
+        return app('response');
+    }
+
+
+    /**
+     * @param $field
+     * @param null $value
+     * @return mixed
+     */
+    function session($field, $value = null)
+    {
+        $session = app('session');
+        if (!isset($value)) {
+            return $session->get($field);
+        }
+        $session->set($field, $value);
+    }
+
+    /**
+     * 重定向
+     * @param string $url
+     * @param int $code
+     */
+    function redirect(string $url, int $code = 302)
+    {
+        return app('response')->redirect($url, $code);
+    }
+
+    /**
+     * url生成
+     * @param string $alias
+     * @param array $args
+     * @return string
+     * @throws Exception
+     */
+    function url(string $alias, array $args = []): string
+    {
+        return app(\Max\Http\Route\Alias::class)->get($alias, $args);
+    }
+
 }
 
-/**
- * 重定向
- * @param string $url
- * @param int $code
- */
-function redirect(string $url, int $code = 302)
-{
-    return response()->redirect($url, $code);
-}
+namespace {
 
-/**
- * url生成
- * @param string $alias
- * @param array $args
- * @return string
- * @throws Exception
- */
-function url(string $alias, array $args = []): string
-{
-    return app(\Max\Http\Route\Alias::class)->get($alias, $args);
-}
-
-
-function csrf()
-{
-    app('session')->set('token', md5(uniqid()));
-}
-
-/**
- * 兼容CLI的获取Headers的方法
- * @return array
- */
-function apache_request_headers(): array
-{
-    $headers = [];
-    foreach ($_SERVER as $key => $server) {
-        if ('HTTP_' == substr($key, 0, 5)) {
-            $headers[str_replace('_', '-', substr($key, 5))] = $server;
+    if (false === function_exists('apache_request_headers')) {
+        /**
+         * 兼获取Headers的方法
+         * @return array
+         */
+        function apache_request_headers(): array
+        {
+            $headers = [];
+            foreach ($_SERVER as $key => $server) {
+                if ('HTTP_' == substr($key, 0, 5)) {
+                    $headers[str_replace('_', '-', substr($key, 5))] = $server;
+                }
+            }
+            return $headers;
         }
     }
-    return $headers;
+
 }
