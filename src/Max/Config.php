@@ -28,7 +28,7 @@ class Config
     /**
      * 配置获取方法
      * @param string|null $key
-     * 使用点语法获取配置文件名下的配置文件，例如app.auto_start
+     * 使用点语法获取配置文件名下的配置文件，例如http.auto_start
      * @param null $default
      * @return array|mixed|null
      */

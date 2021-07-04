@@ -11,7 +11,7 @@ class Handler
      * 异常实例
      * @var Throwable
      */
-    protected $exception;
+    protected $e;
 
     /**
      * Handle constructor.
@@ -19,7 +19,7 @@ class Handler
      */
     public function __construct(Throwable $e)
     {
-        $this->exception = $e;
+        $this->e = $e;
     }
 
     public function __toString()
@@ -31,7 +31,7 @@ class Handler
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$this->exception->getMessage()}</title>
+    <title>{$this->e->getMessage()}</title>
     <style>
         html,
         body {
@@ -74,11 +74,11 @@ class Handler
 <body>
 <div class="flex-center position-ref full-height">
     <div class="code">
-        {$this->exception->getCode()}
+        {$this->e->getCode()}
     </div>
 
     <div class="message" style="padding: 10px;">
-        {$this->exception->getMessage()}
+        {$this->e->getMessage()}
     </div>
 </div>
 </body>

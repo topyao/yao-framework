@@ -286,7 +286,6 @@ class Container implements ContainerInterface, ArrayAccess
         return $injection;
     }
 
-
     public function offsetExists($offset)
     {
         return $this->has($offset);

@@ -21,7 +21,7 @@ class Session
     public function __construct(App $app)
     {
         $this->app = $app;
-        if ($app->config->get('app.auto_start', false)) {
+        if ($app->config->get('http.auto_start', false)) {
             $this->init();
         }
     }

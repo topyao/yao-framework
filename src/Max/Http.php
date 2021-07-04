@@ -12,24 +12,24 @@ class Http
     protected $app;
 
     /**
+     * app配置
      * @var array
      */
     protected $config;
 
     public function __construct(App $app)
     {
-        ini_set('memory_limit', '64M');
-        $this->config = $app->config->get('app');
+        $this->config = $app->config->get('http');
+        date_default_timezone_set($this->config['default_timezone']);
         $app->error->register();
         $app->serve($this->config['provider'] ?? []);
-        date_default_timezone_set($this->config['default_timezone']);
         $this->app = $app;
     }
 
     public function response()
     {
         return $this->app->middleware
-            ->through($this->app->config->get('app.middleware'))
+            ->through($this->config['middleware'] ?? [])
             ->then(function () {
                 return $this->app->route->register()->dispatch();
             })->end();

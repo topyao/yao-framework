@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace Max\Http;
 
-use Max\{App, Config, Http\Route\Alias};
+use Max\{App, Config, Http\Route\Alias, Http\Route\Dispatcher};
 use Max\Exception\RouteNotFoundException;
 
 /**
@@ -16,36 +16,28 @@ class Route
 {
 
     /**
-     * 容器实例
+     * App
      * @var App
      */
     protected $app;
 
     /**
-     * 请求实例
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * 响应实例
-     * @var Response
-     */
-    protected $response;
-
-    /**
-     * 路由注册树
+     * 路由
      * @var array
      */
     protected $routesMap = [];
 
     /**
-     * 注册路由的方法
+     * 匹配到的路由信息
+     * @var array
+     */
+    protected $matched = [];
+
+    /**
+     * 注册路由请求方法
      * @var array
      */
     protected $method;
-
-    protected $controller;
 
     /**
      * 注册路由的path
@@ -53,25 +45,15 @@ class Route
      */
     protected $path = '';
 
-    protected $namespace;
-
+    /**
+     * @var \Closure|array|string
+     */
     protected $callable;
 
-    protected $options = [
-        'middleware' => [],
-        'location'   => '',
-        'cache'      => 0,
-        'cors'       => ''
-    ];
-
     /**
-     * 路由注册的地址
-     * @var
+     * 路由后缀
+     * @var string
      */
-    protected $location;
-
-    protected $middleware = '';
-
     protected $ext = '';
 
     /**
@@ -146,14 +128,14 @@ class Route
      */
     public function rule(string $path, $location, $methods = ['GET', 'POST'])
     {
-        [$this->method, $this->path] = [$methods, '/' . trim($path, '/')];
+        [$this->method, $this->path, $this->ext] = [$methods, '/' . trim($path, '/'), ''];
         foreach ($methods as $method) {
-            $this->routesMap[$method]["{$this->path}{$this->ext}"] = [
-                'route'      => $location,
-                'middleware' => $this->middleware,
-                'ext'        => $this->ext,
-                'controller' => $this->controller,
-                'namespace'  => $this->namespace,
+            $this->routesMap[strtoupper($method)]["{$this->path}{$this->ext}"] = [
+                'route'       => $location,
+                'middleware'  => [],
+                'ext'         => '',
+                'cache'       => false,
+                'allowOrigin' => [],
             ];
         }
         return $this;
@@ -210,7 +192,9 @@ class Route
      */
     public function middleware($middleware)
     {
-        $this->setOption('middleware', $middleware);
+        foreach ($this->method as $method) {
+            array_push($this->routesMap[strtoupper($method)]["{$this->path}{$this->ext}"]['middleware'], ...(array)$middleware);
+        }
         return $this;
     }
 
@@ -253,20 +237,13 @@ class Route
     }
 
     /**
-     * 路由允许跨域设置
-     * @param string|array $allowOrigin
-     * 允许跨域域名
-     * @param string $allowCredentials
-     * 是否可以将对请求的响应暴露给页面
-     * @param string $allowHeaders
-     * 允许的头信息
-     * @param int $allowAge
-     * 缓存预检时间
+     * 跨域支持
+     * @param string|string[] $allowOrigin
      * @return $this
      */
     public function cors($allowOrigin = '*')
     {
-        $this->setOption('cors', $allowOrigin);
+        $this->setOption('allowOrigin', $allowOrigin);
         return $this;
     }
 
@@ -281,14 +258,14 @@ class Route
         return $this;
     }
 
-    /***
+    /**
      * @param string $key
      * @param $value
      */
     protected function setOption(string $key, $value)
     {
         foreach ($this->method as $method) {
-            $this->routesMap[$method][$this->path][$key] = $value;
+            $this->routesMap[strtoupper($method)]["{$this->path}{$this->ext}"][$key] = $value;
         }
     }
 
@@ -325,50 +302,7 @@ class Route
 
     public function dispatch()
     {
-        //TODO miss路由bug
-        $router         = $this->matched();
-        $cache          = $router['cache'] ?? '';
-        $cors           = $router['cors'] ?? [];
-        $this->callable = $router['route'] ?? '';
-        if (is_string($this->callable)) {
-            if ('C:' === substr($this->callable, 0, 2)) {
-                $this->callable = \Opis\Closure\unserialize($this->callable);
-            } else {
-                $callable = explode('@', $this->callable, 2);
-                if (!isset($callable[1])) {
-                    throw new RouteNotFoundException();
-                }
-                $this->callable = ['App\\Http\\Controllers\\' . implode('\\', array_map(function ($value) {
-                        return ucfirst($value);
-                    }, explode('/', $callable[0]))), $callable[1]];
-            }
-        }
-        if (!empty($cache)) {
-            $this->app->response->cache($cache);
-        }
-        if (!empty($cors)) {
-            if ($this->app->request->header('origin')) {
-                //TODO 跨域
-            }
-        }
-        return $this->app->middleware
-            ->through($router['middleware'] ?? [])
-            ->then(function () {
-                if ($this->callable instanceof \Closure) {
-                    $request = function () {
-                        return $this->app->invokeFunc($this->callable);
-                    };
-                } else if (is_array($this->callable) && 2 === count($this->callable)) {
-                    $this->app->request->setAction($this->callable[1]);
-                    $this->app->make($this->callable[0]);
-                    $request = function () {
-                        return $this->app->invokeMethod($this->callable, $this->app->request->routeParams());
-                    };
-                } else {
-                    throw new \Exception('Cannot resolve request');
-                }
-                return $this->app->middleware->then($request)->end();
-            })->end();
+        return $this->app->make(Dispatcher::class, [$this->matched()])->dispatch();
     }
 
     /**

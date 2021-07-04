@@ -208,7 +208,7 @@ class Response implements ResponseInterface
     {
         ob_start();
         $this->app->middleware
-            ->through($this->app->config->get('app.middleware'))
+            ->through($this->app->config->get('http.middleware'))
             ->then(function () {
                 return $this->app->route->register()->dispatch();
             })->end();
@@ -255,7 +255,7 @@ class Response implements ResponseInterface
         if (!$this->responded) {
             $this->responded = true;
             http_response_code((int)$this->code);
-            $this->withHeader('X-Powered-By', $this->app->config->get('app.powered_by', 'MaxPHP'));
+            $this->withHeader('X-Powered-By', $this->app->config->get('http.powered_by', 'MaxPHP'));
             foreach ($this->header as $name => $value) {
                 header("{$name}: {$value}");
             }

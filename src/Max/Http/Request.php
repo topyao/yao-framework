@@ -142,7 +142,7 @@ class Request implements RequestInterface
         $request->app     = $app;
         $request->env     = &$_ENV;
         $request->server  = &$_SERVER;
-        $request->filters = $app->config->get('app.filter', []);
+        $request->filters = $app->config->get('http.filter', []);
 
         $header = apache_request_headers();
 
