@@ -43,7 +43,9 @@ class App extends Container
         $class                     = static::class;
         $this->bind['app']         = $class;
         static::$instances[$class] = $this;
-        $this->bind                = array_merge($this->config->get('app.alias'), $this->bind);
+        $config                    = $this->config->get('app');
+        $this->bind                = array_merge($config['alias'], $this->bind);
+        date_default_timezone_set($config['default_timezone']);
     }
 
     /**

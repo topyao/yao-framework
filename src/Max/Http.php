@@ -20,7 +20,6 @@ class Http
     public function __construct(App $app)
     {
         $this->config = $app->config->get('http');
-        date_default_timezone_set($this->config['default_timezone']);
         $app->error->register();
         $app->serve($this->config['provider'] ?? []);
         $this->app = $app;
