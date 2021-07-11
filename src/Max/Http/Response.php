@@ -101,7 +101,7 @@ class Response implements ResponseInterface
     public function json(array $jsonSerializable)
     {
         $this->contentType('application/json');
-        echo json($jsonSerializable);
+        echo \Max\json($jsonSerializable);
         return $this;
     }
 
